@@ -14,3 +14,4 @@ Publicado em <https://byt3un1on.github.io> a partir da branch `master`, via GitH
 ## Status
 
 Repositório recém-criado. A stack ainda não foi definida.
+x
