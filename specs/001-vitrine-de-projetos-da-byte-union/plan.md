@@ -12,7 +12,9 @@ foram verificadas no registro em 2026-08-30, não presumidas.
 
 | Decisão | Escolha | Alternativas descartadas | Por quê |
 |---|---|---|---|
-| Forma do artefato publicado | `outputMode: "static"` do builder `application`, com `prerender.routesFile` | `ssr: true`; SPA sem prerender; `discoverRoutes` automático | O Princípio 7 proíbe runtime de servidor e exige que toda rota pública resolva por arquivo. `static` gera diretório servível por qualquer servidor de arquivos; `routesFile` cobre as rotas parametrizadas de projeto, que `discoverRoutes` não descobre sozinho |
+| Forma do artefato publicado | `prerender: { routesFile, discoverRoutes }` com `ssr: false` e **sem** `outputMode` | `outputMode: "static"` combinado com `routesFile`; `ssr: true`; SPA sem prerender | **`outputMode` e `routesFile` são mutuamente exclusivos.** Verificado no fonte do builder (`options.js:116-124`): havendo `outputMode`, ele registra *"The `prerender` option is not considered when `outputMode` is specified"* e reduz a opção a `options.prerender = !!options.server`, **descartando o `routesFile`**. Como `RF-08` e `RF-15` dependem de enumerar as páginas de projeto, e essa lista nasce em `make catalog`, o `outputMode` é que sai. `prerender` + `ssr: false` produz o mesmo diretório estático servível por qualquer servidor de arquivos, e preserva a separação entre **enumerar** e **renderizar** |
+| Entrypoint de servidor | `app/infra/init/web_server.ts`, usado apenas em build | Não ter entrypoint de servidor | Não é escolha: `options.js:239` recorta *"The `server` option is required when enabling `ssr`, `prerender` or `app-shell`"*. O prerender precisa de um bundle de servidor **para renderizar em build**. Ele não vai para o artefato publicado e nenhum processo o executa em produção — o Princípio 7 segue intacto |
+| Componente raiz | `app/adapters/presenters/layout/site-shell.component.ts` | Fazer de `home-page` a raiz; dispensar casca | `bootstrapApplication` exige um componente raiz, e o `index.html` precisa do seletor dele. A casca é onde cabeçalho, `router-outlet` e rodapé se compõem uma vez — sem ela, cada página repetiria o enquadramento, contra o DRY do Princípio 4 |
 | Momento de obtenção do catálogo | Passo de geração anterior ao build, executado no Node | Buscar durante o prerender; buscar no navegador do visitante | `RNF-08` exige **0** requisição à API do GitHub feita pelo navegador. Buscar durante o prerender entrelaça obtenção de dado com renderização e reexecuta a chamada por rota; um passo próprio é determinístico, testável e é onde `RF-14` (abortar a publicação) tem lugar natural |
 | Como o sítio consome o catálogo | Arquivo `catalog.generated.json` gerado antes do build e lido por repositório dedicado | `HttpClient` em tempo de execução; embutir o JSON em componente | Mantém `RNF-08` em zero requisições e preserva a regra do `frontend-rules`: componente não faz rede. O repositório é a fronteira, e é mockável no teste |
 | Detecção de repositório vazio (`RF-06`) | `GET /repos/{org}/{repo}/commits?per_page=1` e tratar **HTTP 409** como vazio | Usar `size == 0`; usar `language == null`; confiar na curadoria | Verificado na API: `documentation-site` (vazio) e `byt3un1on.github.io` (com commits) **ambos** retornam `size: 0`. `size` é KB arredondado e não serve. O 409 `Git Repository is empty` é o único sinal confiável |
@@ -97,6 +99,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 
 | Camada | Arquivo | Ação | Teste espelhado | Requisitos |
 |---|---|---|---|---|
+| adapters/presenters | `app/adapters/presenters/layout/site-shell.component.ts` | criar | `app/tests/unit/adapters/presenters/layout/site-shell.component.test.ts` | RF-01, RF-10 |
 | adapters/presenters | `app/adapters/presenters/layout/site-header.component.ts` | criar | `app/tests/unit/adapters/presenters/layout/site-header.component.test.ts` | RF-01, RNF-06 |
 | adapters/presenters | `app/adapters/presenters/layout/site-footer.component.ts` | criar | `app/tests/unit/adapters/presenters/layout/site-footer.component.test.ts` | RF-10 |
 | adapters/presenters | `app/adapters/presenters/home/home-page.component.ts` | criar | `app/tests/unit/adapters/presenters/home/home-page.component.test.ts` | RF-01 |
@@ -115,6 +118,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | infra/tools | `app/infra/tools/seo_tool.ts` | criar | `app/tests/unit/infra/tools/seo_tool.test.ts` | RNF-06 |
 | infra/init | `app/infra/init/web_routes.ts` | criar | `app/tests/unit/infra/init/web_routes.test.ts` | RF-08, RF-12, RF-15 |
 | infra/init | `app/infra/init/web_init.ts` | criar | — *(isento: só compõe a configuração e entrega o roteamento declarado em `web_routes.ts`)* | — |
+| infra/init | `app/infra/init/web_server.ts` | criar | — *(isento: entrypoint de renderização em build, sem regra própria)* | RF-15 |
 | infra/init | `app/infra/init/ioc_init.ts` | criar | — *(isento: só liga interface a implementação, sem decisão)* | — |
 | infra/init | `app/infra/init/cli_ioc_init.ts` | criar | — *(isento: só liga interface a implementação, sem decisão)* | — |
 | infra/cli | `app/infra/cli/cli_entry.ts` | criar | `app/tests/unit/infra/cli/cli_entry.test.ts` | RF-14 |
@@ -154,14 +158,16 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | `app/main_catalog.ts` | Sobe o gerador de catálogo: pede o inicializador a `cli_entry` e o executa | isento |
 | `app/main_report.ts` | Sobe o reporte de estado da publicação, acionado na fronteira do fluxo, com o desfecho recebido por argumento | isento |
 
-**Prova da isenção, exigida pela emenda 1.0.2.** Seis arquivos ficam fora da conta de cobertura —
-os três acima mais `ioc_init.ts`, `cli_ioc_init.ts` e `web_init.ts` — e nenhum carrega decisão:
+**Prova da isenção, exigida pela emenda 1.0.2.** Sete arquivos ficam fora da conta de cobertura —
+os três acima mais `ioc_init.ts`, `cli_ioc_init.ts`, `web_init.ts` e `web_server.ts` — e nenhum
+carrega decisão:
 
 | Arquivo | O que faria dele um arquivo com regra | Onde essa regra mora, testada |
 |---|---|---|
 | `main.ts`, `main_catalog.ts`, `main_report.ts` | escolher o que executar, tratar erro, ler argumento com significado | `cli_entry.ts` interpreta o argumento e escolhe o comando; os comandos tratam o erro |
 | `ioc_init.ts`, `cli_ioc_init.ts` | decidir qual implementação usar em qual condição | não há condição: cada interface tem uma implementação só, ligada uma vez |
 | `web_init.ts` | declarar rotas, ordem ou guarda de navegação | `web_routes.ts` declara a tabela de rotas e **tem teste espelhado**; `web_init` só a entrega ao framework |
+| `web_server.ts` | escolher o que renderizar, ou responder requisição | não responde requisição nenhuma: existe só para o builder renderizar em build, e a lista do que renderizar vem de `prerender-routes.txt` |
 
 Qualquer um deles que venha a ganhar um `if` perde a isenção no mesmo commit: a regra sai para
 uma camada testável antes, e só então o arquivo volta a ser fiação.
@@ -178,7 +184,7 @@ uma camada testável antes, e só então o arquivo volta a ser fiação.
 |---|---|---|
 | `app/data/curation.json` | A curadoria: quais projetos entram, ordem, destaque, resumo e composição (`RF-04`, `RF-05`, `RF-07`) | sim |
 | `app/data/catalog.generated.json` | Catálogo montado por `make catalog`, consumido pelo build | não — ignorado |
-| `app/data/prerender-routes.txt` | Lista de rotas a prerenderizar, uma por linha (`RF-08`, `RF-15`) | não — ignorado |
+| `app/data/prerender-routes.txt` | Lista de rotas a prerenderizar, uma por linha, consumida por `prerender.routesFile` (`RF-08`, `RF-15`) | não — ignorado |
 
 > `curation.json` fica fora das camadas de propósito: o Princípio 8 exige que a curadoria viva
 > em **arquivo de dados separado do código**. Colocá-la em `core/domain` a tornaria código.
@@ -270,8 +276,8 @@ precisam de dois insumos que não podem vir da produção: a curadoria e a respo
 | `app/eslint.config.js`, `app/.prettierrc`, `app/.editorconfig` | Dotfiles de qualidade |
 | `app/index.html` | Casca do sítio, com `lang="pt-BR"` (`RNF-07`) |
 | `app/styles.css` | Tokens de cor e tipografia (`RNF-09`) e a malha fluida que sustenta `RNF-05` de 320 px a 1920 px |
-| `app/scripts/serve_dist.sh` | Sobe servidor de arquivos estático sobre `dist/` para BDD e auditoria |
-| `app/scripts/check_links.sh` | Varre o `dist/` construído e falha se alguma ligação interna for absoluta (`RNF-10`) ou se alguma rota pública exigir mais de 2 cliques a partir da página inicial (`RNF-06`) |
+| `app/scripts/serve_dist.sh` | Sobe servidor de arquivos estático sobre **`dist/browser`** — o diretório publicável — para BDD e auditoria |
+| `app/scripts/check_links.sh` | Varre o `dist/browser` construído e falha se alguma ligação interna for absoluta (`RNF-10`) ou se alguma rota pública exigir mais de 2 cliques a partir da página inicial (`RNF-06`) |
 
 ### Arquivos fora de `app/` — exceção declarada
 
@@ -377,7 +383,9 @@ existentes não cobrem:
 
 **Alvos existentes que mudam de conteúdo:**
 
-- `make build` passa a depender de `make catalog` — sem catálogo não há o que prerenderizar.
+- `make build` passa a depender de `make catalog` — sem catálogo não há lista de rotas, e sem
+  lista de rotas o prerender não gera as páginas de projeto. O diretório publicável é
+  `dist/browser`; `dist/server` é insumo de build e não sobe para o ar.
 - `make validate` passa a encadear `fmt → lint → test → cover → it → bdd → audit`.
 - `make bdd` passa a exigir **duas** dependências, porque a suíte tem dois motores: o `dist/`
   construído e servido por servidor de arquivos, para os 19 cenários de navegador, e o serviço
@@ -420,7 +428,7 @@ basta para desenvolvimento local, mas não escreve questão.
 | 4 — Simplicidade defensável | Quatro padrões aplicados, todos por problema presente; seis considerados e recusados, com o motivo registrado. Nenhuma biblioteca de estado, de DI ou de cache foi adicionada — as três seriam antecipação |
 | 5 — Autoria | Nenhum artefato deste plano credita ferramenta de IA. `.github/workflows/publish.yml` publica com o autor configurado no repositório |
 | 6 — Idioma | Spec, plano, tarefas e mensagens de commit em português do Brasil; cenários em `# language: pt`; identificadores de código em inglês; conteúdo do sítio em pt-BR por `RNF-07` |
-| 7 — Publicação estática | `outputMode: "static"` e `prerender.routesFile` — o build produz diretório servível por qualquer servidor de arquivos, e `make bdd` prova isso servindo `dist/` com servidor de arquivos puro. Nenhum SSR, nenhuma função de servidor, nenhuma reescrita de rota. `RF-12` vira `404.html` estático. A emenda 1.0.1 autorizou expressamente a credencial de build que não entra no artefato, e o `GITHUB_TOKEN` de `make catalog` é exatamente esse caso: ele constrói a página e não chega ao visitante |
+| 7 — Publicação estática | `prerender: { routesFile }` com `ssr: false` — o build produz `dist/browser`, diretório servível por qualquer servidor de arquivos, e `make bdd` prova isso servindo-o com servidor de arquivos puro. O bundle de servidor gerado em `dist/server` é **insumo de build e não é publicado**: nenhum processo o executa, e o que vai ao ar não depende dele. Nenhum SSR, nenhuma função de servidor, nenhuma reescrita de rota. `RF-12` vira `404.html` estático. A emenda 1.0.1 autorizou expressamente a credencial de build que não entra no artefato, e o `GITHUB_TOKEN` de `make catalog` é exatamente esse caso: ele constrói a página e não chega ao visitante |
 | 8 — O catálogo deriva do GitHub | Todo dado exibido nasce em `github_organization_client`; nenhum componente carrega texto de projeto. A curadoria vive em `app/data/curation.json`, versionada e fora do código, e cada entrada referencia o repositório que descreve. `assemble_catalog_use_case` exclui privado, arquivado e vazio ainda que a curadoria os declare |
 | 9 — Acessibilidade e performance medidas | `make audit` roda headless e entra em `make validate`. Lighthouse ≥ 90 nas quatro categorias em perfil móvel; `axe` falhando em violação crítica ou séria; `budgets` do builder cobrindo `RNF-04`; `RNF-05` verificado por viewport de 320 px no BDD; `RF-13` anuncia a contagem por região viva, o que é o que faz a restrição de `RF-11` existir para quem usa leitor de tela. `check_links.sh` fecha `RNF-06` e `RNF-10` sobre o `dist/` construído, e `total-byte-weight` mede `RNF-04` em bytes de rede, que é a unidade que o requisito pede |
 
