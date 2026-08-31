@@ -1,0 +1,5 @@
+dist/
+coverage/
+node_modules/
+data/catalog.generated.json
+data/prerender-routes.txt

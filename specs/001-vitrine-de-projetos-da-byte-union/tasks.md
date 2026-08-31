@@ -8,19 +8,19 @@
 
 - [x] T001 [P] Criar `app/package.json` com as versões exatas do plano (Angular 22.1.4, TypeScript 6.0.3, Vitest 4.1.11), sem intervalo `^`
 - [x] T002 [P] Criar `app/tsconfig.json` em modo estrito, sem `any`, com os caminhos das camadas de `app/`
-- [ ] T003 [P] Criar `app/angular.json`: `sourceRoot` na própria `app/`, `prerender` com `routesFile` apontando `app/data/prerender-routes.txt`, `ssr: false`, `server` em `app/infra/init/web_server.ts`, **sem** `outputMode` — que descartaria o `routesFile` —, `baseHref` na raiz, `budgets` e builder `unit-test` com `runner: vitest`
-- [ ] T004 [P] Criar `app/Dockerfile` com Node 24 e Chromium do Playwright, imagem única para executar e desenvolver
-- [ ] T005 [P] Criar `app/docker-compose.yml` com os serviços `dev` (ocioso, código por volume) e `wiremock` em `wiremock/wiremock:3.13.2`, consumido por `make it` e por `make bdd`
-- [ ] T006 [P] Criar `app/Makefile` com os 14 alvos do contrato mais `catalog`, `audit` e `report`; `validate` encadeando `fmt → lint → test → cover → it → bdd → audit`; e `bdd` exigindo o `dist/` construído e o serviço `wiremock` de pé
+- [x] T003 [P] Criar `app/angular.json`: `sourceRoot` na própria `app/`, `prerender` com `routesFile` apontando `app/data/prerender-routes.txt`, `ssr: false`, `server` em `app/infra/init/web_server.ts`, **sem** `outputMode` — que descartaria o `routesFile` —, `baseHref` na raiz, `budgets` e builder `unit-test` com `runner: vitest`
+- [x] T004 [P] Criar `app/Dockerfile` com Node 24 e Chromium do Playwright, imagem única para executar e desenvolver
+- [x] T005 [P] Criar `app/docker-compose.yml` com os serviços `dev` (ocioso, código por volume) e `wiremock` em `wiremock/wiremock:3.13.2`, consumido por `make it` e por `make bdd`
+- [x] T006 [P] Criar `app/Makefile` com os 14 alvos do contrato mais `catalog`, `audit` e `report`; `validate` encadeando `fmt → lint → test → cover → it → bdd → audit`; e `bdd` exigindo o `dist/` construído e o serviço `wiremock` de pé
 - [x] T007 [P] Criar `app/vitest.config.ts` com limiar de cobertura de 90% por arquivo e a exclusão dos sete arquivos de fiação isentos pela emenda 1.0.2: `app/main.ts`, `app/main_catalog.ts`, `app/main_report.ts`, `app/infra/init/ioc_init.ts`, `app/infra/init/cli_ioc_init.ts`, `app/infra/init/web_init.ts` e `app/infra/init/web_server.ts`
-- [ ] T008 [P] Criar os dotfiles `app/eslint.config.js`, `app/.prettierrc` e `app/.editorconfig`
-- [ ] T009 [P] Criar `app/lighthouserc.json` com asserções de 90 nas quatro categorias, LCP ≤ 2,5 s, CLS ≤ 0,1 e `total-byte-weight` ≤ 300 KB, em perfil móvel
-- [ ] T010 [P] Criar `app/index.html` com `lang="pt-BR"` e os metadados base
-- [ ] T011 [P] Criar `app/styles.css` com os tokens de contraste 4,5:1 e 3:1 e a malha fluida de 320 px a 1920 px
-- [ ] T012 [P] Criar `app/scripts/serve_dist.sh`, servidor de arquivos estático sobre `app/dist/browser` — o diretório publicável — para BDD e auditoria
-- [ ] T013 [P] Criar `app/scripts/check_links.sh`, que falha em ligação interna absoluta no `app/dist/browser` e em rota pública a mais de 2 cliques da página inicial
-- [ ] T014 [P] Atualizar `.gitignore` para `app/node_modules/`, `app/dist/`, `app/coverage/`, `app/data/catalog.generated.json` e `app/data/prerender-routes.txt`
-- [ ] T015 [P] Criar `CLAUDE.md` na raiz a partir do template do fluxo
+- [x] T008 [P] Criar os dotfiles `app/eslint.config.js`, `app/.prettierrc` e `app/.editorconfig`
+- [x] T009 [P] Criar `app/lighthouserc.json` com asserções de 90 nas quatro categorias, LCP ≤ 2,5 s, CLS ≤ 0,1 e `total-byte-weight` ≤ 300 KB, em perfil móvel
+- [x] T010 [P] Criar `app/index.html` com `lang="pt-BR"` e os metadados base
+- [x] T011 [P] Criar `app/styles.css` com os tokens de contraste 4,5:1 e 3:1 e a malha fluida de 320 px a 1920 px
+- [x] T012 [P] Criar `app/scripts/serve_dist.sh`, servidor de arquivos estático sobre `app/dist/browser` — o diretório publicável — para BDD e auditoria
+- [x] T013 [P] Criar `app/scripts/check_links.sh`, que falha em ligação interna absoluta no `app/dist/browser` e em rota pública a mais de 2 cliques da página inicial
+- [x] T014 [P] Atualizar `.gitignore` para `app/node_modules/`, `app/dist/`, `app/coverage/`, `app/data/catalog.generated.json` e `app/data/prerender-routes.txt`
+- [x] T015 [P] Criar `CLAUDE.md` na raiz a partir do template do fluxo
 
 ## Fase 1 — Domínio
 

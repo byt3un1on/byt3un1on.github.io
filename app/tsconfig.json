@@ -36,5 +36,14 @@
     "typeCheckHostBindings": true,
     "strictTemplates": true
   },
-  "include": ["adapters/**/*.ts", "core/**/*.ts", "infra/**/*.ts", "interfaces/**/*.ts", "tests/**/*.ts", "main.ts", "main_catalog.ts", "main_report.ts"]
+  "include": [
+    "adapters/**/*.ts",
+    "core/**/*.ts",
+    "infra/**/*.ts",
+    "interfaces/**/*.ts",
+    "tests/**/*.ts",
+    "main.ts",
+    "main_catalog.ts",
+    "main_report.ts"
+  ]
 }

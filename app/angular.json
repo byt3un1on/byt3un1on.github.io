@@ -16,36 +16,23 @@
             "index": "index.html",
             "browser": "main.ts",
             "server": "infra/init/web_server.ts",
-            "outputMode": "static",
-            "baseHref": "/",
+            "ssr": false,
             "prerender": {
+              "discoverRoutes": true,
               "routesFile": "data/prerender-routes.txt"
             },
+            "baseHref": "/",
             "tsConfig": "tsconfig.json",
             "styles": ["styles.css"],
             "polyfills": [],
             "budgets": [
-              {
-                "type": "initial",
-                "maximumWarning": "250kB",
-                "maximumError": "300kB"
-              },
-              {
-                "type": "anyComponentStyle",
-                "maximumWarning": "4kB",
-                "maximumError": "8kB"
-              }
+              { "type": "initial", "maximumWarning": "250kB", "maximumError": "300kB" },
+              { "type": "anyComponentStyle", "maximumWarning": "4kB", "maximumError": "8kB" }
             ]
           },
           "configurations": {
-            "production": {
-              "optimization": true,
-              "outputHashing": "all"
-            },
-            "development": {
-              "optimization": false,
-              "sourceMap": true
-            }
+            "production": { "optimization": true, "outputHashing": "all" },
+            "development": { "optimization": false, "sourceMap": true }
           },
           "defaultConfiguration": "production"
         },

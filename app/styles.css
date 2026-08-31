@@ -1,0 +1,113 @@
+/* Tokens e malha da vitrine. O contraste declarado aqui sustenta o RNF-09, e a
+   malha fluida sustenta o RNF-05 de 320 px a 1920 px. */
+
+:root {
+  /* Contraste medido sobre --surface (#ffffff), nao estimado:
+     --text 17.96:1, --text-muted 6.64:1, --accent 5.99:1.
+     Todos acima do minimo de 4.5:1 que o RNF-09 exige para texto normal.
+     --border fica em 1.44:1 e por isso nunca carrega texto: e so separacao. */
+  --surface: #ffffff;
+  --surface-raised: #f4f5f7;
+  --text: #14171c;
+  --text-muted: #565d68;
+  --accent: #0b5cd5;
+  --accent-contrast: #ffffff;
+  --border: #d3d7de;
+  --focus: #0b5cd5;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+
+  --measure: 68ch;
+  --radius: 6px;
+
+  /* Tipografia fluida: 16px a 320px, 18px a 1920px. */
+  --font-body: clamp(1rem, 0.97rem + 0.13vw, 1.125rem);
+  --font-lead: clamp(1.125rem, 1.05rem + 0.35vw, 1.5rem);
+  --font-title: clamp(1.75rem, 1.4rem + 1.6vw, 3rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-size: var(--font-body);
+  line-height: 1.6;
+}
+
+/* Nenhum elemento pode forcar rolagem horizontal a 320 px — RNF-05. */
+img,
+svg,
+video,
+table,
+pre {
+  max-width: 100%;
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.bu-container {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: var(--space-3);
+}
+
+/* Malha que se adapta sem media query: uma coluna a 320 px, varias quando couber. */
+.bu-grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+
+.bu-prose {
+  max-width: var(--measure);
+}
+
+.bu-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

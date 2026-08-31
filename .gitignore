@@ -1,6 +1,17 @@
-node_modules/
-dist/
-coverage/
+# Dependencias e artefatos de build
+app/node_modules/
+app/dist/
+app/out-tsc/
+app/.angular/
+
+# Relatorios de qualidade
+app/coverage/
+
+# Artefatos gerados por make catalog — derivados, nunca versionados
+app/data/catalog.generated.json
+app/data/prerender-routes.txt
+
+# Ambiente e ruido de sistema
 .env
 .DS_Store
 *.log
