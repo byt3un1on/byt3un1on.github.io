@@ -82,7 +82,13 @@ princípio. O container de IoC é o sistema de injeção do próprio Angular, co
 - Expectativa é **dinâmica**: nome de método nunca é string literal na configuração do mock.
 - Toda chamada verificada em quatro aspectos: **ocorreu**, **quantas vezes**, **com quais
   parâmetros**, **retornando o quê**.
-- Cobertura mínima de 90% por arquivo modificado. `main` e `ioc_init` ficam fora da conta.
+- Cobertura mínima de 90% por arquivo modificado. Ficam **fora da conta** o entrypoint e o
+  inicializador — todo arquivo cujo trabalho é apenas **construir e ligar serviços reais**, sem
+  regra de negócio própria: `main` e suas variantes por tempo de execução, o contêiner de IoC e
+  suas variantes, e o inicializador de framework. A isenção é pela **natureza do arquivo**, não
+  pelo nome: fiação que instancia dependência real não é mockável, e testá-la mede a si mesma.
+  Quem invoca a isenção responde por provar que o arquivo não carrega decisão alguma — havendo
+  regra, ela sai dali para uma camada testável antes de o arquivo ser isentado.
 - Testes de integração exercitam contratos reais contra dependências simuladas (WireMock),
   sem mock interno. Testes BDD validam o funcional a partir dos critérios de aceite da spec.
 
@@ -165,9 +171,10 @@ etapa antes de reprovar — o chat não sobrevive à retentativa, o artefato sim
 
 ---
 
-**Versão**: 1.0.1 · **Ratificada em**: 2026-08-30 · **Última emenda**: 2026-08-30
+**Versão**: 1.0.2 · **Ratificada em**: 2026-08-30 · **Última emenda**: 2026-08-31
 
 ## Histórico de emendas
 
 - **1.0.0** — 2026-08-30 — Ratificação inicial: seis princípios da organização, cobertura em 90%, identidade do projeto (Angular + GitHub Pages) e três princípios específicos — publicação estática (7), catálogo derivado do GitHub (8) e acessibilidade/performance medidas (9).
 - **1.0.1** — 2026-08-30 — Emenda de redação, a pedido do usuário, sem remover nem inverter princípio. O Princípio 7 passa a distinguir credencial no artefato publicado (proibida) de credencial de build que nunca entra no artefato (permitida). O Princípio 1 acrescenta `audit` à cadeia do `make validate`, encerrando a contradição com o Princípio 9, que agora nomeia o alvo. Texto integral lido e **aprovado pelo usuário em 2026-08-30**, encerrando o portão de ratificação que seguia aberto desde a 1.0.0.
+- **1.0.2** — 2026-08-31 — Emenda de redação, a pedido do usuário, sem remover nem inverter princípio. O Princípio 3 passa a definir a isenção de cobertura pela **natureza do arquivo** — entrypoint e inicializador que apenas constroem e ligam serviços reais — em lugar da lista de dois nomes, que deixava `main_catalog`, `main_report` e `cli_ioc_init` isentos só por analogia e `web_init` sem isenção alguma. A isenção passa a exigir prova de que o arquivo não carrega decisão.

@@ -112,9 +112,9 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | infra/tools | `app/infra/tools/config_tool.ts` | criar | `app/tests/unit/infra/tools/config_tool.test.ts` | RF-02 |
 | infra/tools | `app/infra/tools/seo_tool.ts` | criar | `app/tests/unit/infra/tools/seo_tool.test.ts` | RNF-06 |
 | infra/init | `app/infra/init/web_routes.ts` | criar | `app/tests/unit/infra/init/web_routes.test.ts` | RF-08, RF-12, RF-15 |
-| infra/init | `app/infra/init/web_init.ts` | criar | — *(inicializador; fora da conta de cobertura)* | RF-15 |
-| infra/init | `app/infra/init/ioc_init.ts` | criar | — *(contêiner de IoC; fora da conta de cobertura)* | — |
-| infra/init | `app/infra/init/cli_ioc_init.ts` | criar | — *(contêiner de IoC; fora da conta de cobertura)* | — |
+| infra/init | `app/infra/init/web_init.ts` | criar | — *(isento: só compõe a configuração e entrega o roteamento declarado em `web_routes.ts`)* | — |
+| infra/init | `app/infra/init/ioc_init.ts` | criar | — *(isento: só liga interface a implementação, sem decisão)* | — |
+| infra/init | `app/infra/init/cli_ioc_init.ts` | criar | — *(isento: só liga interface a implementação, sem decisão)* | — |
 | infra/cli | `app/infra/cli/cli_entry.ts` | criar | `app/tests/unit/infra/cli/cli_entry.test.ts` | RF-14 |
 
 ### `interfaces` — toda abstração injetada
@@ -148,9 +148,21 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 
 | Arquivo | Papel | Cobertura |
 |---|---|---|
-| `app/main.ts` | Sobe o Angular: pede o inicializador a `web_init` e o executa | fora da conta |
-| `app/main_catalog.ts` | Sobe o gerador de catálogo: pede o inicializador a `cli_entry` e o executa | fora da conta |
-| `app/main_report.ts` | Sobe o reporte de estado da publicação, acionado na fronteira do fluxo, com o desfecho recebido por argumento | fora da conta |
+| `app/main.ts` | Sobe o Angular: pede o inicializador a `web_init` e o executa | isento |
+| `app/main_catalog.ts` | Sobe o gerador de catálogo: pede o inicializador a `cli_entry` e o executa | isento |
+| `app/main_report.ts` | Sobe o reporte de estado da publicação, acionado na fronteira do fluxo, com o desfecho recebido por argumento | isento |
+
+**Prova da isenção, exigida pela emenda 1.0.2.** Seis arquivos ficam fora da conta de cobertura —
+os três acima mais `ioc_init.ts`, `cli_ioc_init.ts` e `web_init.ts` — e nenhum carrega decisão:
+
+| Arquivo | O que faria dele um arquivo com regra | Onde essa regra mora, testada |
+|---|---|---|
+| `main.ts`, `main_catalog.ts`, `main_report.ts` | escolher o que executar, tratar erro, ler argumento com significado | `cli_entry.ts` interpreta o argumento e escolhe o comando; os comandos tratam o erro |
+| `ioc_init.ts`, `cli_ioc_init.ts` | decidir qual implementação usar em qual condição | não há condição: cada interface tem uma implementação só, ligada uma vez |
+| `web_init.ts` | declarar rotas, ordem ou guarda de navegação | `web_routes.ts` declara a tabela de rotas e **tem teste espelhado**; `web_init` só a entrega ao framework |
+
+Qualquer um deles que venha a ganhar um `if` perde a isenção no mesmo commit: a regra sai para
+uma camada testável antes, e só então o arquivo volta a ser fiação.
 
 > **Desvio declarado.** A constituição fala em `main` no singular. Este projeto tem **três
 > pontos de entrada** por ter tempos de execução distintos: a geração do catálogo e o reporte de
@@ -354,7 +366,7 @@ basta para desenvolvimento local, mas não escreve questão.
 |---|---|
 | 1 — Contrato de operação | Nenhuma ferramenta é chamada direto: `ng`, `vitest`, `cucumber`, `lhci`, `eslint` e `prettier` só aparecem dentro de alvos do `Makefile`, executados por `docker compose exec dev`. Os dois alvos novos (`catalog`, `audit`) **estendem** o contrato e estão declarados acima; nenhum contorna. A emenda 1.0.1 acrescentou `audit` à cadeia do `make validate`, encerrando a contradição com o Princípio 9 |
 | 2 — Arquitetura limpa | `core/` não importa Angular, Node, `fs` nem HTTP — só entidades e interfaces. `adapters/` e `infra/` conhecem `core`; nunca o inverso. Componente não injeta `HttpClient` e não guarda regra: chama caso de uso. Desvio único e declarado: dois entrypoints, por haver dois tempos de execução |
-| 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os inicializadores e os três entrypoints que a própria constituição tira da conta. Os arquivos de integração e BDD estão enumerados em seção própria, e nenhum diretório de teste fora de `unit/`, `it/` e `bdd/` é criado. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos sete blocos Gherkin da spec, sem reescrita |
+| 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os seis arquivos de fiação isentos pela emenda 1.0.2, cuja isenção está provada item a item na tabela acima — a regra que cada um poderia carregar mora em arquivo testado. Os arquivos de integração e BDD estão enumerados em seção própria, e nenhum diretório de teste fora de `unit/`, `it/` e `bdd/` é criado. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos sete blocos Gherkin da spec, sem reescrita |
 | 4 — Simplicidade defensável | Quatro padrões aplicados, todos por problema presente; seis considerados e recusados, com o motivo registrado. Nenhuma biblioteca de estado, de DI ou de cache foi adicionada — as três seriam antecipação |
 | 5 — Autoria | Nenhum artefato deste plano credita ferramenta de IA. `.github/workflows/publish.yml` publica com o autor configurado no repositório |
 | 6 — Idioma | Spec, plano, tarefas e mensagens de commit em português do Brasil; cenários em `# language: pt`; identificadores de código em inglês; conteúdo do sítio em pt-BR por `RNF-07` |
@@ -373,3 +385,10 @@ princípio:
    permitida, com o ônus da prova sobre quem a introduz.
 2. **Princípio 1** ganhou `audit` na cadeia do `make validate`, e o Princípio 9 passou a nomear
    o alvo. A contradição entre os dois deixou de existir.
+
+Uma terceira emenda foi decidida em 2026-08-31, elevando a constituição a **1.0.2**:
+
+3. **Princípio 3** passou a definir a isenção de cobertura pela **natureza do arquivo** — o que
+   apenas constrói e liga serviços reais — em vez da lista de dois nomes, que deixava
+   `main_catalog`, `main_report` e `cli_ioc_init` isentos só por analogia e `web_init` sem
+   isenção nenhuma. A isenção agora exige prova, apresentada acima.
