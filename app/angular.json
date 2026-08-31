@@ -1,0 +1,74 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": ".",
+  "projects": {
+    "vitrine": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "",
+      "prefix": "bu",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist",
+            "index": "index.html",
+            "browser": "main.ts",
+            "server": "infra/init/web_server.ts",
+            "outputMode": "static",
+            "baseHref": "/",
+            "prerender": {
+              "routesFile": "data/prerender-routes.txt"
+            },
+            "tsConfig": "tsconfig.json",
+            "styles": ["styles.css"],
+            "polyfills": [],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "250kB",
+                "maximumError": "300kB"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "4kB",
+                "maximumError": "8kB"
+              }
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "vitrine:build:development",
+            "host": "0.0.0.0",
+            "port": 4200
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "vitrine:build:development",
+            "tsConfig": "tsconfig.json",
+            "runner": "vitest",
+            "runnerConfig": "vitest.config.ts",
+            "watch": false,
+            "include": ["tests/unit/**/*.test.ts"]
+          }
+        }
+      }
+    }
+  }
+}
