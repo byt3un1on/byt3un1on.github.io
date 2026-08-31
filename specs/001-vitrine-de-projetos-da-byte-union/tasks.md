@@ -167,37 +167,37 @@
 - [x] T135 [P] Criar a fixture `app/tests/bdd/fixtures/stubs/organizacao_indisponivel.json` — listagem que falha no meio da obtenção
 - [x] T136 [P] Criar a fixture `app/tests/bdd/fixtures/stubs/questoes_sem_aberta.json` — API de questões sem nenhuma aberta
 - [x] T137 [P] Criar a fixture `app/tests/bdd/fixtures/stubs/questoes_com_aberta.json` — API de questões com uma já aberta
-- [ ] T138 [P] Cenário *RF-01 — proposta visível na chegada* em `app/tests/bdd/features/apresentacao_da_oficina.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T139 [P] Cenário *RF-02 — catálogo tem origem no GitHub da organização* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T140 Cenário *RF-03 — ficha mínima de cada projeto* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T141 Cenário *RF-04 — repositório não declarado na curadoria não aparece* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T138 [P] Cenário *RF-01 — proposta visível na chegada* em `app/tests/bdd/features/apresentacao_da_oficina.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T139 [P] Cenário *RF-02 — catálogo tem origem no GitHub da organização* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T140 Cenário *RF-03 — ficha mínima de cada projeto* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T141 Cenário *RF-04 — repositório não declarado na curadoria não aparece* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T142 Cenário *RF-06 — repositório privado não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T143 Cenário *RF-06 — repositório sem commit não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@processo` (`# language: pt`)
-- [ ] T144 Cenário *RF-07 — sistema de vários repositórios é um projeto só* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T145 Cenário *RF-11 — restrição por tecnologia alcança projeto multi-tecnologia* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T144 Cenário *RF-07 — sistema de vários repositórios é um projeto só* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T145 Cenário *RF-11 — restrição por tecnologia alcança projeto multi-tecnologia* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
 - [ ] T146 Cenário *RF-13 — restrição sem resultado se explica* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T147 Cenário *RF-13 — a mudança de resultado é anunciada a quem usa leitor de tela* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T148 [P] Cenário *RF-04 — ordem e destaque vêm da curadoria* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T147 Cenário *RF-13 — a mudança de resultado é anunciada a quem usa leitor de tela* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T148 [P] Cenário *RF-04 — ordem e destaque vêm da curadoria* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
 - [ ] T149 Cenário *RF-04 — resumo editorial supre a descrição ausente* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T150 Cenário *RF-05 — entrada sem resumo impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T151 Cenário *RF-05 — referência a repositório inexistente impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T152 Cenário *RF-05 — repositório declarado em dois projetos impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
-- [ ] T153 [P] Cenário *RF-08 — página própria por projeto* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T154 Cenário *RF-09 — endereço publicado é distinto do repositório* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T155 Cenário *RF-15 — endereço direto funciona sem navegação prévia* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T153 [P] Cenário *RF-08 — página própria por projeto* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T154 Cenário *RF-09 — endereço publicado é distinto do repositório* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T155 Cenário *RF-15 — endereço direto funciona sem navegação prévia* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
 - [ ] T156 [P] Cenário *RF-10 — autoria como organização e dois canais acionáveis* em `app/tests/bdd/features/contato_com_a_organizacao.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T157 [P] Cenário *RF-14 — falha na obtenção não publica catálogo incompleto* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T158 Cenário *RF-16 — publicação abortada abre questão no repositório* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T159 Cenário *RF-16 — publicação bem-sucedida encerra a questão aberta* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
-- [ ] T160 Cenário *RNF-08 — o visitante não espera pela rede* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T161 [P] Cenário *RF-12 — endereço inexistente tem página própria* em `app/tests/bdd/features/resiliencia_e_bordas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T160 Cenário *RNF-08 — o visitante não espera pela rede* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T161 [P] Cenário *RF-12 — endereço inexistente tem página própria* em `app/tests/bdd/features/resiliencia_e_bordas.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T162 [P] Cenário *RNF-01 e RNF-03 — limiares de qualidade em perfil móvel* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@processo` (`# language: pt`)
-- [ ] T163 Cenário *RNF-02 — operação apenas por teclado* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T164 Cenário *RNF-05 — alcance de dispositivos* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T165 Cenário *RNF-07 — idioma único* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T166 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/catalog_steps.ts` — catálogo, curadoria vista pelo visitante e aprofundamento
-- [ ] T167 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/site_steps.ts` — apresentação, contato e endereço inexistente
-- [ ] T168 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/quality_steps.ts` — teclado, viewport, idioma, ausência de requisição à API e a varredura `axe` que reprova violação crítica ou séria
+- [x] T163 Cenário *RNF-02 — operação apenas por teclado* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T164 Cenário *RNF-05 — alcance de dispositivos* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T165 Cenário *RNF-07 — idioma único* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T166 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/catalog_steps.ts` — catálogo, curadoria vista pelo visitante e aprofundamento
+- [x] T167 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/site_steps.ts` — apresentação, contato e endereço inexistente
+- [x] T168 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/quality_steps.ts` — teclado, viewport, idioma, ausência de requisição à API e a varredura `axe` que reprova violação crítica ou séria
 - [x] T169 [P] Implementar os passos de processo em `app/tests/bdd/steps/process/publication_steps.ts` — curadoria inválida, inelegibilidade, aborto e questão
 - [x] T170 [P] Implementar os passos de processo em `app/tests/bdd/steps/process/audit_steps.ts` — execução do Lighthouse e leitura dos limiares
 

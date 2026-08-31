@@ -5,6 +5,10 @@
   },
   {
     "request": { "method": "POST", "urlPath": "/repos/byt3un1on/byt3un1on.github.io/issues" },
-    "response": { "status": 201, "headers": { "Content-Type": "application/json" }, "jsonBody": { "number": 42 } }
+    "response": {
+      "status": 201,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": { "number": 42 }
+    }
   }
 ]

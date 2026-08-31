@@ -9,10 +9,18 @@
   },
   {
     "request": { "method": "POST", "urlPath": "/repos/byt3un1on/byt3un1on.github.io/issues" },
-    "response": { "status": 201, "headers": { "Content-Type": "application/json" }, "jsonBody": { "number": 99 } }
+    "response": {
+      "status": 201,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": { "number": 99 }
+    }
   },
   {
     "request": { "method": "PATCH", "urlPath": "/repos/byt3un1on/byt3un1on.github.io/issues/42" },
-    "response": { "status": 200, "headers": { "Content-Type": "application/json" }, "jsonBody": { "number": 42, "state": "closed" } }
+    "response": {
+      "status": 200,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": { "number": 42, "state": "closed" }
+    }
   }
 ]

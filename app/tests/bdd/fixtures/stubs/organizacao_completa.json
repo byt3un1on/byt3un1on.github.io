@@ -40,14 +40,26 @@
   },
   {
     "request": { "method": "GET", "urlPath": "/repos/byt3un1on/shortsmaker-api/commits" },
-    "response": { "status": 200, "headers": { "Content-Type": "application/json" }, "jsonBody": [{ "sha": "abc123" }] }
+    "response": {
+      "status": 200,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": [{ "sha": "abc123" }]
+    }
   },
   {
     "request": { "method": "GET", "urlPath": "/repos/byt3un1on/niche-scout/commits" },
-    "response": { "status": 200, "headers": { "Content-Type": "application/json" }, "jsonBody": [{ "sha": "def456" }] }
+    "response": {
+      "status": 200,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": [{ "sha": "def456" }]
+    }
   },
   {
     "request": { "method": "GET", "urlPath": "/repos/byt3un1on/documentation-site/commits" },
-    "response": { "status": 409, "headers": { "Content-Type": "application/json" }, "jsonBody": { "message": "Git Repository is empty." } }
+    "response": {
+      "status": 409,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": { "message": "Git Repository is empty." }
+    }
   }
 ]

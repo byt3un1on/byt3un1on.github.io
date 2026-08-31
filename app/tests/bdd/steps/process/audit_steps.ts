@@ -62,9 +62,7 @@ When(
 Then(
   'nenhuma das categorias Performance, Acessibilidade, Boas Práticas e SEO fica abaixo de {int}',
   function (minimo: number): void {
-    const abaixo = Object.entries(auditoria.categorias).filter(
-      ([, nota]) => nota * 100 < minimo,
-    );
+    const abaixo = Object.entries(auditoria.categorias).filter(([, nota]) => nota * 100 < minimo);
     assert.deepEqual(abaixo, [], `categorias abaixo de ${minimo}: ${JSON.stringify(abaixo)}`);
   },
 );

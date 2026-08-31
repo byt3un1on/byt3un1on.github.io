@@ -30,6 +30,13 @@ export class BrowserDriver {
     this.currentPage = null;
   }
 
+  /** Um mesmo texto de passo serve aos dois motores — por exemplo, "X nao
+   *  aparece em lugar nenhum do sitio", que RF-06 verifica no catalogo gerado e
+   *  RF-04 verifica na pagina. O passo pergunta qual motor esta ativo. */
+  public get active(): boolean {
+    return this.currentPage !== null;
+  }
+
   public get page(): Page {
     if (this.currentPage === null) {
       throw new Error('motor de navegador nao iniciado: cenario sem a etiqueta @navegador?');

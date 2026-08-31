@@ -15,10 +15,13 @@ Given(
   },
 );
 
-Given('que a curadoria declara um projeto sem resumo escrito', async function (this: VitrineWorld): Promise<void> {
-  curadoriaEscolhida = 'sem_resumo.json';
-  await this.process.loadStubs('organizacao_completa.json');
-});
+Given(
+  'que a curadoria declara um projeto sem resumo escrito',
+  async function (this: VitrineWorld): Promise<void> {
+    curadoriaEscolhida = 'sem_resumo.json';
+    await this.process.loadStubs('organizacao_completa.json');
+  },
+);
 
 Given(
   'que a curadoria declara um repositório que não existe mais na organização',
@@ -36,15 +39,21 @@ Given(
   },
 );
 
-Given('que {string} é privado na organização', async function (this: VitrineWorld, _nome: string): Promise<void> {
-  curadoriaEscolhida = 'declara_inelegiveis.json';
-  await this.process.loadStubs('organizacao_completa.json');
-});
+Given(
+  'que {string} é privado na organização',
+  async function (this: VitrineWorld, _nome: string): Promise<void> {
+    curadoriaEscolhida = 'declara_inelegiveis.json';
+    await this.process.loadStubs('organizacao_completa.json');
+  },
+);
 
-Given('que {string} não possui nenhum commit', async function (this: VitrineWorld, _nome: string): Promise<void> {
-  curadoriaEscolhida = 'declara_inelegiveis.json';
-  await this.process.loadStubs('organizacao_completa.json');
-});
+Given(
+  'que {string} não possui nenhum commit',
+  async function (this: VitrineWorld, _nome: string): Promise<void> {
+    curadoriaEscolhida = 'declara_inelegiveis.json';
+    await this.process.loadStubs('organizacao_completa.json');
+  },
+);
 
 Given('que a versão atual do sítio está no ar', async function (this: VitrineWorld): Promise<void> {
   curadoriaEscolhida = 'valida.json';
@@ -89,31 +98,54 @@ When('uma publicação conclui com sucesso', async function (this: VitrineWorld)
 
 // --- Então -----------------------------------------------------------------
 
-Then('{string} não aparece em lugar nenhum do sítio', async function (this: VitrineWorld, nome: string): Promise<void> {
-  const catalogo = await this.process.readCatalog();
-  const encontrado = JSON.stringify(catalogo).includes(nome);
-  assert.equal(encontrado, false, `"${nome}" apareceu no catalogo gerado`);
-});
+Then(
+  '{string} não aparece em lugar nenhum do sítio',
+  async function (this: VitrineWorld, nome: string): Promise<void> {
+    if (this.browser.active) {
+      const conteudo = await this.browser.page.content();
+      assert.equal(conteudo.includes(nome), false, `"${nome}" apareceu na pagina`);
+      return;
+    }
+    const catalogo = await this.process.readCatalog();
+    assert.equal(
+      JSON.stringify(catalogo).includes(nome),
+      false,
+      `"${nome}" apareceu no catalogo gerado`,
+    );
+  },
+);
 
-Then('{string} não aparece no catálogo', async function (this: VitrineWorld, nome: string): Promise<void> {
-  const catalogo = await this.process.readCatalog();
-  assert.equal(JSON.stringify(catalogo).includes(nome), false);
-});
+Then(
+  '{string} não aparece no catálogo',
+  async function (this: VitrineWorld, nome: string): Promise<void> {
+    const catalogo = await this.process.readCatalog();
+    assert.equal(JSON.stringify(catalogo).includes(nome), false);
+  },
+);
 
-Then('os demais projetos declarados continuam sendo exibidos', async function (this: VitrineWorld): Promise<void> {
-  const catalogo = await this.process.readCatalog();
-  assert.ok(catalogo.projects.length > 0, 'nenhum projeto sobreviveu');
-});
+Then(
+  'os demais projetos declarados continuam sendo exibidos',
+  async function (this: VitrineWorld): Promise<void> {
+    const catalogo = await this.process.readCatalog();
+    assert.ok(catalogo.projects.length > 0, 'nenhum projeto sobreviveu');
+  },
+);
 
-Then('a publicação falha indicando qual entrada de curadoria está sem resumo', function (this: VitrineWorld): void {
-  assert.notEqual(this.process.result.exitCode, 0);
-  assert.match(this.process.result.stdout, /entrada sem resumo escrito/);
-});
+Then(
+  'a publicação falha indicando qual entrada de curadoria está sem resumo',
+  function (this: VitrineWorld): void {
+    assert.notEqual(this.process.result.exitCode, 0);
+    assert.match(this.process.result.stdout, /entrada sem resumo escrito/);
+  },
+);
 
-Then('a publicação falha indicando qual referência está quebrada', function (this: VitrineWorld): void {
-  assert.notEqual(this.process.result.exitCode, 0);
-  assert.match(this.process.result.stdout, /referencia a repositorio inexistente/);
-});
+Then(
+  'a publicação falha indicando qual referência está quebrada',
+  function (this: VitrineWorld): void {
+    assert.notEqual(this.process.result.exitCode, 0);
+    assert.match(this.process.result.stdout, /referencia a repositorio inexistente/);
+  },
+);
 
 Then(
   'a publicação falha indicando o repositório repetido e os dois projetos que o declaram',
@@ -128,14 +160,24 @@ Then('a publicação é abortada e informa a falha', function (this: VitrineWorl
   assert.match(this.process.result.stdout, /publicacao abortada/);
 });
 
-Then('a versão anterior do sítio permanece no ar, intacta', async function (this: VitrineWorld): Promise<void> {
-  assert.equal(await this.process.catalogExists(), false, 'catalogo foi escrito apesar do aborto');
-});
+Then(
+  'a versão anterior do sítio permanece no ar, intacta',
+  async function (this: VitrineWorld): Promise<void> {
+    assert.equal(
+      await this.process.catalogExists(),
+      false,
+      'catalogo foi escrito apesar do aborto',
+    );
+  },
+);
 
-Then('existe uma questão aberta no repositório do sítio com o motivo da falha', function (this: VitrineWorld): void {
-  assert.equal(this.process.result.exitCode, 0);
-  assert.match(this.process.result.stdout, /desfecho registrado/);
-});
+Then(
+  'existe uma questão aberta no repositório do sítio com o motivo da falha',
+  function (this: VitrineWorld): void {
+    assert.equal(this.process.result.exitCode, 0);
+    assert.match(this.process.result.stdout, /desfecho registrado/);
+  },
+);
 
 Then('essa questão é encerrada automaticamente', function (this: VitrineWorld): void {
   assert.equal(this.process.result.exitCode, 0);
@@ -144,9 +186,12 @@ Then('essa questão é encerrada automaticamente', function (this: VitrineWorld)
 
 // --- Mas -------------------------------------------------------------------
 
-Then('nenhum projeto com ficha incompleta é publicado', async function (this: VitrineWorld): Promise<void> {
-  assert.equal(await this.process.catalogExists(), false);
-});
+Then(
+  'nenhum projeto com ficha incompleta é publicado',
+  async function (this: VitrineWorld): Promise<void> {
+    assert.equal(await this.process.catalogExists(), false);
+  },
+);
 
 Then(
   'a vitrine não é publicada omitindo silenciosamente esse projeto',
@@ -155,21 +200,30 @@ Then(
   },
 );
 
-Then('nenhum catálogo com repositório duplicado é publicado', async function (this: VitrineWorld): Promise<void> {
-  assert.equal(await this.process.catalogExists(), false);
-});
+Then(
+  'nenhum catálogo com repositório duplicado é publicado',
+  async function (this: VitrineWorld): Promise<void> {
+    assert.equal(await this.process.catalogExists(), false);
+  },
+);
 
-Then('nenhuma versão com catálogo parcial ou vazio é publicada', async function (this: VitrineWorld): Promise<void> {
-  assert.equal(await this.process.catalogExists(), false);
-});
+Then(
+  'nenhuma versão com catálogo parcial ou vazio é publicada',
+  async function (this: VitrineWorld): Promise<void> {
+    assert.equal(await this.process.catalogExists(), false);
+  },
+);
 
 Then('nenhuma mensagem de erro é exibida ao visitante', function (this: VitrineWorld): void {
   assert.equal(this.process.result.exitCode, 0);
 });
 
-Then('nenhuma questão duplicada é aberta enquanto a anterior seguir em aberto', function (this: VitrineWorld): void {
-  assert.equal(this.process.result.exitCode, 0);
-});
+Then(
+  'nenhuma questão duplicada é aberta enquanto a anterior seguir em aberto',
+  function (this: VitrineWorld): void {
+    assert.equal(this.process.result.exitCode, 0);
+  },
+);
 
 Then('nenhuma outra questão do repositório é alterada', function (this: VitrineWorld): void {
   assert.equal(this.process.result.exitCode, 0);

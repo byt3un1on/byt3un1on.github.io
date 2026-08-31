@@ -42,6 +42,10 @@ export default tseslint.config(
       // regra onde ela protege — no codigo de producao — sem obrigar o teste a
       // usar string, que e o defeito que a constituicao quer impedir.
       '@typescript-eslint/unbound-method': 'off',
+      // O Cucumber exige que a funcao do passo tenha um parametro por
+      // placeholder da expressao, mesmo quando o passo nao o usa. Sublinhado a
+      // frente e a marcacao convencional para parametro deliberadamente ocioso.
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     },
   },
   {
