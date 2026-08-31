@@ -146,12 +146,12 @@
 
 ## Fase 7 — Integração
 
-- [ ] T120 [P] Criar os stubs do WireMock em `app/tests/it/stubs/` para a listagem da organização, o 409 de repositório vazio e a API de questões
-- [ ] T121 [P] Teste de integração de `app/adapters/clients/github_organization_client.ts` em `app/tests/it/adapters/clients/github_organization_client_test_integration.ts`
-- [ ] T122 [P] Teste de integração de `app/adapters/clients/github_issue_client.ts` em `app/tests/it/adapters/clients/github_issue_client_test_integration.ts`
-- [ ] T123 [P] Teste de integração de `app/adapters/repositories/curation_repository.ts` em `app/tests/it/adapters/repositories/curation_repository_test_integration.ts`
-- [ ] T124 [P] Teste de integração de `app/adapters/repositories/catalog_file_repository.ts` em `app/tests/it/adapters/repositories/catalog_file_repository_test_integration.ts`
-- [ ] T125 [P] Teste de integração de `app/adapters/repositories/static_catalog_repository.ts` em `app/tests/it/adapters/repositories/static_catalog_repository_test_integration.ts`
+- [x] T120 [P] Criar os stubs do WireMock em `app/tests/it/stubs/` para a listagem da organização, o 409 de repositório vazio e a API de questões
+- [x] T121 [P] Teste de integração de `app/adapters/clients/github_organization_client.ts` em `app/tests/it/adapters/clients/github_organization_client_test_integration.ts`
+- [x] T122 [P] Teste de integração de `app/adapters/clients/github_issue_client.ts` em `app/tests/it/adapters/clients/github_issue_client_test_integration.ts`
+- [x] T123 [P] Teste de integração de `app/adapters/repositories/curation_repository.ts` em `app/tests/it/adapters/repositories/curation_repository_test_integration.ts`
+- [x] T124 [P] Teste de integração de `app/adapters/repositories/catalog_file_repository.ts` em `app/tests/it/adapters/repositories/catalog_file_repository_test_integration.ts`
+- [x] T125 [P] Teste de integração de `app/adapters/repositories/static_catalog_repository.ts` em `app/tests/it/adapters/repositories/static_catalog_repository_test_integration.ts`
 
 ## Fase 8 — BDD
 

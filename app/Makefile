@@ -49,7 +49,9 @@ cover:
 
 it:
 	$(COMPOSE) up -d wiremock
-	$(DEV) npx vitest run tests/it/$(ARG) --coverage.enabled=false
+	# --no-file-parallelism: o WireMock e uma instancia so, e arquivos em
+	# paralelo resetariam os stubs uns dos outros.
+	$(DEV) npx vitest run tests/it/$(ARG) --coverage.enabled=false --no-file-parallelism
 
 bdd: build
 	$(COMPOSE) up -d wiremock
