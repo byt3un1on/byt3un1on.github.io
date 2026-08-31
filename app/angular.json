@@ -26,13 +26,27 @@
             "styles": ["styles.css"],
             "polyfills": [],
             "budgets": [
-              { "type": "initial", "maximumWarning": "250kB", "maximumError": "300kB" },
-              { "type": "anyComponentStyle", "maximumWarning": "4kB", "maximumError": "8kB" }
+              {
+                "type": "initial",
+                "maximumWarning": "250kB",
+                "maximumError": "300kB"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "4kB",
+                "maximumError": "8kB"
+              }
             ]
           },
           "configurations": {
-            "production": { "optimization": true, "outputHashing": "all" },
-            "development": { "optimization": false, "sourceMap": true }
+            "production": {
+              "optimization": true,
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -52,7 +66,27 @@
             "runner": "vitest",
             "runnerConfig": "vitest.config.ts",
             "watch": false,
-            "include": ["tests/unit/**/*.test.ts"]
+            "include": ["tests/unit/**/*.test.ts"],
+            "coverageInclude": ["adapters/**/*.ts", "core/**/*.ts", "infra/**/*.ts"],
+            "coverageExclude": [
+              "main.ts",
+              "main_catalog.ts",
+              "main_report.ts",
+              "infra/init/ioc_init.ts",
+              "infra/init/cli_ioc_init.ts",
+              "infra/init/web_init.ts",
+              "infra/init/web_server.ts",
+              "tests/**",
+              "**/*.test.ts"
+            ],
+            "coverageThresholds": {
+              "perFile": true,
+              "statements": 90,
+              "branches": 90,
+              "functions": 90,
+              "lines": 90
+            },
+            "coverageReporters": ["text", "html"]
           }
         }
       }

@@ -20,12 +20,11 @@
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
     "types": ["node"],
-    "baseUrl": ".",
     "paths": {
-      "@adapters/*": ["adapters/*"],
-      "@core/*": ["core/*"],
-      "@infra/*": ["infra/*"],
-      "@interfaces/*": ["interfaces/*"]
+      "@adapters/*": ["./adapters/*"],
+      "@core/*": ["./core/*"],
+      "@infra/*": ["./infra/*"],
+      "@interfaces/*": ["./interfaces/*"]
     },
     "outDir": "./out-tsc"
   },

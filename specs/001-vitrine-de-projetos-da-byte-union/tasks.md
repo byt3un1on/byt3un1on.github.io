@@ -24,22 +24,22 @@
 
 ## Fase 1 — Domínio
 
-- [ ] T016 [P] Teste unitário de `app/core/domain/entities/code_repository.ts` em `app/tests/unit/core/domain/entities/code_repository.test.ts`
-- [ ] T017 [P] Implementar `app/core/domain/entities/code_repository.ts` — depende do teste anterior
-- [ ] T018 [P] Teste unitário de `app/core/domain/entities/project.ts` em `app/tests/unit/core/domain/entities/project.test.ts`
-- [ ] T019 [P] Implementar `app/core/domain/entities/project.ts` — depende do teste anterior
-- [ ] T020 [P] Teste unitário de `app/core/domain/dtos/github_repository_dto.ts` em `app/tests/unit/core/domain/dtos/github_repository_dto.test.ts`
-- [ ] T021 [P] Implementar `app/core/domain/dtos/github_repository_dto.ts` — depende do teste anterior
-- [ ] T022 [P] Teste unitário de `app/core/domain/dtos/curation_dto.ts` em `app/tests/unit/core/domain/dtos/curation_dto.test.ts`
-- [ ] T023 [P] Implementar `app/core/domain/dtos/curation_dto.ts` — depende do teste anterior
-- [ ] T024 [P] Teste unitário de `app/core/domain/dtos/catalog_dto.ts` em `app/tests/unit/core/domain/dtos/catalog_dto.test.ts`
-- [ ] T025 [P] Implementar `app/core/domain/dtos/catalog_dto.ts` — depende do teste anterior
-- [ ] T026 [P] Teste unitário de `app/core/domain/errors/curation_validation_error.ts` em `app/tests/unit/core/domain/errors/curation_validation_error.test.ts`
-- [ ] T027 [P] Implementar `app/core/domain/errors/curation_validation_error.ts` — depende do teste anterior
-- [ ] T028 [P] Teste unitário de `app/core/domain/errors/catalog_source_error.ts` em `app/tests/unit/core/domain/errors/catalog_source_error.test.ts`
-- [ ] T029 [P] Implementar `app/core/domain/errors/catalog_source_error.ts` — depende do teste anterior
-- [ ] T030 [P] Teste unitário de `app/core/domain/constants/site_routes_constants.ts` em `app/tests/unit/core/domain/constants/site_routes_constants.test.ts`
-- [ ] T031 [P] Implementar `app/core/domain/constants/site_routes_constants.ts` — depende do teste anterior
+- [x] T016 [P] Teste unitário de `app/core/domain/entities/code_repository.ts` em `app/tests/unit/core/domain/entities/code_repository.test.ts`
+- [x] T017 [P] Implementar `app/core/domain/entities/code_repository.ts` — depende do teste anterior
+- [x] T018 [P] Teste unitário de `app/core/domain/entities/project.ts` em `app/tests/unit/core/domain/entities/project.test.ts`
+- [x] T019 [P] Implementar `app/core/domain/entities/project.ts` — depende do teste anterior
+- [x] T020 [P] Teste unitário de `app/core/domain/dtos/github_repository_dto.ts` em `app/tests/unit/core/domain/dtos/github_repository_dto.test.ts`
+- [x] T021 [P] Implementar `app/core/domain/dtos/github_repository_dto.ts` — depende do teste anterior
+- [x] T022 [P] Teste unitário de `app/core/domain/dtos/curation_dto.ts` em `app/tests/unit/core/domain/dtos/curation_dto.test.ts`
+- [x] T023 [P] Implementar `app/core/domain/dtos/curation_dto.ts` — depende do teste anterior
+- [x] T024 [P] Teste unitário de `app/core/domain/dtos/catalog_dto.ts` em `app/tests/unit/core/domain/dtos/catalog_dto.test.ts`
+- [x] T025 [P] Implementar `app/core/domain/dtos/catalog_dto.ts` — depende do teste anterior
+- [x] T026 [P] Teste unitário de `app/core/domain/errors/curation_validation_error.ts` em `app/tests/unit/core/domain/errors/curation_validation_error.test.ts`
+- [x] T027 [P] Implementar `app/core/domain/errors/curation_validation_error.ts` — depende do teste anterior
+- [x] T028 [P] Teste unitário de `app/core/domain/errors/catalog_source_error.ts` em `app/tests/unit/core/domain/errors/catalog_source_error.test.ts`
+- [x] T029 [P] Implementar `app/core/domain/errors/catalog_source_error.ts` — depende do teste anterior
+- [x] T030 [P] Teste unitário de `app/core/domain/constants/site_routes_constants.ts` em `app/tests/unit/core/domain/constants/site_routes_constants.test.ts`
+- [x] T031 [P] Implementar `app/core/domain/constants/site_routes_constants.ts` — depende do teste anterior
 - [ ] T032 [P] Teste unitário de `app/core/domain/constants/organization_constants.ts` em `app/tests/unit/core/domain/constants/organization_constants.test.ts`
 - [ ] T033 [P] Implementar `app/core/domain/constants/organization_constants.ts` — depende do teste anterior
 
