@@ -12,7 +12,7 @@
 - [ ] T004 [P] Criar `app/Dockerfile` com Node 24 e Chromium do Playwright, imagem única para executar e desenvolver
 - [ ] T005 [P] Criar `app/docker-compose.yml` com os serviços `dev` (ocioso, código por volume) e `wiremock` em `wiremock/wiremock:3.13.2`
 - [ ] T006 [P] Criar `app/Makefile` com os 14 alvos do contrato mais `catalog`, `audit` e `report`, e `validate` encadeando `fmt → lint → test → cover → it → bdd → audit`
-- [ ] T007 [P] Criar `app/vitest.config.ts` com limiar de cobertura de 90% por arquivo e exclusão de `main.ts`, `main_catalog.ts`, `ioc_init.ts`, `cli_ioc_init.ts` e `web_init.ts`
+- [ ] T007 [P] Criar `app/vitest.config.ts` com limiar de cobertura de 90% por arquivo e a exclusão dos seis arquivos de fiação isentos pela emenda 1.0.2: `app/main.ts`, `app/main_catalog.ts`, `app/main_report.ts`, `app/infra/init/ioc_init.ts`, `app/infra/init/cli_ioc_init.ts` e `app/infra/init/web_init.ts`
 - [ ] T008 [P] Criar os dotfiles `app/eslint.config.js`, `app/.prettierrc` e `app/.editorconfig`
 - [ ] T009 [P] Criar `app/lighthouserc.json` com asserções de 90 nas quatro categorias, LCP ≤ 2,5 s, CLS ≤ 0,1 e `total-byte-weight` ≤ 300 KB, em perfil móvel
 - [ ] T010 [P] Criar `app/index.html` com `lang="pt-BR"` e os metadados base
@@ -104,7 +104,7 @@
 - [ ] T084 [P] Implementar `app/adapters/commands/report_publication_command.ts` — depende do teste anterior
 - [ ] T085 [P] Teste unitário de `app/infra/cli/cli_entry.ts` em `app/tests/unit/infra/cli/cli_entry.test.ts`
 - [ ] T086 [P] Implementar `app/infra/cli/cli_entry.ts` — depende do teste anterior
-- [ ] T087 [P] Criar `app/infra/init/cli_ioc_init.ts` ligando interfaces a implementações do gerador — fora da conta de cobertura
+- [ ] T087 [P] Criar `app/infra/init/cli_ioc_init.ts` ligando interfaces a implementações do gerador e do reporte — isento de cobertura, sem condição a decidir
 - [ ] T088 [P] Criar `app/main_catalog.ts`: instancia o contêiner, pede o inicializador, executa — sem regra de negócio
 - [ ] T089 [P] Criar `app/main_report.ts`: sobe o reporte de estado da publicação com o desfecho recebido por argumento — sem regra de negócio
 
@@ -132,8 +132,8 @@
 - [ ] T109 [P] Implementar `app/adapters/presenters/project/project-page.component.ts` — depende do teste anterior
 - [ ] T110 [P] Teste unitário de `app/adapters/presenters/error/not-found-page.component.ts` em `app/tests/unit/adapters/presenters/error/not-found-page.component.test.ts`
 - [ ] T111 [P] Implementar `app/adapters/presenters/error/not-found-page.component.ts` — depende do teste anterior
-- [ ] T112 [P] Criar `app/infra/init/ioc_init.ts` com os provedores Angular ligando cada interface à implementação — fora da conta de cobertura
-- [ ] T113 [P] Criar `app/infra/init/web_init.ts` com a configuração da aplicação e o registro das rotas — fora da conta de cobertura
+- [ ] T112 [P] Criar `app/infra/init/ioc_init.ts` com os provedores Angular ligando cada interface à implementação — isento de cobertura, sem condição a decidir
+- [ ] T113 [P] Criar `app/infra/init/web_init.ts`, que compõe a configuração e entrega ao framework o roteamento já declarado em `app/infra/init/web_routes.ts` — isento de cobertura, sem regra própria
 - [ ] T114 [P] Criar `app/main.ts`: sobe o Angular pelo inicializador, sem regra de negócio
 
 ## Fase 6 — Curadoria e publicação
@@ -208,7 +208,7 @@
 | RF-12 | T030, T031, T067, T068, T079, T080, T094, T095, T110, T111, T147 |
 | RF-13 | T063, T064, T104, T105, T106, T107, T132, T133 |
 | RF-14 | T028, T029, T039, T043, T049, T052, T057, T058, T069, T070, T081, T082, T085, T086, T088, T116, T143 |
-| RF-15 | T003, T030, T031, T037, T079, T080, T094, T095, T113, T121, T141 |
+| RF-15 | T003, T030, T031, T037, T079, T080, T094, T095, T121, T141 |
 | RF-16 | T006, T035, T040, T044, T059, T060, T075, T076, T083, T084, T089, T116, T117, T119, T144, T145 |
 | RNF-01 | T009, T148, T155 |
 | RNF-02 | T149, T154, T155 |
