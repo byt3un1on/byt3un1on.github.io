@@ -1,4 +1,4 @@
-import type { PublicationOutcome } from '../../core/application/catalog/i_report_publication_status_use_case';
+import type { PublicationOutcome } from '../../core/application/catalog/i_report_publication_status_use_case.ts';
 
 export type { PublicationOutcome };
 

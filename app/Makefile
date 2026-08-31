@@ -10,6 +10,9 @@ DEV     := $(COMPOSE) exec -T dev
 # entraria no argumento (make fmt viraria 'prettier --write fmt').
 ARG      = $(filter-out $@,$(MAKECMDGOALS))
 DIST    := dist/browser
+# O Node faz apagamento de tipos, nao transformacao: sem esta flag ele recusa
+# propriedade de parametro no construtor, que e como a injecao e escrita aqui.
+NODETS  := node --experimental-transform-types
 
 infra:
 	$(COMPOSE) build
@@ -24,7 +27,7 @@ install:
 	$(DEV) npm install --no-audit --no-fund
 
 catalog:
-	$(DEV) node main_catalog.ts
+	$(DEV) $(NODETS) main_catalog.ts
 
 build: catalog
 	$(DEV) npx ng build
@@ -53,7 +56,7 @@ audit:
 	$(DEV) npx cucumber-js --tags @navegador --name "qualidade"
 
 report:
-	$(DEV) node main_report.ts $(ARG)
+	$(DEV) $(NODETS) main_report.ts $(ARG)
 
 lint:
 	$(DEV) npx eslint $(if $(ARG),$(ARG),.)

@@ -1,4 +1,4 @@
-import { CurationValidationError } from '../errors/curation_validation_error';
+import { CurationValidationError } from '../errors/curation_validation_error.ts';
 
 /**
  * Uma entrada de curadoria (RF-04). A ordem no arquivo e a ordem na vitrine —

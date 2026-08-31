@@ -3,7 +3,7 @@ import {
   type CodeRepositoryProps,
   createCodeRepository,
   isEligibleForShowcase,
-} from '../../../../../core/domain/entities/code_repository';
+} from '../../../../../core/domain/entities/code_repository.ts';
 
 function props(overrides: Partial<CodeRepositoryProps> = {}): CodeRepositoryProps {
   return {

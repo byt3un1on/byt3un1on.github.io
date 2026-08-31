@@ -1,6 +1,6 @@
-import type { CatalogProjectDto } from '../../domain/dtos/catalog_dto';
-import type { IStaticCatalogRepository } from '../../../interfaces/adapters/repositories/i_static_catalog_repository';
-import type { IFilterProjectsByTechnologyUseCase } from '../../../interfaces/core/application/showcase/i_filter_projects_by_technology_use_case';
+import type { CatalogProjectDto } from '../../domain/dtos/catalog_dto.ts';
+import type { IStaticCatalogRepository } from '../../../interfaces/adapters/repositories/i_static_catalog_repository.ts';
+import type { IFilterProjectsByTechnologyUseCase } from '../../../interfaces/core/application/showcase/i_filter_projects_by_technology_use_case.ts';
 
 /**
  * RF-11. A correspondencia e por conter, e nao por ser principal: projeto

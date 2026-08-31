@@ -2,14 +2,14 @@ import { describe, expect, it } from 'vitest';
 import {
   type CodeRepositoryProps,
   createCodeRepository,
-} from '../../../../../core/domain/entities/code_repository';
+} from '../../../../../core/domain/entities/code_repository.ts';
 import {
   type Project,
   createProject,
   projectHomepage,
   projectLastActivityAt,
   projectTechnologies,
-} from '../../../../../core/domain/entities/project';
+} from '../../../../../core/domain/entities/project.ts';
 
 function repo(
   overrides: Partial<CodeRepositoryProps> = {},

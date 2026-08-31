@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ValidateCurationUseCase } from '../../../../../core/application/catalog/validate_curation_use_case';
-import type { CurationDto, CurationProjectDto } from '../../../../../core/domain/dtos/curation_dto';
-import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error';
+import { ValidateCurationUseCase } from '../../../../../core/application/catalog/validate_curation_use_case.ts';
+import type {
+  CurationDto,
+  CurationProjectDto,
+} from '../../../../../core/domain/dtos/curation_dto.ts';
+import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error.ts';
 
 function entrada(overrides: Partial<CurationProjectDto> = {}): CurationProjectDto {
   return {

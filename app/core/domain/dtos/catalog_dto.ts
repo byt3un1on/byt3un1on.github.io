@@ -1,4 +1,4 @@
-import { CatalogSourceError } from '../errors/catalog_source_error';
+import { CatalogSourceError } from '../errors/catalog_source_error.ts';
 
 /** Repositorio como o catalogo gerado o registra. */
 export interface CatalogRepositoryDto {

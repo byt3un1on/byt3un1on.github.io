@@ -1,11 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AssembleCatalogUseCase } from '../../../../../core/application/catalog/assemble_catalog_use_case';
-import type { CurationDto, CurationProjectDto } from '../../../../../core/domain/dtos/curation_dto';
+import { AssembleCatalogUseCase } from '../../../../../core/application/catalog/assemble_catalog_use_case.ts';
+import type {
+  CurationDto,
+  CurationProjectDto,
+} from '../../../../../core/domain/dtos/curation_dto.ts';
 import {
   type CodeRepository,
   type CodeRepositoryProps,
   createCodeRepository,
-} from '../../../../../core/domain/entities/code_repository';
+} from '../../../../../core/domain/entities/code_repository.ts';
 
 function repo(overrides: Partial<CodeRepositoryProps> = {}): CodeRepository {
   return createCodeRepository({

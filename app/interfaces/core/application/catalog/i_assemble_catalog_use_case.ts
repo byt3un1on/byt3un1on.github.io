@@ -1,6 +1,6 @@
-import type { CatalogDto } from '../../../../core/domain/dtos/catalog_dto';
-import type { CurationDto } from '../../../../core/domain/dtos/curation_dto';
-import type { CodeRepository } from '../../../../core/domain/entities/code_repository';
+import type { CatalogDto } from '../../../../core/domain/dtos/catalog_dto.ts';
+import type { CurationDto } from '../../../../core/domain/dtos/curation_dto.ts';
+import type { CodeRepository } from '../../../../core/domain/entities/code_repository.ts';
 
 /**
  * Cruza curadoria e organizacao e produz o catalogo: inclusao explicita

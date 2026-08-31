@@ -1,4 +1,4 @@
-import type { CurationDto } from '../../../../core/domain/dtos/curation_dto';
+import type { CurationDto } from '../../../../core/domain/dtos/curation_dto.ts';
 
 /**
  * As tres invalidezes de RF-05: entrada sem resumo escrito, referencia a

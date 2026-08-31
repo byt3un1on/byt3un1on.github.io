@@ -3,7 +3,7 @@ import {
   SITE_ROUTES,
   projectRoute,
   staticRoutes,
-} from '../../../../../core/domain/constants/site_routes_constants';
+} from '../../../../../core/domain/constants/site_routes_constants.ts';
 
 describe('SITE_ROUTES', () => {
   it('deve declarar toda rota relativa a raiz quando inspecionadas', () => {

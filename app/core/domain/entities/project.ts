@@ -1,4 +1,4 @@
-import type { CodeRepository } from './code_repository';
+import type { CodeRepository } from './code_repository.ts';
 
 /**
  * Um item do catalogo. Pode reunir varios repositorios (RF-07), e nesse caso as

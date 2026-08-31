@@ -1,4 +1,4 @@
-import type { CatalogProjectDto } from '../../../../core/domain/dtos/catalog_dto';
+import type { CatalogProjectDto } from '../../../../core/domain/dtos/catalog_dto.ts';
 
 /**
  * Projetos na ordem em que a curadoria os declara (RF-02, RF-04). Destaque e

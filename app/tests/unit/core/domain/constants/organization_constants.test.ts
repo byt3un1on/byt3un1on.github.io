@@ -4,7 +4,7 @@ import {
   ORGANIZATION,
   pendingContactChannels,
   readyContactChannels,
-} from '../../../../../core/domain/constants/organization_constants';
+} from '../../../../../core/domain/constants/organization_constants.ts';
 
 describe('ORGANIZATION', () => {
   it('deve identificar a organizacao pelo nome quando consultada', () => {

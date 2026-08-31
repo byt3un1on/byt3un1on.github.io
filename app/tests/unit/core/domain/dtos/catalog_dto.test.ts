@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseCatalogDto } from '../../../../../core/domain/dtos/catalog_dto';
-import { CatalogSourceError } from '../../../../../core/domain/errors/catalog_source_error';
+import { parseCatalogDto } from '../../../../../core/domain/dtos/catalog_dto.ts';
+import { CatalogSourceError } from '../../../../../core/domain/errors/catalog_source_error.ts';
 
 function repositorio(): Record<string, unknown> {
   return {

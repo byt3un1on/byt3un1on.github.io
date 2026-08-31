@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ListProjectsUseCase } from '../../../../../core/application/showcase/list_projects_use_case';
-import type { CatalogDto, CatalogProjectDto } from '../../../../../core/domain/dtos/catalog_dto';
-import type { IStaticCatalogRepository } from '../../../../../interfaces/adapters/repositories/i_static_catalog_repository';
+import { ListProjectsUseCase } from '../../../../../core/application/showcase/list_projects_use_case.ts';
+import type { CatalogDto, CatalogProjectDto } from '../../../../../core/domain/dtos/catalog_dto.ts';
+import type { IStaticCatalogRepository } from '../../../../../interfaces/adapters/repositories/i_static_catalog_repository.ts';
 
 function projeto(slug: string, technologies: readonly string[] = ['Python']): CatalogProjectDto {
   return {

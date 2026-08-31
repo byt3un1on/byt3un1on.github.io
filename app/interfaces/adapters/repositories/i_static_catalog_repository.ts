@@ -1,4 +1,4 @@
-import type { CatalogDto } from '../../../core/domain/dtos/catalog_dto';
+import type { CatalogDto } from '../../../core/domain/dtos/catalog_dto.ts';
 
 /**
  * Le o catalogo ja gerado, do lado do sitio. **Sincrono de proposito**: o dado

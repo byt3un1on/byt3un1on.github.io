@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseCurationDto } from '../../../../../core/domain/dtos/curation_dto';
-import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error';
+import { parseCurationDto } from '../../../../../core/domain/dtos/curation_dto.ts';
+import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error.ts';
 
 function entradaValida(): Record<string, unknown> {
   return {

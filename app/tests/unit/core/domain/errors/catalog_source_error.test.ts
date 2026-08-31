@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CatalogSourceError } from '../../../../../core/domain/errors/catalog_source_error';
+import { CatalogSourceError } from '../../../../../core/domain/errors/catalog_source_error.ts';
 
 describe('CatalogSourceError', () => {
   it('deve compor a mensagem com o motivo e o recurso quando construido', () => {

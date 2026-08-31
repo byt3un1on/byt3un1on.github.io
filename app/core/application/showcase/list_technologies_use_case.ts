@@ -1,5 +1,5 @@
-import type { IStaticCatalogRepository } from '../../../interfaces/adapters/repositories/i_static_catalog_repository';
-import type { IListTechnologiesUseCase } from '../../../interfaces/core/application/showcase/i_list_technologies_use_case';
+import type { IStaticCatalogRepository } from '../../../interfaces/adapters/repositories/i_static_catalog_repository.ts';
+import type { IListTechnologiesUseCase } from '../../../interfaces/core/application/showcase/i_list_technologies_use_case.ts';
 
 /** RF-11: os criterios oferecidos ao visitante saem do proprio catalogo. */
 export class ListTechnologiesUseCase implements IListTechnologiesUseCase {

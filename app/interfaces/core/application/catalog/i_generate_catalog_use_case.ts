@@ -1,4 +1,4 @@
-import type { CatalogDto } from '../../../../core/domain/dtos/catalog_dto';
+import type { CatalogDto } from '../../../../core/domain/dtos/catalog_dto.ts';
 
 /**
  * Orquestra a geracao: le a curadoria, busca a organizacao, valida, monta e

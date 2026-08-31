@@ -1,18 +1,18 @@
 import { describe, expect, it, vi } from 'vitest';
-import { GenerateCatalogUseCase } from '../../../../../core/application/catalog/generate_catalog_use_case';
-import type { CatalogDto } from '../../../../../core/domain/dtos/catalog_dto';
-import type { CurationDto } from '../../../../../core/domain/dtos/curation_dto';
+import { GenerateCatalogUseCase } from '../../../../../core/application/catalog/generate_catalog_use_case.ts';
+import type { CatalogDto } from '../../../../../core/domain/dtos/catalog_dto.ts';
+import type { CurationDto } from '../../../../../core/domain/dtos/curation_dto.ts';
 import {
   type CodeRepository,
   createCodeRepository,
-} from '../../../../../core/domain/entities/code_repository';
-import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error';
-import type { IGithubOrganizationClient } from '../../../../../interfaces/adapters/clients/i_github_organization_client';
-import type { ICatalogFileRepository } from '../../../../../interfaces/adapters/repositories/i_catalog_file_repository';
-import type { ICurationRepository } from '../../../../../interfaces/adapters/repositories/i_curation_repository';
-import type { IAssembleCatalogUseCase } from '../../../../../interfaces/core/application/catalog/i_assemble_catalog_use_case';
-import type { IValidateCurationUseCase } from '../../../../../interfaces/core/application/catalog/i_validate_curation_use_case';
-import type { ILoggerTool } from '../../../../../interfaces/infra/tools/i_logger_tool';
+} from '../../../../../core/domain/entities/code_repository.ts';
+import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error.ts';
+import type { IGithubOrganizationClient } from '../../../../../interfaces/adapters/clients/i_github_organization_client.ts';
+import type { ICatalogFileRepository } from '../../../../../interfaces/adapters/repositories/i_catalog_file_repository.ts';
+import type { ICurationRepository } from '../../../../../interfaces/adapters/repositories/i_curation_repository.ts';
+import type { IAssembleCatalogUseCase } from '../../../../../interfaces/core/application/catalog/i_assemble_catalog_use_case.ts';
+import type { IValidateCurationUseCase } from '../../../../../interfaces/core/application/catalog/i_validate_curation_use_case.ts';
+import type { ILoggerTool } from '../../../../../interfaces/infra/tools/i_logger_tool.ts';
 
 const CURACAO: CurationDto = {
   projects: [

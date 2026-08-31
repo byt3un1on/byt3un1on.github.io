@@ -2,16 +2,19 @@ import type {
   CatalogDto,
   CatalogProjectDto,
   CatalogRepositoryDto,
-} from '../../domain/dtos/catalog_dto';
-import type { CurationDto, CurationProjectDto } from '../../domain/dtos/curation_dto';
-import { type CodeRepository, isEligibleForShowcase } from '../../domain/entities/code_repository';
+} from '../../domain/dtos/catalog_dto.ts';
+import type { CurationDto, CurationProjectDto } from '../../domain/dtos/curation_dto.ts';
+import {
+  type CodeRepository,
+  isEligibleForShowcase,
+} from '../../domain/entities/code_repository.ts';
 import {
   createProject,
   projectHomepage,
   projectLastActivityAt,
   projectTechnologies,
-} from '../../domain/entities/project';
-import type { IAssembleCatalogUseCase } from '../../../interfaces/core/application/catalog/i_assemble_catalog_use_case';
+} from '../../domain/entities/project.ts';
+import type { IAssembleCatalogUseCase } from '../../../interfaces/core/application/catalog/i_assemble_catalog_use_case.ts';
 
 /**
  * Cruza curadoria e organizacao. A ordem do catalogo e a ordem da curadoria

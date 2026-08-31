@@ -1,4 +1,4 @@
-import type { CatalogDto } from '../../../core/domain/dtos/catalog_dto';
+import type { CatalogDto } from '../../../core/domain/dtos/catalog_dto.ts';
 
 /**
  * Escreve os dois artefatos que o build consome: o catalogo e a lista de rotas

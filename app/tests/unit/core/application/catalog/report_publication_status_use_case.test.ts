@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
-import { ReportPublicationStatusUseCase } from '../../../../../core/application/catalog/report_publication_status_use_case';
+import { ReportPublicationStatusUseCase } from '../../../../../core/application/catalog/report_publication_status_use_case.ts';
 import type {
   IGithubIssueClient,
   OpenIssue,
-} from '../../../../../interfaces/adapters/clients/i_github_issue_client';
-import type { ILoggerTool } from '../../../../../interfaces/infra/tools/i_logger_tool';
+} from '../../../../../interfaces/adapters/clients/i_github_issue_client.ts';
+import type { ILoggerTool } from '../../../../../interfaces/infra/tools/i_logger_tool.ts';
 
 const TITULO = 'Publicacao da vitrine abortada';
 const ABERTA: OpenIssue = { number: 7, title: TITULO };

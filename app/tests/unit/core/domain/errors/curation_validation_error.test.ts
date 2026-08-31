@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error';
+import { CurationValidationError } from '../../../../../core/domain/errors/curation_validation_error.ts';
 
 describe('CurationValidationError', () => {
   it('deve compor a mensagem com o motivo e as entradas quando ha entradas afetadas', () => {

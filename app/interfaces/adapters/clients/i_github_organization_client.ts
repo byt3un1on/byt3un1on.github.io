@@ -1,4 +1,4 @@
-import type { CodeRepository } from '../../../core/domain/entities/code_repository';
+import type { CodeRepository } from '../../../core/domain/entities/code_repository.ts';
 
 /**
  * Fonte unica do catalogo (RF-02). Devolve entidades ja traduzidas: o formato

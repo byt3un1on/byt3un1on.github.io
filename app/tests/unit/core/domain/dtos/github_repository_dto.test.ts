@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseGithubRepositoryDto } from '../../../../../core/domain/dtos/github_repository_dto';
-import { CatalogSourceError } from '../../../../../core/domain/errors/catalog_source_error';
+import { parseGithubRepositoryDto } from '../../../../../core/domain/dtos/github_repository_dto.ts';
+import { CatalogSourceError } from '../../../../../core/domain/errors/catalog_source_error.ts';
 
 const RESOURCE = '/orgs/byt3un1on/repos';
 

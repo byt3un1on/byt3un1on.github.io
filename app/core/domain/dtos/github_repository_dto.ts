@@ -1,4 +1,4 @@
-import { CatalogSourceError } from '../errors/catalog_source_error';
+import { CatalogSourceError } from '../errors/catalog_source_error.ts';
 
 /** Recorte do repositorio como a API do GitHub o entrega (RF-02). */
 export interface GithubRepositoryDto {

@@ -1,4 +1,4 @@
-import type { CatalogProjectDto } from '../../../../core/domain/dtos/catalog_dto';
+import type { CatalogProjectDto } from '../../../../core/domain/dtos/catalog_dto.ts';
 
 /**
  * RF-11: devolve o projeto cuja lista de tecnologias **contenha** a escolhida —

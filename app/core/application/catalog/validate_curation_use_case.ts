@@ -1,6 +1,6 @@
-import type { CurationDto } from '../../domain/dtos/curation_dto';
-import { CurationValidationError } from '../../domain/errors/curation_validation_error';
-import type { IValidateCurationUseCase } from '../../../interfaces/core/application/catalog/i_validate_curation_use_case';
+import type { CurationDto } from '../../domain/dtos/curation_dto.ts';
+import { CurationValidationError } from '../../domain/errors/curation_validation_error.ts';
+import type { IValidateCurationUseCase } from '../../../interfaces/core/application/catalog/i_validate_curation_use_case.ts';
 
 /**
  * As tres invalidezes de RF-05. Forma do arquivo ja foi conferida pelo parser

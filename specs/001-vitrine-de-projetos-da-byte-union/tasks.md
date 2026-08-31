@@ -86,27 +86,27 @@
 
 ## Fase 4 — Adapters de dado e gerador de catálogo
 
-- [ ] T069 [P] Teste unitário de `app/infra/tools/logger_tool.ts` em `app/tests/unit/infra/tools/logger_tool.test.ts`
-- [ ] T070 [P] Implementar `app/infra/tools/logger_tool.ts` — depende do teste anterior
-- [ ] T071 [P] Teste unitário de `app/infra/tools/config_tool.ts` em `app/tests/unit/infra/tools/config_tool.test.ts`
-- [ ] T072 [P] Implementar `app/infra/tools/config_tool.ts` — depende do teste anterior
-- [ ] T073 [P] Teste unitário de `app/adapters/clients/github_organization_client.ts` em `app/tests/unit/adapters/clients/github_organization_client.test.ts`
-- [ ] T074 [P] Implementar `app/adapters/clients/github_organization_client.ts` — depende do teste anterior
-- [ ] T075 [P] Teste unitário de `app/adapters/clients/github_issue_client.ts` em `app/tests/unit/adapters/clients/github_issue_client.test.ts`
-- [ ] T076 [P] Implementar `app/adapters/clients/github_issue_client.ts` — depende do teste anterior
-- [ ] T077 [P] Teste unitário de `app/adapters/repositories/curation_repository.ts` em `app/tests/unit/adapters/repositories/curation_repository.test.ts`
-- [ ] T078 [P] Implementar `app/adapters/repositories/curation_repository.ts` — depende do teste anterior
-- [ ] T079 [P] Teste unitário de `app/adapters/repositories/catalog_file_repository.ts` em `app/tests/unit/adapters/repositories/catalog_file_repository.test.ts`
-- [ ] T080 [P] Implementar `app/adapters/repositories/catalog_file_repository.ts` — depende do teste anterior
-- [ ] T081 [P] Teste unitário de `app/adapters/commands/generate_catalog_command.ts` em `app/tests/unit/adapters/commands/generate_catalog_command.test.ts`
-- [ ] T082 [P] Implementar `app/adapters/commands/generate_catalog_command.ts` — depende do teste anterior
-- [ ] T083 [P] Teste unitário de `app/adapters/commands/report_publication_command.ts` em `app/tests/unit/adapters/commands/report_publication_command.test.ts`
-- [ ] T084 [P] Implementar `app/adapters/commands/report_publication_command.ts` — depende do teste anterior
-- [ ] T085 [P] Teste unitário de `app/infra/cli/cli_entry.ts` em `app/tests/unit/infra/cli/cli_entry.test.ts`
-- [ ] T086 [P] Implementar `app/infra/cli/cli_entry.ts` — depende do teste anterior
-- [ ] T087 [P] Criar `app/infra/init/cli_ioc_init.ts` ligando interfaces a implementações do gerador e do reporte — isento de cobertura, sem condição a decidir
-- [ ] T088 [P] Criar `app/main_catalog.ts`: instancia o contêiner, pede o inicializador, executa — sem regra de negócio
-- [ ] T089 [P] Criar `app/main_report.ts`: sobe o reporte de estado da publicação com o desfecho recebido por argumento — sem regra de negócio
+- [x] T069 [P] Teste unitário de `app/infra/tools/logger_tool.ts` em `app/tests/unit/infra/tools/logger_tool.test.ts`
+- [x] T070 [P] Implementar `app/infra/tools/logger_tool.ts` — depende do teste anterior
+- [x] T071 [P] Teste unitário de `app/infra/tools/config_tool.ts` em `app/tests/unit/infra/tools/config_tool.test.ts`
+- [x] T072 [P] Implementar `app/infra/tools/config_tool.ts` — depende do teste anterior
+- [x] T073 [P] Teste unitário de `app/adapters/clients/github_organization_client.ts` em `app/tests/unit/adapters/clients/github_organization_client.test.ts`
+- [x] T074 [P] Implementar `app/adapters/clients/github_organization_client.ts` — depende do teste anterior
+- [x] T075 [P] Teste unitário de `app/adapters/clients/github_issue_client.ts` em `app/tests/unit/adapters/clients/github_issue_client.test.ts`
+- [x] T076 [P] Implementar `app/adapters/clients/github_issue_client.ts` — depende do teste anterior
+- [x] T077 [P] Teste unitário de `app/adapters/repositories/curation_repository.ts` em `app/tests/unit/adapters/repositories/curation_repository.test.ts`
+- [x] T078 [P] Implementar `app/adapters/repositories/curation_repository.ts` — depende do teste anterior
+- [x] T079 [P] Teste unitário de `app/adapters/repositories/catalog_file_repository.ts` em `app/tests/unit/adapters/repositories/catalog_file_repository.test.ts`
+- [x] T080 [P] Implementar `app/adapters/repositories/catalog_file_repository.ts` — depende do teste anterior
+- [x] T081 [P] Teste unitário de `app/adapters/commands/generate_catalog_command.ts` em `app/tests/unit/adapters/commands/generate_catalog_command.test.ts`
+- [x] T082 [P] Implementar `app/adapters/commands/generate_catalog_command.ts` — depende do teste anterior
+- [x] T083 [P] Teste unitário de `app/adapters/commands/report_publication_command.ts` em `app/tests/unit/adapters/commands/report_publication_command.test.ts`
+- [x] T084 [P] Implementar `app/adapters/commands/report_publication_command.ts` — depende do teste anterior
+- [x] T085 [P] Teste unitário de `app/infra/cli/cli_entry.ts` em `app/tests/unit/infra/cli/cli_entry.test.ts`
+- [x] T086 [P] Implementar `app/infra/cli/cli_entry.ts` — depende do teste anterior
+- [x] T087 [P] Criar `app/infra/init/cli_ioc_init.ts` ligando interfaces a implementações do gerador e do reporte — isento de cobertura, sem condição a decidir
+- [x] T088 [P] Criar `app/main_catalog.ts`: instancia o contêiner, pede o inicializador, executa — sem regra de negócio
+- [x] T089 [P] Criar `app/main_report.ts`: sobe o reporte de estado da publicação com o desfecho recebido por argumento — sem regra de negócio
 
 ## Fase 5 — Apresentação
 

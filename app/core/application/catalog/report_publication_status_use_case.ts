@@ -1,9 +1,9 @@
 import type {
   IReportPublicationStatusUseCase,
   PublicationOutcome,
-} from '../../../interfaces/core/application/catalog/i_report_publication_status_use_case';
-import type { IGithubIssueClient } from '../../../interfaces/adapters/clients/i_github_issue_client';
-import type { ILoggerTool } from '../../../interfaces/infra/tools/i_logger_tool';
+} from '../../../interfaces/core/application/catalog/i_report_publication_status_use_case.ts';
+import type { IGithubIssueClient } from '../../../interfaces/adapters/clients/i_github_issue_client.ts';
+import type { ILoggerTool } from '../../../interfaces/infra/tools/i_logger_tool.ts';
 
 /** Titulo fixo: e por ele que a questao aberta e reencontrada e encerrada. */
 const ISSUE_TITLE = 'Publicacao da vitrine abortada';
