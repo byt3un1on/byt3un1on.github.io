@@ -4,8 +4,9 @@ app/dist/
 app/out-tsc/
 app/.angular/
 
-# Relatorios de qualidade
+# Relatorios de qualidade — saida de ferramenta, nunca versionada
 app/coverage/
+app/.lighthouseci/
 
 # Artefatos gerados por make catalog — derivados, nunca versionados
 app/data/catalog.generated.json
@@ -17,5 +18,6 @@ app/data/prerender-routes.txt
 *.log
 
 # Configuracao local do agente
-.claude/settings.local.json
-.claude/.bu-state.json
+# Padrao sem barra inicial para valer em qualquer nivel, e nao so na raiz
+**/.claude/settings.local.json
+**/.claude/.bu-state.json

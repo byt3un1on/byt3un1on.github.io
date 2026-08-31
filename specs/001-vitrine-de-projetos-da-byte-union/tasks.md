@@ -237,7 +237,77 @@
 | RNF-09 | T011, T168, T171 |
 | RNF-10 | T003, T013, T030, T031, T171 |
 
+
+## Convergência — tarefas acrescentadas na rodada 1
+
+- [ ] T173 Substituir o canal `pending` do Discord por `ready` com convite sem prazo de validade em `app/core/domain/constants/organization_constants.ts` — **depende de o grupo existir** (RF-10)
+- [ ] T174 Trocar em `specs/001-vitrine-de-projetos-da-byte-union/spec.md` o exemplo do cenário *RF-04 — resumo editorial supre a descrição ausente*, hoje `templates-library`, por um repositório efetivamente curado, e regerar `app/tests/bdd/features/curadoria_do_catalogo.feature` (RF-04)
+- [ ] T175 Resolver a contradição entre `RF-11` e `RF-13` — o filtro só oferece tecnologias existentes no catálogo, então o estado vazio de `app/adapters/presenters/catalog/catalog-page.component.ts` é inalcançável pelo visitante (RF-11, RF-13)
+- [ ] T176 Acrescentar à spec um cenário que invoque a varredura automática de acessibilidade, e a `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, para o passo já implementado em `app/tests/bdd/steps/browser/quality_steps.ts` deixar de ser código morto (RNF-02, RNF-09)
+
 ## Convergence
 
 > Seção **append-only**, escrita por `/bu:converge`. Cada rodada acrescenta um bloco;
 > nada é reescrito.
+
+### Rodada 1 — 2026-08-31
+
+| Requisito | Estado | Evidência |
+|---|---|---|
+| RF-01 | realizado | `app/adapters/presenters/home/home-page.component.ts:17`; cenário passa |
+| RF-02 | realizado | `app/adapters/clients/github_organization_client.ts:23`; cenário passa |
+| RF-03 | realizado | `app/adapters/presenters/catalog/project-card.component.ts:26`; cenário passa |
+| RF-04 | **parcial** | Inclusão explícita em `app/core/application/catalog/assemble_catalog_use_case.ts:26`, com cenário passando. O cenário *resumo editorial* falha: cita `templates-library`, que ficou fora da curadoria |
+| RF-05 | realizado | `app/core/application/catalog/validate_curation_use_case.ts:11`; os três cenários passam |
+| RF-06 | realizado | `app/core/domain/entities/code_repository.ts:55`; dois cenários passam |
+| RF-07 | realizado | `app/core/domain/entities/project.ts:44`; cenário passa com os cinco repositórios reais |
+| RF-08 | realizado | `app/infra/init/web_routes.ts:15`; 6 rotas prerenderizadas |
+| RF-09 | realizado | `app/adapters/presenters/project/project-page.component.ts:24`; cenário passa |
+| RF-10 | **parcial** | Autoria como organização e canal do GitHub em `app/adapters/presenters/layout/site-footer.component.ts:4`. Discord modelado como `pending`; cenário falha por exigir dois canais acionáveis |
+| RF-11 | realizado | `app/core/application/showcase/filter_projects_by_technology_use_case.ts:18`; cenário passa |
+| RF-12 | realizado | `app/adapters/presenters/error/not-found-page.component.ts:13`; cenário passa; `dist/browser/404/index.html` gerado |
+| RF-13 | **parcial** | Anúncio por região viva em `app/adapters/presenters/catalog/catalog-page.component.ts:26`, com cenário passando. O cenário do estado vazio falha: a interface não o alcança |
+| RF-14 | realizado | `app/adapters/commands/generate_catalog_command.ts:22`; cenário passa; comprovado em execução real com 403 da API |
+| RF-15 | realizado | `app/angular.json:22` com `routesFile`; cenário de acesso direto passa |
+| RF-16 | realizado | `app/core/application/catalog/report_publication_status_use_case.ts:23`; dois cenários passam |
+| RNF-01 | realizado | `app/lighthouserc.json:25`; `make audit` verde sobre 5 URLs |
+| RNF-02 | **parcial** | Metade do teclado provada por cenário. A metade da **verificação automática** não roda: o passo do `axe` existe em `app/tests/bdd/steps/browser/quality_steps.ts:150` mas **nenhum cenário o invoca** |
+| RNF-03 | realizado | `app/lighthouserc.json:46`; asserções de LCP e CLS passam |
+| RNF-04 | realizado | `app/lighthouserc.json:58`; medido 66,28 kB contra teto de 300 kB |
+| RNF-05 | realizado | `app/styles.css:85`; cenário a 320 px passa sem rolagem horizontal |
+| RNF-06 | realizado | `app/infra/tools/seo_tool.ts:13` e `app/scripts/check_links.sh`; 2 cliques verificados |
+| RNF-07 | realizado | `app/index.html:2`; cenário passa nas rotas fixas |
+| RNF-08 | realizado | `app/adapters/repositories/static_catalog_repository.ts:6`; cenário mede **0** requisições à API |
+| RNF-09 | **parcial** | Contrastes medidos e documentados em `app/styles.css:6` (17,96:1, 6,64:1, 5,99:1). Nenhuma verificação automática no pipeline — mesma causa de `RNF-02` |
+| RNF-10 | realizado | `app/scripts/check_links.sh:3`; `make audit` reporta ok |
+
+**`make validate` — saída real:**
+
+```
+fmt    ok
+lint   ok
+test   38 arquivos, 279 testes, 0 falhas
+cover  All files 100 | 99.13 | 100 | 100
+it     5 arquivos, 22 testes, 0 falhas
+bdd    28 scenarios (25 passed, 3 failed) · 184 steps (175 passed, 6 skipped, 3 failed)
+       make[1]: *** [Makefile:62: bdd] Erro 1
+audit  nao executado — a cadeia parou no bdd
+make: *** [Makefile:88: validate] Erro 2
+```
+
+**Excesso de escopo encontrado e corrigido nesta rodada:** `app/.lighthouseci/` (13 arquivos) e
+`app/.claude/.bu-state.json` estavam versionados — saída de ferramenta e estado local do agente,
+que nenhum requisito pediu. Removidos do índice; o `.gitignore` passou a usar padrão `**/` para
+valer em qualquer nível, e não só na raiz.
+
+**Fora de escopo:** nada do que a spec proíbe foi entregue. Sem runtime de servidor, sem
+formulário que envie dados, sem perfil pessoal, sem rastreamento do visitante, sem repositório
+privado ou arquivado exposto.
+
+**Veredito: não convergido.**
+
+Três desencontros entre spec e realidade, nenhum deles defeito de implementação, e um deles
+descoberto só aqui: a varredura automática de acessibilidade está implementada mas nenhum
+cenário a invoca, então `RNF-02` e `RNF-09` não são de fato verificados.
+
+Tarefas acrescentadas: T173, T174, T175, T176.
