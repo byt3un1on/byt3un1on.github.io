@@ -183,7 +183,14 @@ que nenhum apareça só nas tarefas.
 | `app/tests/it/adapters/repositories/catalog_file_repository_test_integration.ts` | `RF-08`, `RF-15` — catálogo e lista de rotas escritos em disco real |
 | `app/tests/it/adapters/repositories/static_catalog_repository_test_integration.ts` | `RF-02`, `RNF-08` — leitura do catálogo gerado, sem rede |
 | `app/tests/bdd/support/world.ts` | Cucumber sobre Playwright, apontado ao `dist/` servido estaticamente |
-| `app/tests/bdd/features/<funcionalidade>.feature` | Um arquivo por bloco `Funcionalidade` da spec — oito ao todo, 28 cenários |
+| `app/tests/bdd/features/apresentacao_da_oficina.feature` | `RF-01` |
+| `app/tests/bdd/features/catalogo_de_projetos.feature` | `RF-02`, `RF-03`, `RF-04`, `RF-06`, `RF-07`, `RF-11`, `RF-13` |
+| `app/tests/bdd/features/curadoria_do_catalogo.feature` | `RF-04`, `RF-05` |
+| `app/tests/bdd/features/aprofundamento_em_um_projeto.feature` | `RF-08`, `RF-09`, `RF-15` |
+| `app/tests/bdd/features/contato_com_a_organizacao.feature` | `RF-10` |
+| `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature` | `RF-14`, `RF-16`, `RNF-08` |
+| `app/tests/bdd/features/resiliencia_e_bordas.feature` | `RF-12` |
+| `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` | `RNF-01`, `RNF-02`, `RNF-03`, `RNF-05`, `RNF-07` |
 | `app/tests/bdd/steps/catalog_steps.ts` | Passos do catálogo, da curadoria e do aprofundamento |
 | `app/tests/bdd/steps/publication_steps.ts` | Passos de frescura, integridade e resiliência |
 | `app/tests/bdd/steps/accessibility_steps.ts` | Passos de qualidade medida — **é aqui que a varredura `axe` vive** |
