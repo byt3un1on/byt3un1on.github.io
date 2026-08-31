@@ -18,53 +18,63 @@ organização no GitHub encontra uma lista crua de repositórios que **não expl
 | Estrelas somadas | 0 |
 | Parados há mais de 6 meses | 5 |
 
-O custo é direto: o trabalho existe, mas é ilegível para quem não o escreveu. Um visitante não
-consegue responder em trinta segundos "o que essa gente faz e sabe fazer", e por isso não vira
-nem contato, nem contribuidor, nem oportunidade. Não resolver mantém o esforço técnico já
-investido rendendo zero em alcance — e o problema piora a cada repositório novo, porque a lista
-cresce e a legibilidade cai.
+O custo é direto: o trabalho existe, mas é ilegível para quem não o escreveu. Uma pessoa
+técnica não consegue responder em trinta segundos "o que essa gente construiu, e há aqui algo
+que eu possa usar ou para o qual eu possa contribuir" — e por isso não vira nem usuário, nem
+contribuidor, nem par. Não resolver mantém o esforço técnico já investido rendendo zero em
+alcance, e o problema piora a cada repositório novo: a lista cresce e a legibilidade cai.
 
 ## Objetivo
 
 Um sítio público que apresenta a Byte Union como oficina de projetos e expõe seu portfólio de
-forma legível a quem não conhece a organização, levando o visitante a um passo seguinte
-explícito em direção aos autores.
+forma legível a quem não conhece a organização, levando o visitante técnico ao código e a um
+canal de conversa com os autores.
 
-Está pronto quando um visitante que nunca ouviu falar da Byte Union consegue, sem sair do
-sítio: entender a que a oficina se propõe; percorrer os projetos e entender o que cada um faz;
-abrir o repositório do que lhe interessou; e saber como falar com os autores.
+O público prioritário é o **par técnico e a comunidade** — pessoas que usam, contribuem e
+divulgam. Isso ordena as decisões da vitrine: o destaque vai para o que é reutilizável por
+terceiros, o caminho mais curto de toda página leva ao repositório, e a chamada final convida a
+usar e conversar, não a contratar.
+
+Está pronto quando um visitante técnico que nunca ouviu falar da Byte Union consegue, sem sair
+do sítio: entender a que a oficina se propõe; percorrer os projetos e entender o que cada um
+faz; abrir o repositório do que lhe interessou; e saber onde conversar com os autores.
 
 ## Fora de escopo
 
 - **Publicar conteúdo dos projetos**: documentação técnica, tutoriais, blog, changelog ou
   qualquer texto de projeto que deva viver no repositório de origem.
+- **Expor o método de trabalho da oficina** — disciplina de spec, constituição, arquitetura,
+  contrato de operação. O método é distribuído como plugin privado, instalado no ambiente do
+  autor e fora dos projetos; a vitrine não o apresenta, não o explica e não expõe o repositório
+  que o contém. Os artefatos que o método produz (`specs/`, `.specify/`) permanecem versionados
+  normalmente nos repositórios — o que não se expõe é o plugin inteiro.
 - **Área autenticada**: login, painel de administração, edição de conteúdo pela interface.
 - **Formulário que envie dados**: qualquer captura de dados do visitante processada por
-  servidor. O contato se dá por canal externo já existente.
+  servidor. O contato se dá por canais externos já existentes.
 - **Exposição de repositório privado ou arquivado** da organização.
-- **Perfis pessoais completos** dos autores no formato de currículo, histórico de emprego ou
-  portfólio individual paralelo ao da organização.
-- **Internacionalização com troca de idioma pelo visitante** — ver `RNF-07` sobre o idioma único.
+- **Perfis pessoais dos autores**: nome, papel, biografia, currículo ou ligação para perfil
+  individual. A autoria é apresentada como organização — ver `RF-09`.
+- **Segundo idioma e troca de idioma pelo visitante** — ver `RNF-07`.
 - **Corrigir os repositórios de origem**: preencher descrição, `topics` ou `README` faltantes
   nos 12 repositórios é trabalho de outro escopo, ainda que esta spec dependa do sintoma.
-- **Métricas de audiência com rastreamento do visitante**.
+- **Métricas de audiência com rastreamento do visitante**: nenhuma instrumentação de
+  rastreamento é adicionada ao sítio — ver *Métricas de sucesso*.
 
 ## Personas e cenários de uso
 
-**Contratante em avaliação.** Recebeu o link dos autores ou chegou por busca. Tem pouco tempo e
-uma pergunta só: "essa gente entrega software de verdade?". Chega, varre a vitrine, procura
-evidência de rigor e sai com uma impressão formada — ou com um canal de contato aberto.
-
-**Pessoa técnica curiosa.** Achou um dos projetos e quer entender o resto. Quer saber o que a
-oficina construiu, em que tecnologias, e se há algo que ela possa usar ou para o qual possa
-contribuir. Vai clicar até o repositório.
+**Pessoa técnica curiosa** *(persona prioritária)*. Achou um dos projetos e quer entender o
+resto. Quer saber o que a oficina construiu, em que tecnologias, e se há algo que ela possa
+usar ou para o qual possa contribuir. Vai clicar até o repositório, e julga pelo código.
 
 **Par da indústria.** Conhece um dos autores e quer entender o trabalho conjunto. Interessa-se
-mais pelo *como* — método, padrão, disciplina — do que pelo produto isolado.
+pela substância técnica — que sistemas existem, quão completos são, como se dividem — e chega
+a essa leitura pelos próprios projetos, já que a vitrine não fala do método.
 
-**Os próprios autores.** Publicam um repositório novo e esperam que ele apareça na vitrine sem
-retrabalho de interface, e que a curadoria (ordem, destaque, texto editorial) seja alterável em
-um lugar só.
+**Contribuidor em potencial.** Encontrou algo reutilizável e quer saber se o projeto está vivo,
+se aceita contribuição e onde perguntar antes de abrir uma issue.
+
+**Os próprios autores.** Publicam um repositório novo e esperam decidir, em um lugar só, se e
+como ele entra na vitrine — sem tocar em código de apresentação.
 
 ## Requisitos funcionais
 
@@ -73,16 +83,18 @@ um lugar só.
 | RF-01 | O sítio deve apresentar, na página inicial e acima da dobra, o que é a Byte Union e a que ela se propõe como oficina de projetos. | obrigatório |
 | RF-02 | O sítio deve exibir um catálogo dos projetos da organização, cujos dados têm origem no catálogo de repositórios obtido da API do GitHub da organização. | obrigatório |
 | RF-03 | Cada projeto no catálogo deve exibir, no mínimo: nome legível, resumo do que ele faz, tecnologia principal, sinal de atividade e ligação para o repositório de origem. | obrigatório |
-| RF-04 | O sítio deve permitir curadoria do catálogo — ordem, destaque, resumo editorial e exclusão de itens — a partir de dado versionado no repositório, sem alteração de código de apresentação. | obrigatório |
-| RF-05 | O catálogo deve excluir automaticamente repositórios privados, arquivados e sem nenhum commit. | obrigatório |
-| RF-06 | Projeto composto por mais de um repositório deve poder ser exibido como um único item de catálogo, reunindo os repositórios que o compõem. | obrigatório |
-| RF-07 | Cada projeto deve ter uma página própria, acessível por endereço estável e direto, com o detalhamento do projeto e as ligações para seus repositórios. | obrigatório |
-| RF-08 | Quando um projeto tiver endereço publicado próprio, o sítio deve oferecer ligação para ele, distinta da ligação para o repositório. | obrigatório |
-| RF-09 | O sítio deve identificar os autores da Byte Union e oferecer ao menos um canal de contato acionável. | obrigatório |
-| RF-10 | O sítio deve permitir ao visitante restringir o catálogo por tecnologia principal. | desejável |
-| RF-11 | O sítio deve responder a endereço inexistente com uma página de erro própria, que ofereça caminho de volta ao catálogo. | obrigatório |
-| RF-12 | O sítio deve exibir estado explicável quando o catálogo estiver vazio ou o resultado da restrição não tiver itens — nunca uma área em branco sem explicação. | obrigatório |
-| RF-13 | Todo endereço público do sítio deve responder a acesso direto, sem depender de navegação prévia a partir da página inicial. | obrigatório |
+| RF-04 | O catálogo deve ser de inclusão explícita: só aparece na vitrine o projeto declarado na curadoria, que é dado versionado no repositório e define ordem, destaque, resumo e composição, sem alteração de código de apresentação. | obrigatório |
+| RF-05 | Entrada de curadoria sem resumo escrito é inválida e deve impedir a publicação, em vez de gerar projeto com ficha incompleta. | obrigatório |
+| RF-06 | O catálogo deve excluir repositórios privados, arquivados e sem nenhum commit, ainda que a curadoria os declare. | obrigatório |
+| RF-07 | Projeto composto por mais de um repositório deve ser exibido como um único item de catálogo, reunindo os repositórios que o compõem. | obrigatório |
+| RF-08 | Cada projeto deve ter uma página própria, acessível por endereço estável e direto, com o detalhamento do projeto e as ligações para seus repositórios. | obrigatório |
+| RF-09 | Quando um projeto tiver endereço publicado próprio, o sítio deve oferecer ligação para ele, distinta da ligação para o repositório. | obrigatório |
+| RF-10 | O sítio deve apresentar a autoria como organização — sem identificar pessoas — e oferecer dois canais acionáveis: o perfil da organização no GitHub e o grupo da comunidade no Discord. | obrigatório |
+| RF-11 | O sítio deve permitir ao visitante restringir o catálogo por tecnologia principal. | desejável |
+| RF-12 | O sítio deve responder a endereço inexistente com uma página de erro própria, que ofereça caminho de volta ao catálogo. | obrigatório |
+| RF-13 | O sítio deve exibir estado explicável quando a restrição aplicada pelo visitante não retornar itens — nunca uma área em branco sem explicação. | obrigatório |
+| RF-14 | A publicação do sítio deve ser abortada, preservando no ar a versão anterior, quando o catálogo da organização não puder ser obtido integralmente. | obrigatório |
+| RF-15 | Todo endereço público do sítio deve responder a acesso direto, sem depender de navegação prévia a partir da página inicial. | obrigatório |
 
 ## Requisitos não funcionais
 
@@ -94,9 +106,10 @@ um lugar só.
 | RNF-04 | Peso da entrega inicial | ≤ **300 KB** transferidos e comprimidos para a primeira renderização da página inicial, excluída mídia abaixo da dobra |
 | RNF-05 | Alcance de dispositivos | Sítio funcional e sem rolagem horizontal de **320 px** a **1920 px** de largura de viewport |
 | RNF-06 | Indexação | **100%** das páginas públicas com título e descrição únicos e não vazios, e alcançáveis a partir da página inicial em no máximo **2** cliques |
-| RNF-07 | Idioma | Sítio publicado em **1** idioma. [NECESSITA ESCLARECIMENTO: português do Brasil ou inglês? O Princípio 6 da constituição rege os artefatos do repositório, não o conteúdo voltado ao visitante; se o público-alvo inclui contratante ou par fora do Brasil, o idioma da vitrine é decisão de produto, não de convenção] |
-| RNF-08 | Defasagem do catálogo | Um repositório novo ou alterado na organização aparece atualizado na vitrine em no máximo [NECESSITA ESCLARECIMENTO: qual defasagem é aceitável — minutos, 24 horas, ou só quando os autores publicarem uma nova versão do sítio? A resposta define se o catálogo é obtido no momento da publicação ou no momento da visita] |
+| RNF-07 | Idioma | Sítio publicado em **1** idioma: português do Brasil. **0** página pública com conteúdo voltado ao visitante em outro idioma |
+| RNF-08 | Defasagem do catálogo | Alteração em repositório da organização reflete-se na vitrine em no máximo **24 h**, por publicação agendada. O visitante nunca aguarda obtenção de catálogo durante a visita: **0** requisição à API do GitHub feita pelo navegador do visitante |
 | RNF-09 | Legibilidade tipográfica | Contraste mínimo de **4,5:1** para texto normal e **3:1** para texto grande, em todo o sítio |
+| RNF-10 | Endereço de publicação | Sítio servido em `byt3un1on.github.io`. **100%** das ligações internas expressas de forma relativa à raiz do sítio, para que a adoção futura de domínio próprio não quebre nenhum endereço |
 
 ## Critérios de aceite
 
@@ -106,7 +119,7 @@ Escritos em DADO / QUANDO / ENTÃO / MAS. Cada critério vira um cenário em
 ```gherkin
 # language: pt
 Funcionalidade: Apresentação da oficina
-  Para que um visitante que não conhece a Byte Union entenda a que ela se propõe
+  Para que uma pessoa técnica que não conhece a Byte Union entenda a que ela se propõe
   Como visitante da vitrine
   Quero compreender a organização antes de olhar qualquer projeto
 
@@ -132,40 +145,48 @@ Funcionalidade: Catálogo de projetos
     Mas nenhum projeto exibido tem origem em texto desvinculado de um repositório
 
   Cenário: RF-03 — ficha mínima de cada projeto
-    Dado que o catálogo exibe o projeto "shared-claude-plugin"
+    Dado que o catálogo exibe um projeto declarado na curadoria
     Quando eu observo o item desse projeto no catálogo
     Então eu vejo seu nome legível, um resumo do que ele faz, sua tecnologia principal e um sinal de sua atividade
     E eu vejo uma ligação que leva ao repositório de origem
     Mas eu não vejo campo obrigatório exibido em branco ou com texto de preenchimento
 
-  Cenário: RF-05 — repositório privado não é exposto
-    Dado que a organização possui o repositório privado "niche-scout"
+  Cenário: RF-04 — repositório não declarado na curadoria não aparece
+    Dado que a organização possui o repositório público "shared-claude-plugin"
+    E que a curadoria não declara esse repositório
     Quando eu abro o catálogo de projetos
-    Então "niche-scout" não aparece em lugar nenhum do sítio
-    Mas o catálogo continua exibindo os projetos públicos
+    Então "shared-claude-plugin" não aparece em lugar nenhum do sítio
+    Mas os projetos declarados na curadoria continuam sendo exibidos
 
-  Cenário: RF-05 — repositório sem commit não é exposto
-    Dado que a organização possui o repositório público "documentation-site" sem nenhum commit
-    Quando eu abro o catálogo de projetos
+  Cenário: RF-06 — repositório privado não é exposto ainda que declarado
+    Dado que a curadoria declara o repositório "niche-scout"
+    E que "niche-scout" é privado na organização
+    Quando o catálogo de projetos é montado
+    Então "niche-scout" não aparece em lugar nenhum do sítio
+    Mas os demais projetos declarados continuam sendo exibidos
+
+  Cenário: RF-06 — repositório sem commit não é exposto ainda que declarado
+    Dado que a curadoria declara o repositório "documentation-site"
+    E que "documentation-site" não possui nenhum commit
+    Quando o catálogo de projetos é montado
     Então "documentation-site" não aparece no catálogo
     Mas nenhuma mensagem de erro é exibida ao visitante
 
-  Cenário: RF-06 — sistema de vários repositórios é um projeto só
-    Dado que os repositórios "shortsmaker-api", "shortsmaker-frontend", "shortsmaker-worker", "shortsmaker-infra" e "shortsmaker-docs" compõem um único sistema
-    E que a curadoria declara esse agrupamento
+  Cenário: RF-07 — sistema de vários repositórios é um projeto só
+    Dado que a curadoria declara um projeto composto pelos repositórios "shortsmaker-api", "shortsmaker-frontend", "shortsmaker-worker", "shortsmaker-infra" e "shortsmaker-docs"
     Quando eu abro o catálogo de projetos
-    Então eu vejo um único item de catálogo para esse sistema
+    Então eu vejo um único item de catálogo para esse projeto
     E ao abri-lo eu vejo os cinco repositórios que o compõem, cada um com sua ligação
     Mas eu não vejo cinco itens separados no catálogo
 
-  Cenário: RF-10 — restrição por tecnologia
+  Cenário: RF-11 — restrição por tecnologia
     Dado que o catálogo exibe projetos de mais de uma tecnologia principal
     Quando eu restrinjo o catálogo à tecnologia "TypeScript"
     Então eu vejo apenas os projetos cuja tecnologia principal é "TypeScript"
     E o critério aplicado permanece visível para mim
     Mas a restrição não altera o endereço dos projetos nem impede que eu a remova
 
-  Cenário: RF-12 — restrição sem resultado se explica
+  Cenário: RF-13 — restrição sem resultado se explica
     Dado que o catálogo está exibindo projetos
     Quando eu aplico uma restrição que não corresponde a nenhum projeto
     Então eu vejo uma mensagem que explica que nenhum projeto atende ao critério
@@ -178,49 +199,49 @@ Funcionalidade: Catálogo de projetos
 Funcionalidade: Curadoria do catálogo
   Para que os autores controlem a narrativa sem mexer na interface
   Como autor da Byte Union
-  Quero definir ordem, destaque, resumo e exclusão em um único lugar versionado
+  Quero declarar em um único lugar versionado o que entra, em que ordem e com que texto
 
   Cenário: RF-04 — ordem e destaque vêm da curadoria
-    Dado que a curadoria declara "shared-claude-plugin" como projeto em destaque e primeiro da ordem
+    Dado que a curadoria declara um projeto como destaque e primeiro da ordem
     Quando eu abro o catálogo de projetos
-    Então "shared-claude-plugin" aparece em primeiro lugar e sinalizado como destaque
+    Então esse projeto aparece em primeiro lugar e sinalizado como destaque
     Mas nenhuma alteração de ordem ou destaque exigiu mudança em código de apresentação
 
   Cenário: RF-04 — resumo editorial supre a descrição ausente
     Dado que o repositório "templates-library" não tem descrição preenchida no GitHub
-    E que a curadoria declara um resumo editorial para esse repositório
+    E que a curadoria declara um resumo para esse repositório
     Quando eu observo esse projeto no catálogo
-    Então eu vejo o resumo editorial declarado pela curadoria
+    Então eu vejo o resumo declarado pela curadoria
     Mas eu não vejo resumo vazio nem o nome do repositório repetido no lugar do resumo
 
-  Cenário: RF-04 — exclusão declarada pela curadoria é respeitada
-    Dado que a curadoria declara que um repositório público não deve aparecer na vitrine
-    Quando eu abro o catálogo de projetos
-    Então esse repositório não aparece em lugar nenhum do sítio
-    Mas os demais repositórios públicos continuam sendo exibidos
+  Cenário: RF-05 — entrada sem resumo impede a publicação
+    Dado que a curadoria declara um projeto sem resumo escrito
+    Quando a publicação do sítio é executada
+    Então a publicação falha indicando qual entrada de curadoria está sem resumo
+    Mas nenhum projeto com ficha incompleta é publicado
 ```
 
 ```gherkin
 # language: pt
 Funcionalidade: Aprofundamento em um projeto
-  Para que o visitante interessado chegue ao trabalho em si
+  Para que o visitante técnico chegue ao código em si
   Como visitante da vitrine
-  Quero abrir um projeto e alcançar seu repositório e seu endereço publicado
+  Quero abrir um projeto e alcançar seus repositórios e seu endereço publicado
 
-  Cenário: RF-07 — página própria por projeto
+  Cenário: RF-08 — página própria por projeto
     Dado que estou no catálogo de projetos
-    Quando eu abro o projeto "shared-claude-plugin"
+    Quando eu abro um projeto do catálogo
     Então eu chego a uma página dedicada a esse projeto, com endereço próprio e estável
     E vejo o detalhamento do projeto e a ligação para o seu repositório
     Mas eu não sou levado para fora do sítio sem que eu tenha escolhido a ligação
 
-  Cenário: RF-08 — endereço publicado é distinto do repositório
+  Cenário: RF-09 — endereço publicado é distinto do repositório
     Dado que o projeto exibido possui endereço publicado próprio além do repositório
     Quando eu abro a página desse projeto
     Então eu vejo duas ligações distintas e rotuladas: uma para o repositório e outra para o endereço publicado
     Mas as duas ligações não apontam para o mesmo destino
 
-  Cenário: RF-13 — endereço direto funciona sem navegação prévia
+  Cenário: RF-15 — endereço direto funciona sem navegação prévia
     Dado que eu tenho o endereço da página de um projeto, recebido por terceiro
     Quando eu abro esse endereço diretamente, sem passar pela página inicial
     Então a página do projeto é exibida integralmente
@@ -229,16 +250,38 @@ Funcionalidade: Aprofundamento em um projeto
 
 ```gherkin
 # language: pt
-Funcionalidade: Contato com os autores
+Funcionalidade: Contato com a organização
   Para que o interesse gerado pela vitrine tenha para onde ir
   Como visitante convencido pelo portfólio
-  Quero saber quem são os autores e como falar com eles
+  Quero alcançar o código da organização e conversar com quem o mantém
 
-  Cenário: RF-09 — autores identificados e contato acionável
+  Cenário: RF-10 — autoria como organização e dois canais acionáveis
     Dado que estou em qualquer página pública do sítio
     Quando eu procuro por quem mantém a Byte Union
-    Então eu encontro a identificação dos autores e ao menos um canal de contato acionável
-    Mas não me é exigido preencher formulário no próprio sítio para estabelecer contato
+    Então eu encontro a autoria apresentada como organização
+    E encontro uma ligação para o perfil da organização no GitHub e outra para o grupo da comunidade no Discord
+    Mas eu não vejo nome, papel, biografia ou perfil individual de nenhum autor
+```
+
+```gherkin
+# language: pt
+Funcionalidade: Frescura e integridade do catálogo
+  Para que a vitrine nunca publique um retrato incompleto da organização
+  Como autor da Byte Union
+  Quero que o catálogo seja obtido antes da publicação e que falha na obtenção impeça a troca
+
+  Cenário: RF-14 — falha na obtenção não publica catálogo incompleto
+    Dado que a versão atual do sítio está no ar
+    Quando a publicação é executada e o catálogo da organização não pode ser obtido integralmente
+    Então a publicação é abortada e informa a falha
+    E a versão anterior do sítio permanece no ar, intacta
+    Mas nenhuma versão com catálogo parcial ou vazio é publicada
+
+  Cenário: RNF-08 — o visitante não espera pela rede
+    Dado que eu abro qualquer página pública do sítio
+    Quando a página termina de carregar
+    Então todos os dados dos projetos já estão presentes
+    Mas o meu navegador não realizou nenhuma requisição à API do GitHub
 ```
 
 ```gherkin
@@ -246,21 +289,14 @@ Funcionalidade: Contato com os autores
 Funcionalidade: Resiliência e bordas
   Para que a vitrine nunca exponha ao visitante uma falha crua
   Como visitante da vitrine
-  Quero ser conduzido de volta quando algo não existe ou não carrega
+  Quero ser conduzido de volta quando o endereço não existe
 
-  Cenário: RF-11 — endereço inexistente tem página própria
+  Cenário: RF-12 — endereço inexistente tem página própria
     Dado que eu abro um endereço que não corresponde a nenhuma página do sítio
     Quando a página é exibida
     Então eu vejo uma página de erro do próprio sítio, com a identidade da Byte Union
     E vejo uma ligação que me leva ao catálogo de projetos
     Mas eu não vejo página de erro genérica do serviço de hospedagem
-
-  Cenário: RF-12 — catálogo indisponível se explica
-    Dado que o catálogo de projetos não pôde ser obtido
-    Quando eu abro a página do catálogo
-    Então eu vejo uma mensagem que explica que os projetos não puderam ser carregados
-    E vejo uma alternativa para alcançar a organização no GitHub
-    Mas eu não vejo mensagem técnica de erro nem uma área em branco
 ```
 
 ```gherkin
@@ -288,63 +324,50 @@ Funcionalidade: Qualidade medida das páginas públicas
     Quando a página é renderizada
     Então todo o conteúdo permanece legível e utilizável
     Mas não há rolagem horizontal
+
+  Cenário: RNF-07 — idioma único
+    Dado que percorro todas as páginas públicas do sítio
+    Quando eu leio o conteúdo voltado ao visitante
+    Então todo ele está em português do Brasil
+    Mas não há alternador de idioma nem conteúdo em segundo idioma
 ```
 
 ## Ambiguidades
 
-`/bu:clarify` só encerra quando esta lista está vazia.
+Nenhuma. As 11 marcas registradas na primeira versão desta spec foram respondidas pelo usuário
+em 2026-08-30 e aplicadas nos requisitos acima — ver *Esclarecimentos*.
 
-1. **[NECESSITA ESCLARECIMENTO: qual é o público-alvo prioritário — contratante que compra
-   serviço, empregador que contrata pessoas, ou par técnico que contribui e divulga?]** O pedido
-   diz "atrair público alvo para nós (autores)", e os três públicos levam a vitrines diferentes:
-   o primeiro quer prova de entrega e capacidade; o segundo quer competência individual
-   atribuída a pessoas; o terceiro quer código e método. Esta é a ambiguidade de maior impacto —
-   ela decide a página inicial, a ordem do catálogo e a chamada final.
-2. **[NECESSITA ESCLARECIMENTO: quem são os autores, quantos são, e cada um deve ser
-   identificado individualmente com nome, papel e ligação para seu perfil, ou a autoria é
-   apresentada apenas como organização?]** `RF-09` depende disso.
-3. **[NECESSITA ESCLARECIMENTO: qual é o canal de contato acionável — e-mail, perfil no GitHub,
-   rede profissional, outro?]** `RF-09` exige ao menos um, e a seção *Fora de escopo* já
-   descarta formulário processado por servidor.
-4. **[NECESSITA ESCLARECIMENTO: dos 12 repositórios públicos, quais entram na vitrine?]** Nove
-   não têm descrição, quatro não têm `README` útil, cinco estão parados há mais de seis meses e
-   um está vazio. Expor tudo mostra volume e expõe abandono; expor pouco mostra rigor e parece
-   vazio. É decisão editorial, não técnica.
-5. **[NECESSITA ESCLARECIMENTO: os cinco repositórios `shortsmaker-*` formam um projeto só na
-   vitrine, e qual o nome e o resumo desse projeto?]** `RF-06` prevê o agrupamento, mas não
-   pode inventar como ele se chama nem o que faz — nenhum dos cinco repositórios tem descrição
-   preenchida.
-6. **[NECESSITA ESCLARECIMENTO: quem escreve os resumos editoriais dos projetos sem descrição, e
-   até quando?]** `RF-04` prevê onde eles vivem; a spec não pode presumir que o texto existirá a
-   tempo. Sem essa resposta, `RF-03` corre o risco de exibir ficha incompleta na publicação.
-7. **[NECESSITA ESCLARECIMENTO: RNF-07 — o sítio é publicado em português do Brasil ou em
-   inglês?]**
-8. **[NECESSITA ESCLARECIMENTO: RNF-08 — qual defasagem do catálogo é aceitável?]** A resposta
-   determina se o catálogo é fixado no momento da publicação ou obtido no momento da visita, e
-   isso muda o comportamento observável em `RF-12` (catálogo indisponível só é cenário real na
-   segunda hipótese).
-9. **[NECESSITA ESCLARECIMENTO: a vitrine deve apresentar o método de trabalho da oficina —
-   disciplina de spec, testes, arquitetura — como conteúdo próprio, ou o método só aparece
-   implícito na qualidade dos projetos?]** A persona *par da indústria* se interessa mais pelo
-   método que pelo produto, e isso pode justificar uma seção que hoje não existe em nenhum `RF`.
-10. **[NECESSITA ESCLARECIMENTO: o sítio permanecerá em `byt3un1on.github.io` ou usará domínio
-    próprio?]** Afeta `RF-07` (estabilidade dos endereços) e `RNF-06`.
-11. **[NECESSITA ESCLARECIMENTO: como as métricas de sucesso abaixo serão medidas, dado que
-    *Fora de escopo* descarta rastreamento do visitante?]** Sem uma resposta, as métricas são
-    intenção declarada e não instrumento verificável.
+## Esclarecimentos
+
+| # | Pergunta | Resposta | Data | Onde foi aplicada |
+|---|---|---|---|---|
+| 1 | Qual é o público-alvo prioritário — contratante, empregador ou par técnico? | **Par técnico e comunidade.** O destaque vai para o reutilizável, o caminho mais curto leva ao repositório, e a chamada final convida a usar e conversar. | 2026-08-30 | *Objetivo*, *Personas* |
+| 2 | Qual defasagem do catálogo é aceitável, e o catálogo é fixado na publicação ou buscado na visita? | **≤ 24 h, por publicação agendada.** Catálogo fixado no momento da publicação; o navegador do visitante não consulta a API do GitHub. | 2026-08-30 | `RNF-08`, `RF-14` |
+| 3 | Quais dos 12 repositórios públicos entram na vitrine? | **Só os que a curadoria listar** — inclusão explícita, não exclusão. | 2026-08-30 | `RF-04` |
+| 4 | Como os autores aparecem na vitrine? | **Apenas como organização.** Sem nome, papel, biografia ou perfil individual. | 2026-08-30 | `RF-10`, *Fora de escopo* |
+| 5 | Qual é o canal de contato acionável? | **Perfil da organização no GitHub e grupo da comunidade no Discord** — dois canais. | 2026-08-30 | `RF-10` |
+| 6 | Em que idioma a vitrine é publicada? | **Português do Brasil**, idioma único. | 2026-08-30 | `RNF-07` |
+| 7 | A vitrine deve ter conteúdo próprio sobre o método de trabalho da oficina? | **Não.** O método é plugin privado, instalado no ambiente do autor e fora dos projetos; a vitrine não o apresenta nem expõe o repositório que o contém. Os artefatos que ele produz (`specs/`, `.specify/`) seguem versionados normalmente nos repositórios — o que não se expõe é o plugin inteiro. | 2026-08-30 | *Fora de escopo*, `RF-04` |
+| 8 | O sítio fica em `byt3un1on.github.io` ou usa domínio próprio? | **`byt3un1on.github.io`**, com ligações internas relativas para não travar a adoção futura de domínio próprio. | 2026-08-30 | `RNF-10` |
+| 9 | `shared-claude-plugin` entra na vitrine, dado que o método será privado? | **Não entra.** Consequência direta do esclarecimento 7. | 2026-08-30 | `RF-04` e seu cenário |
+| 10 | Os cinco repositórios `shortsmaker-*` entram, e como? | **Sim, como um projeto só**, reunindo os cinco repositórios em um item de catálogo. Nome e resumo do projeto são conteúdo da curadoria. | 2026-08-30 | `RF-07` e seu cenário |
+| 11 | De onde vem o resumo de cada projeto, já que 9 dos 12 repositórios não têm descrição? | **A curadoria exige resumo**: entrada sem resumo escrito é inválida e impede a publicação. | 2026-08-30 | `RF-05` |
+| 12 | Como medir se a vitrine funcionou, sem rastrear o visitante? | **Sinais do próprio GitHub** — estrelas, forks, issues de terceiros e as estatísticas de tráfego e referenciador que o GitHub dá ao dono do repositório. Nenhuma instrumentação de rastreamento no sítio. | 2026-08-30 | *Métricas de sucesso*, *Fora de escopo* |
 
 ## Métricas de sucesso
 
-Sujeitas à ambiguidade 11 — como medir ainda não está decidido.
+Medidas sem nenhuma instrumentação de rastreamento no sítio, a partir dos sinais que o GitHub
+já oferece ao dono dos repositórios.
 
+- **Conversão para o código**: visitas a repositório da organização cujo referenciador é
+  `byt3un1on.github.io`, nas estatísticas de tráfego do GitHub. É a medida direta de que a
+  vitrine cumpriu o objetivo — o visitante saiu dela e foi ao código.
+- **Interesse da comunidade**: estrelas, forks e issues abertas por pessoas de fora da
+  organização nos projetos expostos, comparados ao ponto de partida de **0** estrelas em
+  2026-08-30.
 - **Alcance**: a vitrine passa a ser o endereço que os autores enviam ao apresentar o trabalho,
   em lugar da lista de repositórios do GitHub.
-- **Conversão de atenção**: visitantes que abrem ao menos uma página de projeto a partir do
-  catálogo — evidência de que o resumo foi suficiente para gerar interesse.
-- **Conversão de destino**: visitantes que seguem de uma página de projeto para o repositório de
-  origem, ou que acionam o canal de contato.
-- **Custo de manutenção**: publicar um repositório novo na organização e vê-lo aparecer na
-  vitrine com ficha completa exige alteração em **um único** arquivo de curadoria — nenhuma em
-  código de apresentação.
+- **Custo de manutenção**: publicar um repositório novo na vitrine com ficha completa exige
+  alteração em **um único** arquivo de curadoria — nenhuma em código de apresentação.
 - **Qualidade sustentada**: os limiares de `RNF-01` a `RNF-03` permanecem atendidos a cada
   publicação, sem exceção registrada.
