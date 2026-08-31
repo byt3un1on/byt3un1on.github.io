@@ -34,6 +34,17 @@ export default tseslint.config(
     },
   },
   {
+    files: ['tests/**/*.ts'],
+    rules: {
+      // O Principio 3 exige expectativa dinamica: `expect(mock.metodo)`, com
+      // referencia real ao metodo, e nunca o nome dele em string. E exatamente
+      // essa referencia que `unbound-method` sinaliza. Desligar aqui preserva a
+      // regra onde ela protege — no codigo de producao — sem obrigar o teste a
+      // usar string, que e o defeito que a constituicao quer impedir.
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
   },

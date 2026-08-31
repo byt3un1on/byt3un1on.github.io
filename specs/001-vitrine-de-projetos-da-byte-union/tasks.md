@@ -67,22 +67,22 @@
 
 ## Fase 3 — Aplicação
 
-- [ ] T053 [P] Teste unitário de `app/core/application/catalog/validate_curation_use_case.ts` em `app/tests/unit/core/application/catalog/validate_curation_use_case.test.ts`
-- [ ] T054 [P] Implementar `app/core/application/catalog/validate_curation_use_case.ts` — depende do teste anterior
-- [ ] T055 [P] Teste unitário de `app/core/application/catalog/assemble_catalog_use_case.ts` em `app/tests/unit/core/application/catalog/assemble_catalog_use_case.test.ts`
-- [ ] T056 [P] Implementar `app/core/application/catalog/assemble_catalog_use_case.ts` — depende do teste anterior
-- [ ] T057 [P] Teste unitário de `app/core/application/catalog/generate_catalog_use_case.ts` em `app/tests/unit/core/application/catalog/generate_catalog_use_case.test.ts`
-- [ ] T058 [P] Implementar `app/core/application/catalog/generate_catalog_use_case.ts` — depende do teste anterior
-- [ ] T059 [P] Teste unitário de `app/core/application/catalog/report_publication_status_use_case.ts` em `app/tests/unit/core/application/catalog/report_publication_status_use_case.test.ts`
-- [ ] T060 [P] Implementar `app/core/application/catalog/report_publication_status_use_case.ts` — depende do teste anterior
-- [ ] T061 [P] Teste unitário de `app/core/application/showcase/list_projects_use_case.ts` em `app/tests/unit/core/application/showcase/list_projects_use_case.test.ts`
-- [ ] T062 [P] Implementar `app/core/application/showcase/list_projects_use_case.ts` — depende do teste anterior
-- [ ] T063 [P] Teste unitário de `app/core/application/showcase/filter_projects_by_technology_use_case.ts` em `app/tests/unit/core/application/showcase/filter_projects_by_technology_use_case.test.ts`
-- [ ] T064 [P] Implementar `app/core/application/showcase/filter_projects_by_technology_use_case.ts` — depende do teste anterior
-- [ ] T065 [P] Teste unitário de `app/core/application/showcase/list_technologies_use_case.ts` em `app/tests/unit/core/application/showcase/list_technologies_use_case.test.ts`
-- [ ] T066 [P] Implementar `app/core/application/showcase/list_technologies_use_case.ts` — depende do teste anterior
-- [ ] T067 [P] Teste unitário de `app/core/application/showcase/find_project_by_slug_use_case.ts` em `app/tests/unit/core/application/showcase/find_project_by_slug_use_case.test.ts`
-- [ ] T068 [P] Implementar `app/core/application/showcase/find_project_by_slug_use_case.ts` — depende do teste anterior
+- [x] T053 [P] Teste unitário de `app/core/application/catalog/validate_curation_use_case.ts` em `app/tests/unit/core/application/catalog/validate_curation_use_case.test.ts`
+- [x] T054 [P] Implementar `app/core/application/catalog/validate_curation_use_case.ts` — depende do teste anterior
+- [x] T055 [P] Teste unitário de `app/core/application/catalog/assemble_catalog_use_case.ts` em `app/tests/unit/core/application/catalog/assemble_catalog_use_case.test.ts`
+- [x] T056 [P] Implementar `app/core/application/catalog/assemble_catalog_use_case.ts` — depende do teste anterior
+- [x] T057 [P] Teste unitário de `app/core/application/catalog/generate_catalog_use_case.ts` em `app/tests/unit/core/application/catalog/generate_catalog_use_case.test.ts`
+- [x] T058 [P] Implementar `app/core/application/catalog/generate_catalog_use_case.ts` — depende do teste anterior
+- [x] T059 [P] Teste unitário de `app/core/application/catalog/report_publication_status_use_case.ts` em `app/tests/unit/core/application/catalog/report_publication_status_use_case.test.ts`
+- [x] T060 [P] Implementar `app/core/application/catalog/report_publication_status_use_case.ts` — depende do teste anterior
+- [x] T061 [P] Teste unitário de `app/core/application/showcase/list_projects_use_case.ts` em `app/tests/unit/core/application/showcase/list_projects_use_case.test.ts`
+- [x] T062 [P] Implementar `app/core/application/showcase/list_projects_use_case.ts` — depende do teste anterior
+- [x] T063 [P] Teste unitário de `app/core/application/showcase/filter_projects_by_technology_use_case.ts` em `app/tests/unit/core/application/showcase/filter_projects_by_technology_use_case.test.ts`
+- [x] T064 [P] Implementar `app/core/application/showcase/filter_projects_by_technology_use_case.ts` — depende do teste anterior
+- [x] T065 [P] Teste unitário de `app/core/application/showcase/list_technologies_use_case.ts` em `app/tests/unit/core/application/showcase/list_technologies_use_case.test.ts`
+- [x] T066 [P] Implementar `app/core/application/showcase/list_technologies_use_case.ts` — depende do teste anterior
+- [x] T067 [P] Teste unitário de `app/core/application/showcase/find_project_by_slug_use_case.ts` em `app/tests/unit/core/application/showcase/find_project_by_slug_use_case.test.ts`
+- [x] T068 [P] Implementar `app/core/application/showcase/find_project_by_slug_use_case.ts` — depende do teste anterior
 
 ## Fase 4 — Adapters de dado e gerador de catálogo
 
