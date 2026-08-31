@@ -7,3 +7,4 @@ coverage/
 
 # Configuracao local do agente
 .claude/settings.local.json
+.claude/.bu-state.json
