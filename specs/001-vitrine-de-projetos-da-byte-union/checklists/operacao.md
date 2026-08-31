@@ -38,6 +38,9 @@
   o aviso (`RF-16`), mas não diz se o fluxo tenta de novo sozinho. Aprovado assim: sem nova
   tentativa automática, a próxima publicação agendada é a próxima chance, dentro das 24 h de
   `RNF-08`.
-- **O endereço do grupo no Discord ainda não existe.** `RF-10` exige o canal, e a curadoria
+- **O endereço do grupo no Discord ainda não existe.** *(2026-08-31: modelado como canal
+  `pending` em `app/core/domain/constants/organization_constants.ts`, com o motivo declarado.
+  Não é renderizado enquanto estiver pendente, e o cenário de aceite de `RF-10` não passa até o
+  convite existir — a falta é visível, não silenciosa.)* `RF-10` exige o canal, e a curadoria
   precisará de um convite sem prazo de validade antes da primeira publicação. Aprovado com a
   pendência registrada: sem o endereço, `RF-10` não fecha.

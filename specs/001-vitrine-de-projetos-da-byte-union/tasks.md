@@ -40,8 +40,8 @@
 - [x] T029 [P] Implementar `app/core/domain/errors/catalog_source_error.ts` — depende do teste anterior
 - [x] T030 [P] Teste unitário de `app/core/domain/constants/site_routes_constants.ts` em `app/tests/unit/core/domain/constants/site_routes_constants.test.ts`
 - [x] T031 [P] Implementar `app/core/domain/constants/site_routes_constants.ts` — depende do teste anterior
-- [ ] T032 [P] Teste unitário de `app/core/domain/constants/organization_constants.ts` em `app/tests/unit/core/domain/constants/organization_constants.test.ts`
-- [ ] T033 [P] Implementar `app/core/domain/constants/organization_constants.ts` — depende do teste anterior
+- [x] T032 [P] Teste unitário de `app/core/domain/constants/organization_constants.ts` em `app/tests/unit/core/domain/constants/organization_constants.test.ts`
+- [x] T033 [P] Implementar `app/core/domain/constants/organization_constants.ts` — depende do teste anterior
 
 ## Fase 2 — Contratos
 
