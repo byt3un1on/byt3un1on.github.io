@@ -25,6 +25,7 @@ foram verificadas no registro em 2026-08-30, não presumidas.
 | Medição de `RNF-01` a `RNF-03` | Lighthouse CI 0.15.1 com asserções por categoria | Medição manual; PageSpeed via API externa | Precisa rodar headless e falhar o portão. A API externa exigiria rede e um sítio já publicado |
 | Medição de `RNF-02` e `RNF-09` | `@axe-core/playwright` 4.13.0, falhando em violação `critical` ou `serious` | Só o índice de acessibilidade do Lighthouse | O Lighthouse dá nota agregada; o Princípio 9 exige **0** violação crítica ou séria, que é asserção por regra, não por nota |
 | Peso da entrega (`RNF-04`) | `budgets` do builder `application` | Medir por script após o build | O builder já falha o build ao estourar o orçamento. Não se escreve o que a ferramenta faz |
+| Onde vive o reporte de `RF-16` | Comando próprio, acionado na fronteira da publicação, com o desfecho por argumento | Acionar dentro de `generate_catalog_command`; acionar por passo solto do fluxo de CI | Dentro do comando de catálogo, o reporte só veria falha de catálogo e encerraria a questão antes de a publicação concluir. Passo solto no fluxo de CI não é testável, e o Princípio 3 não abre exceção |
 | Contêiner de IoC | DI do próprio Angular no sítio; contêiner mínimo próprio no gerador | Biblioteca de DI de terceiro (InversifyJS, tsyringe) | O sítio já tem DI; o gerador tem menos de dez dependências a ligar. Dependência nova para resolver isso não se paga |
 
 ## Padrões de projeto aplicados
@@ -62,8 +63,8 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | core/domain | `app/core/domain/dtos/catalog_dto.ts` | criar | `app/tests/unit/core/domain/dtos/catalog_dto.test.ts` | RF-02 |
 | core/domain | `app/core/domain/errors/curation_validation_error.ts` | criar | `app/tests/unit/core/domain/errors/curation_validation_error.test.ts` | RF-05 |
 | core/domain | `app/core/domain/errors/catalog_source_error.ts` | criar | `app/tests/unit/core/domain/errors/catalog_source_error.test.ts` | RF-14 |
-| core/domain | `app/core/domain/constants/site_routes_constants.ts` | criar | `app/tests/unit/core/domain/constants/site_routes_constants.test.ts` | RF-08, RF-12, RF-15 |
-| core/domain | `app/core/domain/constants/organization_constants.ts` | criar | `app/tests/unit/core/domain/constants/organization_constants.test.ts` | RF-10, RNF-10 |
+| core/domain | `app/core/domain/constants/site_routes_constants.ts` | criar | `app/tests/unit/core/domain/constants/site_routes_constants.test.ts` | RF-08, RF-12, RF-15, RNF-10 — toda rota declarada relativa à raiz, sem esquema nem host |
+| core/domain | `app/core/domain/constants/organization_constants.ts` | criar | `app/tests/unit/core/domain/constants/organization_constants.test.ts` | RF-10 |
 
 ### `core/application` — casos de uso
 
@@ -87,7 +88,8 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | adapters/repositories | `app/adapters/repositories/catalog_file_repository.ts` | criar | `app/tests/unit/adapters/repositories/catalog_file_repository.test.ts` | RF-08, RF-12, RF-15 |
 | adapters/repositories | `app/adapters/repositories/static_catalog_repository.ts` | criar | `app/tests/unit/adapters/repositories/static_catalog_repository.test.ts` | RF-02, RNF-08 |
 | adapters/clients | `app/adapters/clients/github_issue_client.ts` | criar | `app/tests/unit/adapters/clients/github_issue_client.test.ts` | RF-16 |
-| adapters/commands | `app/adapters/commands/generate_catalog_command.ts` | criar | `app/tests/unit/adapters/commands/generate_catalog_command.test.ts` | RF-05, RF-14, RF-16 |
+| adapters/commands | `app/adapters/commands/generate_catalog_command.ts` | criar | `app/tests/unit/adapters/commands/generate_catalog_command.test.ts` | RF-05, RF-14 |
+| adapters/commands | `app/adapters/commands/report_publication_command.ts` | criar | `app/tests/unit/adapters/commands/report_publication_command.test.ts` | RF-16 |
 
 ### `adapters/presenters` — componentes Angular (arquivo `kebab-case`, classe `PascalCase`)
 
@@ -125,6 +127,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | `app/interfaces/adapters/repositories/i_catalog_file_repository.ts` | `catalog_file_repository` |
 | `app/interfaces/adapters/repositories/i_static_catalog_repository.ts` | `static_catalog_repository` |
 | `app/interfaces/adapters/commands/i_generate_catalog_command.ts` | `generate_catalog_command` |
+| `app/interfaces/adapters/commands/i_report_publication_command.ts` | `report_publication_command` |
 | `app/interfaces/core/application/catalog/i_validate_curation_use_case.ts` | `validate_curation_use_case` |
 | `app/interfaces/core/application/catalog/i_assemble_catalog_use_case.ts` | `assemble_catalog_use_case` |
 | `app/interfaces/core/application/catalog/i_generate_catalog_use_case.ts` | `generate_catalog_use_case` |
@@ -147,12 +150,13 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 |---|---|---|
 | `app/main.ts` | Sobe o Angular: pede o inicializador a `web_init` e o executa | fora da conta |
 | `app/main_catalog.ts` | Sobe o gerador de catálogo: pede o inicializador a `cli_entry` e o executa | fora da conta |
+| `app/main_report.ts` | Sobe o reporte de estado da publicação, acionado na fronteira do fluxo, com o desfecho recebido por argumento | fora da conta |
 
-> **Desvio declarado.** A constituição fala em `main` no singular. Este projeto tem **dois
-> tempos de execução distintos** — a geração do catálogo, que roda no Node antes do build, e o
-> sítio, que roda no navegador — e um arquivo não pode servir aos dois. Ambos obedecem à regra
-> que importa: instanciam o contêiner, pedem o inicializador, executam, e não carregam nenhuma
-> regra de negócio.
+> **Desvio declarado.** A constituição fala em `main` no singular. Este projeto tem **três
+> pontos de entrada** por ter tempos de execução distintos: a geração do catálogo e o reporte de
+> estado, que rodam no Node em momentos diferentes do fluxo de publicação, e o sítio, que roda no
+> navegador. Um arquivo não serve aos três. Todos obedecem à regra que importa: instanciam o
+> contêiner, pedem o inicializador, executam, e não carregam nenhuma regra de negócio.
 
 ### Dados versionados — não são código
 
@@ -165,20 +169,45 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 > `curation.json` fica fora das camadas de propósito: o Princípio 8 exige que a curadoria viva
 > em **arquivo de dados separado do código**. Colocá-la em `core/domain` a tornaria código.
 
+### Testes de integração e BDD
+
+Não têm arquivo espelhado de produção — provam contratos, não unidades. Enumerados aqui para
+que nenhum apareça só nas tarefas.
+
+| Arquivo | Prova |
+|---|---|
+| `app/tests/it/stubs/` | Stubs do WireMock: listagem da organização, `409` de repositório vazio, API de questões |
+| `app/tests/it/adapters/clients/github_organization_client_test_integration.ts` | `RF-02`, `RF-06` contra WireMock |
+| `app/tests/it/adapters/clients/github_issue_client_test_integration.ts` | `RF-16` contra WireMock |
+| `app/tests/it/adapters/repositories/curation_repository_test_integration.ts` | `RF-04`, `RF-05` contra arquivo real |
+| `app/tests/it/adapters/repositories/catalog_file_repository_test_integration.ts` | `RF-08`, `RF-15` — catálogo e lista de rotas escritos em disco real |
+| `app/tests/it/adapters/repositories/static_catalog_repository_test_integration.ts` | `RF-02`, `RNF-08` — leitura do catálogo gerado, sem rede |
+| `app/tests/bdd/support/world.ts` | Cucumber sobre Playwright, apontado ao `dist/` servido estaticamente |
+| `app/tests/bdd/features/<funcionalidade>.feature` | Um arquivo por bloco `Funcionalidade` da spec — oito ao todo, 28 cenários |
+| `app/tests/bdd/steps/catalog_steps.ts` | Passos do catálogo, da curadoria e do aprofundamento |
+| `app/tests/bdd/steps/publication_steps.ts` | Passos de frescura, integridade e resiliência |
+| `app/tests/bdd/steps/accessibility_steps.ts` | Passos de qualidade medida — **é aqui que a varredura `axe` vive** |
+
+> **Não existe `app/tests/audit/`.** O Princípio 2 declara três diretórios de teste — `unit/`,
+> `it/` e `bdd/` — e a auditoria não precisa de um quarto: os cenários de qualidade já estão
+> escritos em Gherkin na spec, então o `axe` entra como passo de `accessibility_steps.ts` e o
+> Lighthouse como asserção de `lighthouserc.json`, ambos disparados por `make audit`.
+
 ### Configuração e infraestrutura do projeto
 
 | Arquivo | Papel |
 |---|---|
-| `app/package.json`, `app/angular.json`, `app/tsconfig.json` | Projeto Angular; `sourceRoot` na própria `app/`, para as camadas ficarem na raiz e não sob `src/` |
+| `app/package.json`, `app/angular.json`, `app/tsconfig.json` | Projeto Angular; `sourceRoot` na própria `app/`, para as camadas ficarem na raiz e não sob `src/`. `baseHref: "/"` fixa a raiz do sítio e sustenta `RNF-10` |
 | `app/Makefile` | Contrato de operação |
 | `app/Dockerfile` | Imagem única — Node 24, Chromium do Playwright, ferramentas de qualidade |
 | `app/docker-compose.yml` | Serviços `dev` e `wiremock` |
 | `app/vitest.config.ts` | `runnerConfig` do builder `unit-test`: limiar por arquivo e exclusões de cobertura |
-| `app/lighthouserc.json` | Asserções de `RNF-01` e `RNF-03` |
+| `app/lighthouserc.json` | Asserções de `RNF-01`, `RNF-03` e do peso transferido de `RNF-04`, pela auditoria `total-byte-weight`, que mede bytes na rede e não o pacote em disco |
 | `app/eslint.config.js`, `app/.prettierrc`, `app/.editorconfig` | Dotfiles de qualidade |
 | `app/index.html` | Casca do sítio, com `lang="pt-BR"` (`RNF-07`) |
 | `app/styles.css` | Tokens de cor e tipografia (`RNF-09`) e a malha fluida que sustenta `RNF-05` de 320 px a 1920 px |
 | `app/scripts/serve_dist.sh` | Sobe servidor de arquivos estático sobre `dist/` para BDD e auditoria |
+| `app/scripts/check_links.sh` | Varre o `dist/` construído e falha se alguma ligação interna for absoluta (`RNF-10`) ou se alguma rota pública exigir mais de 2 cliques a partir da página inicial (`RNF-06`) |
 
 ### Arquivos fora de `app/` — exceção declarada
 
@@ -204,8 +233,15 @@ main_catalog.ts
                                            ├─ github_organization_client (RF-02, RF-06)
                                            ├─ assemble_catalog_use_case  (RF-04, RF-06, RF-07)
                                            └─ catalog_file_repository    (escreve catálogo e rotas)
-                                      └─ report_publication_status_use_case (RF-16)
-                                           └─ github_issue_client        (abre e encerra a questão)
+```
+
+**Fronteira da publicação — `make report`, roda no Node depois do fluxo inteiro.**
+
+```
+main_report.ts
+  └─ cli_ioc_init  →  cli_entry  →  report_publication_command   (recebe o desfecho por argumento)
+                                      └─ report_publication_status_use_case  (RF-16)
+                                           └─ github_issue_client   (abre e encerra a questão)
 ```
 
 **Tempo de visita — o navegador, sobre HTML já renderizado.**
@@ -225,9 +261,16 @@ entidades `Project` e `CodeRepository`. Nenhum componente vê DTO de API.
 `CatalogSourceError` dentro do cliente; curadoria sem resumo vira `CurationValidationError`
 dentro de `validate_curation_use_case`. Os dois sobem sem serem capturados até
 `generate_catalog_command`, que registra o erro estruturado pelo `logger_tool` e devolve código
-de saída diferente de zero — o que aborta a publicação e cumpre `RF-14`. Antes de sair, o
-comando aciona `report_publication_status_use_case`, que abre a questão no repositório do sítio
-se ainda não houver uma em aberto, e a encerra quando a publicação volta a concluir (`RF-16`). **No sítio não há
+de saída diferente de zero — o que aborta a publicação e cumpre `RF-14`.
+
+**O reporte de `RF-16` não pertence ao comando de catálogo.** A publicação aborta por mais de um
+motivo — catálogo indisponível, curadoria inválida, build que falha, prerender que não cobre uma
+rota — e um reporte disparado dentro de `make catalog` só enxergaria os dois primeiros. Pior:
+encerraria a questão aberta ao fim do passo de catálogo, quando a publicação ainda não concluiu,
+contradizendo o cenário *publicação bem-sucedida encerra a questão aberta*. Por isso o reporte é
+comando próprio, `report_publication_command`, acionado **na fronteira do fluxo de publicação** e
+sempre — tenha ele concluído ou falhado —, recebendo o desfecho por argumento. É o que torna
+`RF-16` verdadeiro para qualquer motivo de aborto. **No sítio não há
 tratamento de erro de obtenção**, porque no sítio não há obtenção: se o catálogo não existisse,
 o build teria falhado antes.
 
@@ -255,13 +298,14 @@ Versões verificadas no registro em 2026-08-30.
 
 ## Impacto no contrato de operação
 
-**Dois alvos novos no `Makefile`**, porque a feature tem duas obrigações que os catorze alvos
+**Três alvos novos no `Makefile`**, porque a feature tem obrigações que os catorze alvos
 existentes não cobrem:
 
 | Alvo | O que faz | Requisito |
 |---|---|---|
 | `make catalog` | Executa o gerador; escreve `catalog.generated.json` e `prerender-routes.txt`; **sai com código diferente de zero** se a curadoria for inválida ou o catálogo não puder ser obtido | RF-05, RF-14 |
-| `make audit` | Sobe `dist/` em servidor estático, roda Lighthouse CI e a varredura `axe` em cada rota pública, e falha abaixo dos limiares | RNF-01, RNF-02, RNF-03, RNF-09 |
+| `make audit` | Sobe `dist/` em servidor estático, roda Lighthouse CI e a varredura `axe` em cada rota pública, executa `check_links.sh`, e falha abaixo dos limiares | RNF-01, RNF-02, RNF-03, RNF-06, RNF-09, RNF-10 |
+| `make report` | Registra o desfecho da publicação: abre a questão em caso de aborto, encerra a existente em caso de sucesso. Acionado sempre ao fim do fluxo, qualquer que tenha sido o desfecho | RF-16 |
 
 > `RNF-05` não é alvo próprio: o cenário BDD *alcance de dispositivos* já o verifica, abrindo
 > cada rota pública em viewport de 320 px e afirmando ausência de rolagem horizontal. Medir a
@@ -291,6 +335,7 @@ basta para desenvolvimento local, mas não escreve questão.
 | Limite da API do GitHub estourado durante a publicação | baixa | Com a credencial de build autorizada pela emenda 1.0.1, o limite passa de 60 para 5000 requisições por hora, contra uma publicação que faz cerca de dez chamadas. Se ainda assim estourar, `RF-14` aborta, `RF-16` abre a questão e a versão anterior permanece no ar |
 | Convite do Discord expira e `RF-10` passa a apontar para lugar nenhum | média | Usar convite sem prazo de validade, e cobrir a existência das duas ligações no cenário BDD de `RF-10`. A validade do convite em si não é verificável por teste |
 | Questão de `RF-16` acumula duplicatas a cada publicação abortada em sequência | média | `report_publication_status_use_case` consulta as questões em aberto antes de abrir outra, e o cenário BDD afirma que nenhuma duplicata é criada enquanto a anterior seguir aberta |
+| `make report` deixa de ser chamado quando o fluxo de publicação é interrompido pela plataforma, e a questão não abre | baixa | O passo que aciona `make report` roda em condição de execução sempre, independente do desfecho dos anteriores. Interrupção do próprio executor está fora do alcance de qualquer desenho |
 | Nota 90 de SEO e Boas Práticas no Lighthouse em perfil móvel é exigente para páginas com muitas ligações externas | média | `seo_tool` garante título e descrição por rota desde o início; ligações externas com `rel` apropriado. A auditoria roda em `make validate`, então a regressão aparece no ato, não na publicação |
 | A curadoria envelhece: repositório novo aparece na organização e ninguém acrescenta a entrada | alta | Consequência aceita da inclusão explícita que você escolheu. `make catalog` registra em log estruturado os repositórios públicos com commits **ausentes** da curadoria, para que a omissão seja visível sem quebrar a publicação |
 | `dist/` prerenderizado não cobre uma rota nova e ela cai em 404 | baixa | `prerender-routes.txt` é gerado pelo mesmo passo que monta o catálogo, das mesmas entidades. Cenário BDD de `RF-15` abre a página de projeto por endereço direto |
@@ -302,13 +347,13 @@ basta para desenvolvimento local, mas não escreve questão.
 |---|---|
 | 1 — Contrato de operação | Nenhuma ferramenta é chamada direto: `ng`, `vitest`, `cucumber`, `lhci`, `eslint` e `prettier` só aparecem dentro de alvos do `Makefile`, executados por `docker compose exec dev`. Os dois alvos novos (`catalog`, `audit`) **estendem** o contrato e estão declarados acima; nenhum contorna. A emenda 1.0.1 acrescentou `audit` à cadeia do `make validate`, encerrando a contradição com o Princípio 9 |
 | 2 — Arquitetura limpa | `core/` não importa Angular, Node, `fs` nem HTTP — só entidades e interfaces. `adapters/` e `infra/` conhecem `core`; nunca o inverso. Componente não injeta `HttpClient` e não guarda regra: chama caso de uso. Desvio único e declarado: dois entrypoints, por haver dois tempos de execução |
-| 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os quatro inicializadores que a própria constituição tira da conta. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos sete blocos Gherkin da spec, sem reescrita |
+| 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os inicializadores e os três entrypoints que a própria constituição tira da conta. Os arquivos de integração e BDD estão enumerados em seção própria, e nenhum diretório de teste fora de `unit/`, `it/` e `bdd/` é criado. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos sete blocos Gherkin da spec, sem reescrita |
 | 4 — Simplicidade defensável | Quatro padrões aplicados, todos por problema presente; seis considerados e recusados, com o motivo registrado. Nenhuma biblioteca de estado, de DI ou de cache foi adicionada — as três seriam antecipação |
 | 5 — Autoria | Nenhum artefato deste plano credita ferramenta de IA. `.github/workflows/publish.yml` publica com o autor configurado no repositório |
 | 6 — Idioma | Spec, plano, tarefas e mensagens de commit em português do Brasil; cenários em `# language: pt`; identificadores de código em inglês; conteúdo do sítio em pt-BR por `RNF-07` |
 | 7 — Publicação estática | `outputMode: "static"` e `prerender.routesFile` — o build produz diretório servível por qualquer servidor de arquivos, e `make bdd` prova isso servindo `dist/` com servidor de arquivos puro. Nenhum SSR, nenhuma função de servidor, nenhuma reescrita de rota. `RF-12` vira `404.html` estático. A emenda 1.0.1 autorizou expressamente a credencial de build que não entra no artefato, e o `GITHUB_TOKEN` de `make catalog` é exatamente esse caso: ele constrói a página e não chega ao visitante |
 | 8 — O catálogo deriva do GitHub | Todo dado exibido nasce em `github_organization_client`; nenhum componente carrega texto de projeto. A curadoria vive em `app/data/curation.json`, versionada e fora do código, e cada entrada referencia o repositório que descreve. `assemble_catalog_use_case` exclui privado, arquivado e vazio ainda que a curadoria os declare |
-| 9 — Acessibilidade e performance medidas | `make audit` roda headless e entra em `make validate`. Lighthouse ≥ 90 nas quatro categorias em perfil móvel; `axe` falhando em violação crítica ou séria; `budgets` do builder cobrindo `RNF-04`; `RNF-05` verificado por viewport de 320 px no BDD; `RF-13` anuncia a contagem por região viva, o que é o que faz a restrição de `RF-11` existir para quem usa leitor de tela |
+| 9 — Acessibilidade e performance medidas | `make audit` roda headless e entra em `make validate`. Lighthouse ≥ 90 nas quatro categorias em perfil móvel; `axe` falhando em violação crítica ou séria; `budgets` do builder cobrindo `RNF-04`; `RNF-05` verificado por viewport de 320 px no BDD; `RF-13` anuncia a contagem por região viva, o que é o que faz a restrição de `RF-11` existir para quem usa leitor de tela. `check_links.sh` fecha `RNF-06` e `RNF-10` sobre o `dist/` construído, e `total-byte-weight` mede `RNF-04` em bytes de rede, que é a unidade que o requisito pede |
 
 ### Emendas à constituição — aplicadas
 
