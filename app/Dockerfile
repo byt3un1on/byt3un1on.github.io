@@ -13,7 +13,13 @@ RUN apt-get update \
 RUN npx --yes playwright@1.62.1 install --with-deps chromium \
  && rm -rf /root/.npm
 
-ENV CHROME_PATH=/ms-playwright
+# CHROME_PATH precisa apontar para o binario, e nao para o diretorio: o
+# Lighthouse o executa direto, e um diretorio falha com EACCES. O caminho e
+# resolvido no build porque carrega a versao do Chromium que o Playwright baixou.
+RUN printf 'export CHROME_PATH=%s\n' "$(find /ms-playwright -name chrome -type f | head -1)" \
+      > /etc/profile.d/chrome_path.sh \
+ && ln -sf "$(find /ms-playwright -name chrome -type f | head -1)" /usr/local/bin/chrome
+ENV CHROME_PATH=/usr/local/bin/chrome
 
 WORKDIR /app
 

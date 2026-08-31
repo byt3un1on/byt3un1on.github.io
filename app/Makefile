@@ -53,15 +53,22 @@ it:
 	# paralelo resetariam os stubs uns dos outros.
 	$(DEV) npx vitest run tests/it/$(ARG) --coverage.enabled=false --no-file-parallelism
 
-bdd: build
+# Depende de audit porque o cenario de RNF-01 e RNF-03 afirma sobre o relatorio
+# do Lighthouse que o audit produz. A dependencia e de dado, nao de gosto.
+bdd: build audit
 	$(COMPOSE) up -d wiremock
-	$(DEV) npx cucumber-js $(if $(ARG),tests/bdd/features/$(ARG),)
+	# Servidor de arquivos puro sobre o dist: se o sitio funciona aqui, funciona
+	# no Pages, e o Principio 7 fica provado pela propria suite.
+	$(DEV) sh -c 'sh scripts/serve_dist.sh --wait \
+	  && NODE_OPTIONS=--experimental-transform-types npx cucumber-js $(if $(ARG),tests/bdd/features/$(ARG),tests/bdd/features) \
+	    --import "tests/bdd/support/**/*.ts" --import "tests/bdd/steps/**/*.ts"; \
+	  RC=$$?; pkill -f http-server || true; exit $$RC'
 
-audit:
-	$(DEV) sh scripts/serve_dist.sh --wait
+# Nao chama cucumber: a varredura axe vive em tests/bdd/steps/browser, sob o
+# alvo bdd. Se audit a chamasse, os dois alvos se chamariam em circulo.
+audit: build
 	$(DEV) npx lhci autorun --config=lighthouserc.json
 	$(DEV) sh scripts/check_links.sh
-	$(DEV) npx cucumber-js --tags @navegador --name "qualidade"
 
 report:
 	$(DEV) $(NODETS) main_report.ts $(ARG)

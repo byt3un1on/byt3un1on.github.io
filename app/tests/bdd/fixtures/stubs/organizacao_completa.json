@@ -1,0 +1,53 @@
+[
+  {
+    "request": { "method": "GET", "urlPath": "/orgs/byt3un1on/repos" },
+    "response": {
+      "status": 200,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": [
+        {
+          "name": "shortsmaker-api",
+          "description": "API do Shortsmaker",
+          "html_url": "https://github.com/byt3un1on/shortsmaker-api",
+          "homepage": null,
+          "language": "Python",
+          "private": false,
+          "archived": false,
+          "pushed_at": "2026-01-14T05:31:18Z"
+        },
+        {
+          "name": "niche-scout",
+          "description": null,
+          "html_url": "https://github.com/byt3un1on/niche-scout",
+          "homepage": null,
+          "language": null,
+          "private": true,
+          "archived": false,
+          "pushed_at": "2026-08-28T22:49:52Z"
+        },
+        {
+          "name": "documentation-site",
+          "description": "Site para reunir documentacao da Byt3Union.",
+          "html_url": "https://github.com/byt3un1on/documentation-site",
+          "homepage": null,
+          "language": null,
+          "private": false,
+          "archived": false,
+          "pushed_at": "2025-10-25T22:18:45Z"
+        }
+      ]
+    }
+  },
+  {
+    "request": { "method": "GET", "urlPath": "/repos/byt3un1on/shortsmaker-api/commits" },
+    "response": { "status": 200, "headers": { "Content-Type": "application/json" }, "jsonBody": [{ "sha": "abc123" }] }
+  },
+  {
+    "request": { "method": "GET", "urlPath": "/repos/byt3un1on/niche-scout/commits" },
+    "response": { "status": 200, "headers": { "Content-Type": "application/json" }, "jsonBody": [{ "sha": "def456" }] }
+  },
+  {
+    "request": { "method": "GET", "urlPath": "/repos/byt3un1on/documentation-site/commits" },
+    "response": { "status": 409, "headers": { "Content-Type": "application/json" }, "jsonBody": { "message": "Git Repository is empty." } }
+  }
+]
