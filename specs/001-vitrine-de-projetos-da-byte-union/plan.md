@@ -37,12 +37,13 @@ foram verificadas no registro em 2026-08-30, não presumidas.
 | Gateway / Adapter | `github_organization_client` | Isola o formato da API do GitHub do domínio, e é o ponto onde o WireMock entra nos testes de integração | Um DTO de tradução a mais |
 | Injeção de dependências | `ioc_init` (sítio), `cli_ioc_init` (gerador) | Toda dependência injetada precisa ser mockável para o teste unitário isolar a classe | Registro central a manter em dia |
 | Value Object | `Project`, `CodeRepository` | O agrupamento de vários repositórios em um projeto (`RF-07`) é regra, e regra não mora em componente | Mapeamento explícito de DTO para entidade |
+| Strategy | `world.ts` escolhendo entre `browser_driver` e `process_driver` | 19 cenários precisam de navegador e 9 precisam de processo, e o passo não pode saber qual dos dois está sob ele | Duas implementações a manter, e uma etiqueta por cenário no `.feature` |
 
 ### Considerados e recusados
 
 | Padrão | Por que foi recusado |
 |---|---|
-| Strategy no filtro por tecnologia | `RF-11` tem **um** critério. Estratégia intercambiável para uma estratégia só é indireção sem problema presente |
+| Strategy no filtro por tecnologia | `RF-11` tem **um** critério. Estratégia intercambiável para uma estratégia só é indireção sem problema presente. Note que o padrão **é** aplicado no `World` do BDD, onde há de fato duas implementações intercambiáveis — o que se recusa aqui é usá-lo onde há uma só |
 | Store global (NgRx, Signal Store) | O catálogo é imutável e conhecido em build. Estado de servidor não existe aqui — não há o que sincronizar, invalidar ou recarregar |
 | Decorator de cache no cliente HTTP | O cliente é chamado uma vez por publicação, dentro de um processo que morre em seguida. Cache não tem o que amortizar |
 | Factory para as entidades | Construção direta resolve. Fábrica entraria para escolher entre implementações que não existem |
@@ -212,6 +213,33 @@ que nenhum apareça só nas tarefas.
 | `app/tests/bdd/steps/process/publication_steps.ts` | Processo — curadoria inválida, inelegibilidade, aborto e questão: `RF-05`, `RF-06`, `RF-14`, `RF-16` |
 | `app/tests/bdd/steps/process/audit_steps.ts` | Processo — execução do Lighthouse e leitura dos limiares: `RNF-01`, `RNF-03`, `RNF-04` |
 
+**Fixtures dos cenários de processo.** Os 9 cenários `@processo` executam o gerador de verdade, e
+precisam de dois insumos que não podem vir da produção: a curadoria e a resposta da API.
+
+| Arquivo | Estado que representa | Cenário |
+|---|---|---|
+| `app/tests/bdd/fixtures/curation/valida.json` | curadoria íntegra, com resumo em toda entrada | `RF-14`, `RF-16` |
+| `app/tests/bdd/fixtures/curation/sem_resumo.json` | entrada sem resumo escrito | `RF-05` |
+| `app/tests/bdd/fixtures/curation/referencia_inexistente.json` | entrada apontando repositório que não existe na organização | `RF-05` |
+| `app/tests/bdd/fixtures/curation/repositorio_repetido.json` | mesmo repositório declarado em dois projetos | `RF-05` |
+| `app/tests/bdd/fixtures/curation/declara_inelegiveis.json` | curadoria que declara repositório privado e repositório sem commit | `RF-06` |
+| `app/tests/bdd/fixtures/stubs/organizacao_completa.json` | listagem da organização respondendo por inteiro, com privado e vazio incluídos | `RF-05`, `RF-06`, `RF-16` |
+| `app/tests/bdd/fixtures/stubs/organizacao_indisponivel.json` | listagem que falha no meio da obtenção | `RF-14` |
+| `app/tests/bdd/fixtures/stubs/questoes_sem_aberta.json` | API de questões sem nenhuma questão aberta | `RF-16` — abertura |
+| `app/tests/bdd/fixtures/stubs/questoes_com_aberta.json` | API de questões com uma já aberta | `RF-16` — encerramento e ausência de duplicata |
+
+> **As fixtures do BDD são próprias, e não compartilhadas com `app/tests/it/stubs/`.** As duas
+> suítes simulam a mesma API por motivos diferentes: a integração prova o **contrato do cliente**
+> — forma da resposta, tradução de erro —, enquanto o BDD arma **estados de mundo** para o
+> gerador atravessar. Compartilhar acoplaria as duas, e ajustar um estado para um cenário
+> quebraria um teste de contrato que não pediu nada. Arquivo de stub é barato; acoplamento entre
+> suítes, não.
+
+> **`app/data/curation.json` é a curadoria de produção e nenhum cenário a lê ou escreve.** Se o
+> BDD dependesse dela, editar a vitrine passaria a quebrar teste — e o teste deixaria de ser
+> repetível, contrariando o F.I.R.S.T. O motor de processo recebe o caminho da curadoria por
+> configuração, como recebe o diretório de saída.
+
 > **Não existe `app/tests/audit/`.** O Princípio 2 declara três diretórios de teste — `unit/`,
 > `it/` e `bdd/` — e a auditoria não precisa de um quarto: os cenários de qualidade já estão
 > escritos em Gherkin na spec, então o `axe` entra como passo de `browser/quality_steps.ts` e o
@@ -374,6 +402,7 @@ basta para desenvolvimento local, mas não escreve questão.
 | Limite da API do GitHub estourado durante a publicação | baixa | Com a credencial de build autorizada pela emenda 1.0.1, o limite passa de 60 para 5000 requisições por hora, contra uma publicação que faz cerca de dez chamadas. Se ainda assim estourar, `RF-14` aborta, `RF-16` abre a questão e a versão anterior permanece no ar |
 | Convite do Discord expira e `RF-10` passa a apontar para lugar nenhum | média | Usar convite sem prazo de validade, e cobrir a existência das duas ligações no cenário BDD de `RF-10`. A validade do convite em si não é verificável por teste |
 | Questão de `RF-16` acumula duplicatas a cada publicação abortada em sequência | média | `report_publication_status_use_case` consulta as questões em aberto antes de abrir outra, e o cenário BDD afirma que nenhuma duplicata é criada enquanto a anterior seguir aberta |
+| O cenário de `RF-14` afirma que a versão anterior *permanece no ar*, e o motor roda em diretório isolado | média | O cenário prova o que é provável sem publicar: que a saída anterior não foi substituída e que o código de saída aborta o fluxo. Que um sítio publicado siga servindo é garantia do GitHub Pages, que só troca o conteúdo quando recebe uma publicação — e essa publicação não acontece porque o passo anterior falhou. O limite fica registrado para não virar falsa confiança |
 | O motor de processo do BDD sobrescreve o catálogo que os cenários de navegador estão exercitando | média | O motor roda o gerador com diretório de trabalho e caminhos de saída próprios, recebidos por configuração — o mesmo mecanismo que `config_tool` já expõe. Nenhum cenário escreve onde outro lê, e a ordem de execução deixa de importar |
 | `make report` deixa de ser chamado quando o fluxo de publicação é interrompido pela plataforma, e a questão não abre | baixa | O passo que aciona `make report` roda em condição de execução sempre, independente do desfecho dos anteriores. Interrupção do próprio executor está fora do alcance de qualquer desenho |
 | Nota 90 de SEO e Boas Práticas no Lighthouse em perfil móvel é exigente para páginas com muitas ligações externas | média | `seo_tool` garante título e descrição por rota desde o início; ligações externas com `rel` apropriado. A auditoria roda em `make validate`, então a regressão aparece no ato, não na publicação |
