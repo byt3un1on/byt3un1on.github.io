@@ -21,7 +21,8 @@ foram verificadas no registro em 2026-08-30, não presumidas.
 | Runtime de execução | Node 24 na imagem do serviço `dev` | Node 22 local (v22.12.0) | `@angular/cli@22.1.6` exige `^22.22.3 \|\| ^24.15.0 \|\| >=26.0.0`. O Node da máquina está **abaixo** do mínimo — mais uma razão para tudo passar pelo serviço `dev` |
 | Runner de teste unitário | Builder `@angular/build:unit-test` com `runner: vitest` (Vitest 4.1.11) | Karma (depreciado); Jest via runner de terceiro; Vitest configurado à mão fora do Angular | O builder é oficial, tem `coverage`, `coverageThresholds` e `coverageExclude` nativos — é o que sustenta o portão de 90% sem script auxiliar. Está marcado `[EXPERIMENTAL]`; ver *Riscos* |
 | Consulta em teste de componente | Angular Testing Library 19.4.2 sobre `TestBed` | `fixture.debugElement.query(By.css(...))` | `angular-rules` e `frontend-rules` mandam consultar por papel e nome acessível. Consulta por papel também é o que faz o teste falhar quando a acessibilidade regride |
-| Teste BDD | Cucumber 13.2.1 dirigindo Playwright 1.62.1 contra o `dist/` servido estaticamente | Cypress; Playwright sem Cucumber | `frontend-rules` manda Cucumber com `# language: pt`. Servir o `dist/` estático faz o BDD provar, de graça, a exigência do Princípio 7 de que a saída é servível por servidor de arquivos |
+| Teste BDD | Cucumber 13.2.1 com **dois motores** no mesmo `World`: navegador (Playwright 1.62.1 sobre o `dist/` servido) e processo (execução real dos alvos de publicação contra WireMock) | Um motor só, de navegador; Cypress; Playwright sem Cucumber | Dos 28 cenários da spec, **19 abrem página e 9 não abrem nenhuma**: `RF-05`, `RF-06`, `RF-14`, `RF-16` e os limiares de `RNF-01`/`RNF-03` exercitam o processo de publicação, não a interface. Um motor só de navegador os transformaria em encenação. `frontend-rules` manda Cucumber com `# language: pt`; servir o `dist/` estático prova de graça a exigência do Princípio 7 |
+| Isolamento do motor de processo | O gerador roda com diretório de trabalho e caminhos de saída próprios, recebidos por configuração | Deixar o motor de processo escrever nos caminhos reais | O motor de processo executa o gerador de verdade. Se escrevesse em `app/data/catalog.generated.json`, sobrescreveria o catálogo que os cenários de navegador estão exercitando na mesma suíte, e a ordem dos cenários passaria a mudar o resultado — o oposto de teste independente |
 | Medição de `RNF-01` a `RNF-03` | Lighthouse CI 0.15.1 com asserções por categoria | Medição manual; PageSpeed via API externa | Precisa rodar headless e falhar o portão. A API externa exigiria rede e um sítio já publicado |
 | Medição de `RNF-02` e `RNF-09` | `@axe-core/playwright` 4.13.0, falhando em violação `critical` ou `serious` | Só o índice de acessibilidade do Lighthouse | O Lighthouse dá nota agregada; o Princípio 9 exige **0** violação crítica ou séria, que é asserção por regra, não por nota |
 | Peso da entrega (`RNF-04`) | `budgets` do builder `application` | Medir por script após o build | O builder já falha o build ao estourar o orçamento. Não se escreve o que a ferramenta faz |
@@ -194,7 +195,9 @@ que nenhum apareça só nas tarefas.
 | `app/tests/it/adapters/repositories/curation_repository_test_integration.ts` | `RF-04`, `RF-05` contra arquivo real |
 | `app/tests/it/adapters/repositories/catalog_file_repository_test_integration.ts` | `RF-08`, `RF-15` — catálogo e lista de rotas escritos em disco real |
 | `app/tests/it/adapters/repositories/static_catalog_repository_test_integration.ts` | `RF-02`, `RNF-08` — leitura do catálogo gerado, sem rede |
-| `app/tests/bdd/support/world.ts` | Cucumber sobre Playwright, apontado ao `dist/` servido estaticamente |
+| `app/tests/bdd/support/world.ts` | O `World` do Cucumber, que expõe os dois motores aos passos e decide qual cada cenário usa |
+| `app/tests/bdd/support/browser_driver.ts` | Motor de navegador: Playwright sobre o `dist/` servido estaticamente |
+| `app/tests/bdd/support/process_driver.ts` | Motor de processo: executa os alvos de publicação em diretório isolado, contra WireMock, e expõe código de saída, arquivos gerados e chamadas capturadas |
 | `app/tests/bdd/features/apresentacao_da_oficina.feature` | `RF-01` |
 | `app/tests/bdd/features/catalogo_de_projetos.feature` | `RF-02`, `RF-03`, `RF-04`, `RF-06`, `RF-07`, `RF-11`, `RF-13` |
 | `app/tests/bdd/features/curadoria_do_catalogo.feature` | `RF-04`, `RF-05` |
@@ -203,14 +206,28 @@ que nenhum apareça só nas tarefas.
 | `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature` | `RF-14`, `RF-16`, `RNF-08` |
 | `app/tests/bdd/features/resiliencia_e_bordas.feature` | `RF-12` |
 | `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` | `RNF-01`, `RNF-02`, `RNF-03`, `RNF-05`, `RNF-07` |
-| `app/tests/bdd/steps/catalog_steps.ts` | Passos do catálogo, da curadoria e do aprofundamento |
-| `app/tests/bdd/steps/publication_steps.ts` | Passos de frescura, integridade e resiliência |
-| `app/tests/bdd/steps/accessibility_steps.ts` | Passos de qualidade medida — **é aqui que a varredura `axe` vive** |
+| `app/tests/bdd/steps/browser/catalog_steps.ts` | Navegador — catálogo, curadoria vista pelo visitante e aprofundamento: `RF-02`, `RF-03`, `RF-04`, `RF-07`, `RF-08`, `RF-09`, `RF-11`, `RF-13`, `RF-15` |
+| `app/tests/bdd/steps/browser/site_steps.ts` | Navegador — apresentação, contato e endereço inexistente: `RF-01`, `RF-10`, `RF-12` |
+| `app/tests/bdd/steps/browser/quality_steps.ts` | Navegador — teclado, viewport, idioma e ausência de requisição à API: `RNF-02`, `RNF-05`, `RNF-07`, `RNF-08`, `RNF-09`. **É aqui que a varredura `axe` vive** |
+| `app/tests/bdd/steps/process/publication_steps.ts` | Processo — curadoria inválida, inelegibilidade, aborto e questão: `RF-05`, `RF-06`, `RF-14`, `RF-16` |
+| `app/tests/bdd/steps/process/audit_steps.ts` | Processo — execução do Lighthouse e leitura dos limiares: `RNF-01`, `RNF-03`, `RNF-04` |
 
 > **Não existe `app/tests/audit/`.** O Princípio 2 declara três diretórios de teste — `unit/`,
 > `it/` e `bdd/` — e a auditoria não precisa de um quarto: os cenários de qualidade já estão
-> escritos em Gherkin na spec, então o `axe` entra como passo de `accessibility_steps.ts` e o
-> Lighthouse como asserção de `lighthouserc.json`, ambos disparados por `make audit`.
+> escritos em Gherkin na spec, então o `axe` entra como passo de `browser/quality_steps.ts` e o
+> Lighthouse como passo de `process/audit_steps.ts` sobre `lighthouserc.json`.
+
+> **Como o `World` escolhe o motor.** Um mesmo arquivo `.feature` mistura os dois — a
+> funcionalidade *Curadoria do catálogo* tem `RF-04` de navegador e `RF-05` de processo. Por isso
+> a escolha é **por cenário, via etiqueta** `@navegador` ou `@processo` no `.feature`, e o `World`
+> inicializa **apenas** o motor etiquetado, de forma preguiçosa. Sem isso, cada cenário de
+> processo subiria um navegador que não usa. A etiqueta é metadado do arquivo de teste: **o texto
+> do cenário permanece idêntico ao da spec**, palavra por palavra.
+
+> **A divisão dos arquivos de passo segue o motor, não o tema.** Tema corta o motor ao meio —
+> *resiliência*, por exemplo, reúne o 404 do `RF-12`, que é navegador, e o aborto do `RF-14`, que
+> é processo. Arquivo de passo que precisa dos dois motores é arquivo que nenhum dos dois
+> consegue preparar sozinho.
 
 ### Configuração e infraestrutura do projeto
 
@@ -334,11 +351,14 @@ existentes não cobrem:
 
 - `make build` passa a depender de `make catalog` — sem catálogo não há o que prerenderizar.
 - `make validate` passa a encadear `fmt → lint → test → cover → it → bdd → audit`.
-- `make bdd` sobe o `dist/` estático e roda Cucumber sobre ele, em vez de apontar para o
-  servidor de desenvolvimento.
+- `make bdd` passa a exigir **duas** dependências, porque a suíte tem dois motores: o `dist/`
+  construído e servido por servidor de arquivos, para os 19 cenários de navegador, e o serviço
+  `wiremock` de pé, para os 9 cenários de processo, que executam o gerador de verdade contra a
+  API simulada. Sem o WireMock o alvo não roda — e ele está dentro de `make validate`.
 
 **Serviços do compose:** `dev` (imagem única, ociosa, com o código montado por volume) e
-`wiremock` (`wiremock/wiremock:3.13.2`, alvo dos testes de integração do cliente do GitHub).
+`wiremock` (`wiremock/wiremock:3.13.2`), consumido por **`make it` e `make bdd`** — pelos testes
+de integração dos clientes e pelos cenários de processo do BDD.
 
 **Variável de ambiente nova:** `GITHUB_TOKEN`, credencial de build fornecida pelo ambiente de
 integração e consumida por `make catalog` para ler a organização e escrever a questão de
@@ -354,6 +374,7 @@ basta para desenvolvimento local, mas não escreve questão.
 | Limite da API do GitHub estourado durante a publicação | baixa | Com a credencial de build autorizada pela emenda 1.0.1, o limite passa de 60 para 5000 requisições por hora, contra uma publicação que faz cerca de dez chamadas. Se ainda assim estourar, `RF-14` aborta, `RF-16` abre a questão e a versão anterior permanece no ar |
 | Convite do Discord expira e `RF-10` passa a apontar para lugar nenhum | média | Usar convite sem prazo de validade, e cobrir a existência das duas ligações no cenário BDD de `RF-10`. A validade do convite em si não é verificável por teste |
 | Questão de `RF-16` acumula duplicatas a cada publicação abortada em sequência | média | `report_publication_status_use_case` consulta as questões em aberto antes de abrir outra, e o cenário BDD afirma que nenhuma duplicata é criada enquanto a anterior seguir aberta |
+| O motor de processo do BDD sobrescreve o catálogo que os cenários de navegador estão exercitando | média | O motor roda o gerador com diretório de trabalho e caminhos de saída próprios, recebidos por configuração — o mesmo mecanismo que `config_tool` já expõe. Nenhum cenário escreve onde outro lê, e a ordem de execução deixa de importar |
 | `make report` deixa de ser chamado quando o fluxo de publicação é interrompido pela plataforma, e a questão não abre | baixa | O passo que aciona `make report` roda em condição de execução sempre, independente do desfecho dos anteriores. Interrupção do próprio executor está fora do alcance de qualquer desenho |
 | Nota 90 de SEO e Boas Práticas no Lighthouse em perfil móvel é exigente para páginas com muitas ligações externas | média | `seo_tool` garante título e descrição por rota desde o início; ligações externas com `rel` apropriado. A auditoria roda em `make validate`, então a regressão aparece no ato, não na publicação |
 | A curadoria envelhece: repositório novo aparece na organização e ninguém acrescenta a entrada | alta | Consequência aceita da inclusão explícita que você escolheu. `make catalog` registra em log estruturado os repositórios públicos com commits **ausentes** da curadoria, para que a omissão seja visível sem quebrar a publicação |
@@ -366,7 +387,7 @@ basta para desenvolvimento local, mas não escreve questão.
 |---|---|
 | 1 — Contrato de operação | Nenhuma ferramenta é chamada direto: `ng`, `vitest`, `cucumber`, `lhci`, `eslint` e `prettier` só aparecem dentro de alvos do `Makefile`, executados por `docker compose exec dev`. Os dois alvos novos (`catalog`, `audit`) **estendem** o contrato e estão declarados acima; nenhum contorna. A emenda 1.0.1 acrescentou `audit` à cadeia do `make validate`, encerrando a contradição com o Princípio 9 |
 | 2 — Arquitetura limpa | `core/` não importa Angular, Node, `fs` nem HTTP — só entidades e interfaces. `adapters/` e `infra/` conhecem `core`; nunca o inverso. Componente não injeta `HttpClient` e não guarda regra: chama caso de uso. Desvio único e declarado: dois entrypoints, por haver dois tempos de execução |
-| 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os seis arquivos de fiação isentos pela emenda 1.0.2, cuja isenção está provada item a item na tabela acima — a regra que cada um poderia carregar mora em arquivo testado. Os arquivos de integração e BDD estão enumerados em seção própria, e nenhum diretório de teste fora de `unit/`, `it/` e `bdd/` é criado. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos sete blocos Gherkin da spec, sem reescrita |
+| 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os seis arquivos de fiação isentos pela emenda 1.0.2, cuja isenção está provada item a item na tabela acima — a regra que cada um poderia carregar mora em arquivo testado. Os arquivos de integração e BDD estão enumerados em seção própria, e nenhum diretório de teste fora de `unit/`, `it/` e `bdd/` é criado. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos oito blocos Gherkin da spec, sem reescrita, com dois motores porque 9 dos 28 cenários exercitam a publicação e não a interface — cada arquivo de passo pertence a um motor só |
 | 4 — Simplicidade defensável | Quatro padrões aplicados, todos por problema presente; seis considerados e recusados, com o motivo registrado. Nenhuma biblioteca de estado, de DI ou de cache foi adicionada — as três seriam antecipação |
 | 5 — Autoria | Nenhum artefato deste plano credita ferramenta de IA. `.github/workflows/publish.yml` publica com o autor configurado no repositório |
 | 6 — Idioma | Spec, plano, tarefas e mensagens de commit em português do Brasil; cenários em `# language: pt`; identificadores de código em inglês; conteúdo do sítio em pt-BR por `RNF-07` |
