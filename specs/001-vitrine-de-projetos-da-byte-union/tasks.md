@@ -141,8 +141,8 @@
 
 ## Fase 6 — Curadoria e publicação
 
-- [ ] T118 [P] Escrever `app/data/curation.json` com as entradas curadas, cada uma com resumo obrigatório, sem `shared-claude-plugin` e com os cinco `shortsmaker-*` num único projeto
-- [ ] T119 [P] Criar `.github/workflows/publish.yml` com publicação agendada diária, `make catalog` antes do build, aborto preservando a versão anterior, e `make report` acionado ao fim em qualquer desfecho
+- [x] T118 [P] Escrever `app/data/curation.json` com as entradas curadas, cada uma com resumo obrigatório, sem `shared-claude-plugin` e com os cinco `shortsmaker-*` num único projeto
+- [x] T119 [P] Criar `.github/workflows/publish.yml` com publicação agendada diária, `make catalog` antes do build, aborto preservando a versão anterior, e `make report` acionado ao fim em qualquer desfecho
 
 ## Fase 7 — Integração
 

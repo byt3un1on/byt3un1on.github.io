@@ -15,7 +15,18 @@ fi
 falhas=0
 
 # --- RNF-10: ligacao interna absoluta e defeito -----------------------------
-absolutas=$(grep -rlE "(href|src)=\"https?://$HOST" "$DIST" --include='*.html' 2>/dev/null || true)
+# Ligacao externa e marcada com rel="noopener" pelos componentes, e por isso e
+# distinguivel da navegacao interna. A distincao importa: o endereco publicado
+# de um projeto pode apontar para este mesmo host — e o caso da propria vitrine
+# no catalogo — sem que isso seja navegacao interna escrita de forma absoluta.
+absolutas=""
+for arq in $(find "$DIST" -name '*.html'); do
+  suspeitas=$(grep -o '<a[^>]*>' "$arq" 2>/dev/null \
+    | grep -v 'rel="noopener"' \
+    | grep -E "href=\"https?://$HOST" || true)
+  [ -z "$suspeitas" ] || absolutas="$absolutas$arq\n"
+done
+absolutas=$(printf '%b' "$absolutas" | sed '/^$/d')
 if [ -n "$absolutas" ]; then
   echo "RNF-10 REPROVADO — ligacao interna absoluta apontando para $HOST em:" >&2
   echo "$absolutas" | sed 's/^/  /' >&2
