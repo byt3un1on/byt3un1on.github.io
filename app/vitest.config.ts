@@ -17,6 +17,7 @@ export default defineConfig({
         'infra/init/ioc_init.ts',
         'infra/init/cli_ioc_init.ts',
         'infra/init/web_init.ts',
+        'infra/init/web_server.ts',
       ],
       thresholds: {
         perFile: true,
