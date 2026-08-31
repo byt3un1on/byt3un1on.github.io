@@ -110,34 +110,34 @@
 
 ## Fase 5 — Apresentação
 
-- [ ] T090 [P] Teste unitário de `app/infra/tools/seo_tool.ts` em `app/tests/unit/infra/tools/seo_tool.test.ts`
-- [ ] T091 [P] Implementar `app/infra/tools/seo_tool.ts` — depende do teste anterior
-- [ ] T092 [P] Teste unitário de `app/adapters/repositories/static_catalog_repository.ts` em `app/tests/unit/adapters/repositories/static_catalog_repository.test.ts`
-- [ ] T093 [P] Implementar `app/adapters/repositories/static_catalog_repository.ts` — depende do teste anterior
-- [ ] T094 [P] Teste unitário de `app/infra/init/web_routes.ts` em `app/tests/unit/infra/init/web_routes.test.ts`
-- [ ] T095 [P] Implementar `app/infra/init/web_routes.ts` — depende do teste anterior
-- [ ] T096 [P] Teste unitário de `app/adapters/presenters/layout/site-header.component.ts` em `app/tests/unit/adapters/presenters/layout/site-header.component.test.ts`
-- [ ] T097 [P] Implementar `app/adapters/presenters/layout/site-header.component.ts` — depende do teste anterior
-- [ ] T098 [P] Teste unitário de `app/adapters/presenters/layout/site-footer.component.ts` em `app/tests/unit/adapters/presenters/layout/site-footer.component.test.ts`
-- [ ] T099 [P] Implementar `app/adapters/presenters/layout/site-footer.component.ts` — depende do teste anterior
-- [ ] T100 [P] Teste unitário de `app/adapters/presenters/layout/site-shell.component.ts` em `app/tests/unit/adapters/presenters/layout/site-shell.component.test.ts`
-- [ ] T101 [P] Implementar `app/adapters/presenters/layout/site-shell.component.ts` — depende do teste anterior
-- [ ] T102 [P] Teste unitário de `app/adapters/presenters/home/home-page.component.ts` em `app/tests/unit/adapters/presenters/home/home-page.component.test.ts`
-- [ ] T103 [P] Implementar `app/adapters/presenters/home/home-page.component.ts` — depende do teste anterior
-- [ ] T104 [P] Teste unitário de `app/adapters/presenters/catalog/project-card.component.ts` em `app/tests/unit/adapters/presenters/catalog/project-card.component.test.ts`
-- [ ] T105 [P] Implementar `app/adapters/presenters/catalog/project-card.component.ts` — depende do teste anterior
-- [ ] T106 [P] Teste unitário de `app/adapters/presenters/catalog/technology-filter.component.ts` em `app/tests/unit/adapters/presenters/catalog/technology-filter.component.test.ts`
-- [ ] T107 [P] Implementar `app/adapters/presenters/catalog/technology-filter.component.ts` — depende do teste anterior
-- [ ] T108 [P] Teste unitário de `app/adapters/presenters/catalog/catalog-page.component.ts` em `app/tests/unit/adapters/presenters/catalog/catalog-page.component.test.ts`
-- [ ] T109 [P] Implementar `app/adapters/presenters/catalog/catalog-page.component.ts` — depende do teste anterior
-- [ ] T110 [P] Teste unitário de `app/adapters/presenters/project/project-page.component.ts` em `app/tests/unit/adapters/presenters/project/project-page.component.test.ts`
-- [ ] T111 [P] Implementar `app/adapters/presenters/project/project-page.component.ts` — depende do teste anterior
-- [ ] T112 [P] Teste unitário de `app/adapters/presenters/error/not-found-page.component.ts` em `app/tests/unit/adapters/presenters/error/not-found-page.component.test.ts`
-- [ ] T113 [P] Implementar `app/adapters/presenters/error/not-found-page.component.ts` — depende do teste anterior
-- [ ] T114 [P] Criar `app/infra/init/ioc_init.ts` com os provedores Angular ligando cada interface à implementação — isento de cobertura, sem condição a decidir
-- [ ] T115 [P] Criar `app/infra/init/web_init.ts`, que compõe a configuração e entrega ao framework o roteamento já declarado em `app/infra/init/web_routes.ts` — isento de cobertura, sem regra própria
-- [ ] T116 [P] Criar `app/infra/init/web_server.ts`, entrypoint que o builder usa para renderizar em build — não responde requisição e não vai ao artefato publicado; isento de cobertura
-- [ ] T117 [P] Criar `app/main.ts`: sobe o Angular pelo inicializador montando `app/adapters/presenters/layout/site-shell.component.ts`, sem regra de negócio
+- [x] T090 [P] Teste unitário de `app/infra/tools/seo_tool.ts` em `app/tests/unit/infra/tools/seo_tool.test.ts`
+- [x] T091 [P] Implementar `app/infra/tools/seo_tool.ts` — depende do teste anterior
+- [x] T092 [P] Teste unitário de `app/adapters/repositories/static_catalog_repository.ts` em `app/tests/unit/adapters/repositories/static_catalog_repository.test.ts`
+- [x] T093 [P] Implementar `app/adapters/repositories/static_catalog_repository.ts` — depende do teste anterior
+- [x] T094 [P] Teste unitário de `app/infra/init/web_routes.ts` em `app/tests/unit/infra/init/web_routes.test.ts`
+- [x] T095 [P] Implementar `app/infra/init/web_routes.ts` — depende do teste anterior
+- [x] T096 [P] Teste unitário de `app/adapters/presenters/layout/site-header.component.ts` em `app/tests/unit/adapters/presenters/layout/site-header.component.test.ts`
+- [x] T097 [P] Implementar `app/adapters/presenters/layout/site-header.component.ts` — depende do teste anterior
+- [x] T098 [P] Teste unitário de `app/adapters/presenters/layout/site-footer.component.ts` em `app/tests/unit/adapters/presenters/layout/site-footer.component.test.ts`
+- [x] T099 [P] Implementar `app/adapters/presenters/layout/site-footer.component.ts` — depende do teste anterior
+- [x] T100 [P] Teste unitário de `app/adapters/presenters/layout/site-shell.component.ts` em `app/tests/unit/adapters/presenters/layout/site-shell.component.test.ts`
+- [x] T101 [P] Implementar `app/adapters/presenters/layout/site-shell.component.ts` — depende do teste anterior
+- [x] T102 [P] Teste unitário de `app/adapters/presenters/home/home-page.component.ts` em `app/tests/unit/adapters/presenters/home/home-page.component.test.ts`
+- [x] T103 [P] Implementar `app/adapters/presenters/home/home-page.component.ts` — depende do teste anterior
+- [x] T104 [P] Teste unitário de `app/adapters/presenters/catalog/project-card.component.ts` em `app/tests/unit/adapters/presenters/catalog/project-card.component.test.ts`
+- [x] T105 [P] Implementar `app/adapters/presenters/catalog/project-card.component.ts` — depende do teste anterior
+- [x] T106 [P] Teste unitário de `app/adapters/presenters/catalog/technology-filter.component.ts` em `app/tests/unit/adapters/presenters/catalog/technology-filter.component.test.ts`
+- [x] T107 [P] Implementar `app/adapters/presenters/catalog/technology-filter.component.ts` — depende do teste anterior
+- [x] T108 [P] Teste unitário de `app/adapters/presenters/catalog/catalog-page.component.ts` em `app/tests/unit/adapters/presenters/catalog/catalog-page.component.test.ts`
+- [x] T109 [P] Implementar `app/adapters/presenters/catalog/catalog-page.component.ts` — depende do teste anterior
+- [x] T110 [P] Teste unitário de `app/adapters/presenters/project/project-page.component.ts` em `app/tests/unit/adapters/presenters/project/project-page.component.test.ts`
+- [x] T111 [P] Implementar `app/adapters/presenters/project/project-page.component.ts` — depende do teste anterior
+- [x] T112 [P] Teste unitário de `app/adapters/presenters/error/not-found-page.component.ts` em `app/tests/unit/adapters/presenters/error/not-found-page.component.test.ts`
+- [x] T113 [P] Implementar `app/adapters/presenters/error/not-found-page.component.ts` — depende do teste anterior
+- [x] T114 [P] Criar `app/infra/init/ioc_init.ts` com os provedores Angular ligando cada interface à implementação — isento de cobertura, sem condição a decidir
+- [x] T115 [P] Criar `app/infra/init/web_init.ts`, que compõe a configuração e entrega ao framework o roteamento já declarado em `app/infra/init/web_routes.ts` — isento de cobertura, sem regra própria
+- [x] T116 [P] Criar `app/infra/init/web_server.ts`, entrypoint que o builder usa para renderizar em build — não responde requisição e não vai ao artefato publicado; isento de cobertura
+- [x] T117 [P] Criar `app/main.ts`: sobe o Angular pelo inicializador montando `app/adapters/presenters/layout/site-shell.component.ts`, sem regra de negócio
 
 ## Fase 6 — Curadoria e publicação
 

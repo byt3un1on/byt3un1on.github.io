@@ -60,10 +60,16 @@ while [ "$nivel" -lt 2 ]; do
   nivel=$((nivel + 1))
 done
 
+# A pagina de erro nao entra na conta: por definicao ela e alcancada digitando
+# um endereco que nao existe, e nao navegando. Exigir que a inicial aponte para
+# ela inverteria o proposito dela.
+ERRO="${ERROR_ROUTE:-/404}"
+
 inalcancaveis=""
 for arq in $(find "$DIST" -name 'index.html' | sort); do
   rota=$(printf '%s' "$arq" | sed "s#^$DIST##; s#/index.html\$##")
   [ -n "$rota" ] || rota="/"
+  [ "$rota" != "$ERRO" ] || continue
   case " $alcancadas " in
     *" $rota "*) ;;
     *) inalcancaveis="$inalcancaveis $rota" ;;

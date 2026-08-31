@@ -5,7 +5,10 @@
         down ps logs catalog audit report
 
 COMPOSE := docker compose
-DEV     := $(COMPOSE) exec -T dev
+# A credencial de build e repassada por exec, e nao so na criacao do container:
+# sem isso, quem exporta GITHUB_TOKEN depois de `make infra` cai no limite
+# anonimo de 60 requisicoes por hora e a publicacao aborta.
+DEV     := $(COMPOSE) exec -T -e GITHUB_TOKEN dev
 # Expansao adiada com '=': com ':=' o $@ estaria vazio e o proprio alvo
 # entraria no argumento (make fmt viraria 'prettier --write fmt').
 ARG      = $(filter-out $@,$(MAKECMDGOALS))
@@ -21,6 +24,9 @@ infra:
 
 init:
 	$(DEV) mkdir -p data coverage
+	# Catalogo vazio para o build resolver o import antes do primeiro make catalog.
+	$(DEV) sh -c '[ -f data/catalog.generated.json ] || echo "{\"generatedAt\":\"1970-01-01T00:00:00.000Z\",\"projects\":[]}" > data/catalog.generated.json'
+	$(DEV) sh -c '[ -f data/prerender-routes.txt ] || printf "/\n/projetos\n/404\n" > data/prerender-routes.txt'
 	@echo "infraestrutura inicializada"
 
 install:
