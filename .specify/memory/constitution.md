@@ -27,7 +27,7 @@ do `docker-compose.yml`, que sobe ocioso e recebe comandos por `docker compose e
 | `make cover [caminho]` | cobertura em HTML e **falha abaixo de 90%** |
 | `make it [caminho]` | testes de integração |
 | `make bdd [caminho]` | testes BDD |
-| `make validate` | `fmt` → `lint` → `test` → `cover` → `it` → `bdd` |
+| `make validate` | `fmt` → `lint` → `test` → `cover` → `it` → `bdd` → `audit` |
 | `make run` | executa a aplicação dentro do serviço `dev` |
 | `make down [serviço]`, `make ps`, `make logs [serviço]` | operação do compose |
 
@@ -116,8 +116,13 @@ branch `master`. **Proibido**:
   API própria, banco de dados, processo que precise estar de pé para o site responder;
 - rota que dependa de reescrita no servidor. Toda rota pública é **prerenderizada** em build
   e resolve por arquivo; a rota inexistente cai em `404.html` estático;
-- segredo, token ou credencial no bundle, no repositório ou em variável de build — o que vai
-  para o artefato é público por construção, e é tratado como tal.
+- segredo, token ou credencial **no artefato publicado** ou versionado no repositório — o que
+  vai para o artefato é público por construção, e é tratado como tal.
+
+Credencial de **build** — fornecida pelo ambiente de integração, usada para falar com serviços
+externos durante a construção e que **nunca entra no artefato** — é permitida e não fere este
+princípio. O que se proíbe é segredo que chega ao visitante, não segredo que constrói a página.
+Quem introduz uma credencial de build responde por provar que ela não aparece na saída.
 
 Verificação: o build produz um diretório servível por qualquer servidor de arquivos, e o
 conjunto de arquivos gerados cobre todas as rotas declaradas. Rota declarada sem arquivo
@@ -150,7 +155,7 @@ Vitrine que o público não consegue usar não cumpre o objetivo. **Proibido** i
 - torne qualquer página pública inoperável por teclado, ou deixe conteúdo essencial
   inacessível a leitor de tela.
 
-A medição é alvo do `Makefile`, roda headless e integra o `make validate`. Limiar não atingido
+A medição é o alvo `make audit`, roda headless e integra a cadeia do `make validate`. Limiar não atingido
 reprova o portão; exceção exige registro do motivo e da data de correção no artefato da etapa.
 
 ## Portões
@@ -160,8 +165,9 @@ etapa antes de reprovar — o chat não sobrevive à retentativa, o artefato sim
 
 ---
 
-**Versão**: 1.0.0 · **Ratificada em**: 2026-08-30 · **Última emenda**: 2026-08-30
+**Versão**: 1.0.1 · **Ratificada em**: 2026-08-30 · **Última emenda**: 2026-08-30
 
 ## Histórico de emendas
 
 - **1.0.0** — 2026-08-30 — Ratificação inicial: seis princípios da organização, cobertura em 90%, identidade do projeto (Angular + GitHub Pages) e três princípios específicos — publicação estática (7), catálogo derivado do GitHub (8) e acessibilidade/performance medidas (9).
+- **1.0.1** — 2026-08-30 — Emenda de redação, a pedido do usuário, sem remover nem inverter princípio. O Princípio 7 passa a distinguir credencial no artefato publicado (proibida) de credencial de build que nunca entra no artefato (permitida). O Princípio 1 acrescenta `audit` à cadeia do `make validate`, encerrando a contradição com o Princípio 9, que agora nomeia o alvo.

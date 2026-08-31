@@ -55,7 +55,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 
 | Camada | Arquivo | Ação | Teste espelhado | Requisitos |
 |---|---|---|---|---|
-| core/domain | `app/core/domain/entities/project.ts` | criar | `app/tests/unit/core/domain/entities/project.test.ts` | RF-03, RF-07, RF-09 |
+| core/domain | `app/core/domain/entities/project.ts` | criar | `app/tests/unit/core/domain/entities/project.test.ts` | RF-03, RF-07 — união das tecnologias e atividade mais recente —, RF-09 |
 | core/domain | `app/core/domain/entities/code_repository.ts` | criar | `app/tests/unit/core/domain/entities/code_repository.test.ts` | RF-03, RF-06 |
 | core/domain | `app/core/domain/dtos/github_repository_dto.ts` | criar | `app/tests/unit/core/domain/dtos/github_repository_dto.test.ts` | RF-02 |
 | core/domain | `app/core/domain/dtos/curation_dto.ts` | criar | `app/tests/unit/core/domain/dtos/curation_dto.test.ts` | RF-04, RF-05 |
@@ -69,9 +69,10 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 
 | Camada | Arquivo | Ação | Teste espelhado | Requisitos |
 |---|---|---|---|---|
-| core/application | `app/core/application/catalog/validate_curation_use_case.ts` | criar | `app/tests/unit/core/application/catalog/validate_curation_use_case.test.ts` | RF-05 |
+| core/application | `app/core/application/catalog/validate_curation_use_case.ts` | criar | `app/tests/unit/core/application/catalog/validate_curation_use_case.test.ts` | RF-05 — três invalidezes: sem resumo, referência inexistente, repositório repetido |
 | core/application | `app/core/application/catalog/assemble_catalog_use_case.ts` | criar | `app/tests/unit/core/application/catalog/assemble_catalog_use_case.test.ts` | RF-02, RF-04, RF-06, RF-07 |
 | core/application | `app/core/application/catalog/generate_catalog_use_case.ts` | criar | `app/tests/unit/core/application/catalog/generate_catalog_use_case.test.ts` | RF-14 |
+| core/application | `app/core/application/catalog/report_publication_status_use_case.ts` | criar | `app/tests/unit/core/application/catalog/report_publication_status_use_case.test.ts` | RF-16 |
 | core/application | `app/core/application/showcase/list_projects_use_case.ts` | criar | `app/tests/unit/core/application/showcase/list_projects_use_case.test.ts` | RF-02, RF-04 |
 | core/application | `app/core/application/showcase/filter_projects_by_technology_use_case.ts` | criar | `app/tests/unit/core/application/showcase/filter_projects_by_technology_use_case.test.ts` | RF-11, RF-13 |
 | core/application | `app/core/application/showcase/list_technologies_use_case.ts` | criar | `app/tests/unit/core/application/showcase/list_technologies_use_case.test.ts` | RF-11 |
@@ -85,7 +86,8 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | adapters/repositories | `app/adapters/repositories/curation_repository.ts` | criar | `app/tests/unit/adapters/repositories/curation_repository.test.ts` | RF-04 |
 | adapters/repositories | `app/adapters/repositories/catalog_file_repository.ts` | criar | `app/tests/unit/adapters/repositories/catalog_file_repository.test.ts` | RF-08, RF-12, RF-15 |
 | adapters/repositories | `app/adapters/repositories/static_catalog_repository.ts` | criar | `app/tests/unit/adapters/repositories/static_catalog_repository.test.ts` | RF-02, RNF-08 |
-| adapters/commands | `app/adapters/commands/generate_catalog_command.ts` | criar | `app/tests/unit/adapters/commands/generate_catalog_command.test.ts` | RF-05, RF-14 |
+| adapters/clients | `app/adapters/clients/github_issue_client.ts` | criar | `app/tests/unit/adapters/clients/github_issue_client.test.ts` | RF-16 |
+| adapters/commands | `app/adapters/commands/generate_catalog_command.ts` | criar | `app/tests/unit/adapters/commands/generate_catalog_command.test.ts` | RF-05, RF-14, RF-16 |
 
 ### `adapters/presenters` — componentes Angular (arquivo `kebab-case`, classe `PascalCase`)
 
@@ -94,7 +96,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | adapters/presenters | `app/adapters/presenters/layout/site-header.component.ts` | criar | `app/tests/unit/adapters/presenters/layout/site-header.component.test.ts` | RF-01, RNF-06 |
 | adapters/presenters | `app/adapters/presenters/layout/site-footer.component.ts` | criar | `app/tests/unit/adapters/presenters/layout/site-footer.component.test.ts` | RF-10 |
 | adapters/presenters | `app/adapters/presenters/home/home-page.component.ts` | criar | `app/tests/unit/adapters/presenters/home/home-page.component.test.ts` | RF-01 |
-| adapters/presenters | `app/adapters/presenters/catalog/catalog-page.component.ts` | criar | `app/tests/unit/adapters/presenters/catalog/catalog-page.component.test.ts` | RF-02, RF-11, RF-13 |
+| adapters/presenters | `app/adapters/presenters/catalog/catalog-page.component.ts` | criar | `app/tests/unit/adapters/presenters/catalog/catalog-page.component.test.ts` | RF-02, RF-11, RF-13 — região viva anunciando a contagem |
 | adapters/presenters | `app/adapters/presenters/catalog/project-card.component.ts` | criar | `app/tests/unit/adapters/presenters/catalog/project-card.component.test.ts` | RF-03, RF-04 |
 | adapters/presenters | `app/adapters/presenters/catalog/technology-filter.component.ts` | criar | `app/tests/unit/adapters/presenters/catalog/technology-filter.component.test.ts` | RF-11, RF-13 |
 | adapters/presenters | `app/adapters/presenters/project/project-page.component.ts` | criar | `app/tests/unit/adapters/presenters/project/project-page.component.test.ts` | RF-07, RF-08, RF-09 |
@@ -118,6 +120,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | Arquivo | Espelha |
 |---|---|
 | `app/interfaces/adapters/clients/i_github_organization_client.ts` | `github_organization_client` |
+| `app/interfaces/adapters/clients/i_github_issue_client.ts` | `github_issue_client` |
 | `app/interfaces/adapters/repositories/i_curation_repository.ts` | `curation_repository` |
 | `app/interfaces/adapters/repositories/i_catalog_file_repository.ts` | `catalog_file_repository` |
 | `app/interfaces/adapters/repositories/i_static_catalog_repository.ts` | `static_catalog_repository` |
@@ -125,6 +128,7 @@ Todos criados. Caminhos completos, respeitando as camadas de `app/`.
 | `app/interfaces/core/application/catalog/i_validate_curation_use_case.ts` | `validate_curation_use_case` |
 | `app/interfaces/core/application/catalog/i_assemble_catalog_use_case.ts` | `assemble_catalog_use_case` |
 | `app/interfaces/core/application/catalog/i_generate_catalog_use_case.ts` | `generate_catalog_use_case` |
+| `app/interfaces/core/application/catalog/i_report_publication_status_use_case.ts` | `report_publication_status_use_case` |
 | `app/interfaces/core/application/showcase/i_list_projects_use_case.ts` | `list_projects_use_case` |
 | `app/interfaces/core/application/showcase/i_filter_projects_by_technology_use_case.ts` | `filter_projects_by_technology_use_case` |
 | `app/interfaces/core/application/showcase/i_list_technologies_use_case.ts` | `list_technologies_use_case` |
@@ -200,6 +204,8 @@ main_catalog.ts
                                            ├─ github_organization_client (RF-02, RF-06)
                                            ├─ assemble_catalog_use_case  (RF-04, RF-06, RF-07)
                                            └─ catalog_file_repository    (escreve catálogo e rotas)
+                                      └─ report_publication_status_use_case (RF-16)
+                                           └─ github_issue_client        (abre e encerra a questão)
 ```
 
 **Tempo de visita — o navegador, sobre HTML já renderizado.**
@@ -219,7 +225,9 @@ entidades `Project` e `CodeRepository`. Nenhum componente vê DTO de API.
 `CatalogSourceError` dentro do cliente; curadoria sem resumo vira `CurationValidationError`
 dentro de `validate_curation_use_case`. Os dois sobem sem serem capturados até
 `generate_catalog_command`, que registra o erro estruturado pelo `logger_tool` e devolve código
-de saída diferente de zero — o que aborta a publicação e cumpre `RF-14`. **No sítio não há
+de saída diferente de zero — o que aborta a publicação e cumpre `RF-14`. Antes de sair, o
+comando aciona `report_publication_status_use_case`, que abre a questão no repositório do sítio
+se ainda não houver uma em aberto, e a encerra quando a publicação volta a concluir (`RF-16`). **No sítio não há
 tratamento de erro de obtenção**, porque no sítio não há obtenção: se o catálogo não existisse,
 o build teria falhado antes.
 
@@ -242,7 +250,7 @@ Versões verificadas no registro em 2026-08-30.
 | `eslint` 10.9.1, `angular-eslint` 22.2.0, `typescript-eslint` 8.68.0 | — | `make lint` | — |
 | `prettier` | 3.9.6 | `make fmt` | — |
 | `http-server` | 14.1.1 | Serve `dist/` estático para BDD e auditoria | — |
-| **API REST do GitHub** | v3 | Única fonte do catálogo (Princípio 8) | `wiremock/wiremock:3.13.2` em `app/tests/it/` |
+| **API REST do GitHub** | v3 | Única fonte do catálogo (Princípio 8) e destino das questões de `RF-16` | `wiremock/wiremock:3.13.2` em `app/tests/it/` |
 | `node` (imagem base) | 24 | `@angular/cli` exige `^22.22.3 \|\| ^24.15.0 \|\| >=26.0.0` | — |
 
 ## Impacto no contrato de operação
@@ -269,17 +277,20 @@ existentes não cobrem:
 **Serviços do compose:** `dev` (imagem única, ociosa, com o código montado por volume) e
 `wiremock` (`wiremock/wiremock:3.13.2`, alvo dos testes de integração do cliente do GitHub).
 
-**Variável de ambiente nova:** `GITHUB_TOKEN`, **opcional**, consumida apenas por `make catalog`
-para elevar o limite de requisições à API. Ausente, o gerador usa acesso anônimo. Ver *Riscos* e
-*Conformidade* — este ponto exige decisão sua sobre a redação do Princípio 7.
+**Variável de ambiente nova:** `GITHUB_TOKEN`, credencial de build fornecida pelo ambiente de
+integração e consumida por `make catalog` para ler a organização e escrever a questão de
+`RF-16`. Nunca entra no artefato publicado. A emenda **1.0.1** ao Princípio 7 autoriza
+expressamente esse uso. Fora do CI, ausente a variável, o gerador cai em acesso anônimo — o que
+basta para desenvolvimento local, mas não escreve questão.
 
 ## Riscos
 
 | Risco | Probabilidade | Mitigação |
 |---|---|---|
 | O builder `unit-test` está marcado `[EXPERIMENTAL]` e pode mudar de contrato entre versões menores | média | Versões fixadas exatas, sem `^`. A configuração real do Vitest vive em `app/vitest.config.ts` e é passada por `runnerConfig`, então uma eventual troca do builder não leva junto a configuração de teste |
-| Limite anônimo da API do GitHub é de 60 requisições por hora **por IP**, e executores do Actions compartilham IP | média | A publicação faz 1 chamada de listagem mais 1 por repositório curado — cerca de dez. Ainda assim, o gerador usa `GITHUB_TOKEN` quando existir. Se estourar, `RF-14` já garante o comportamento correto: aborta e mantém a versão anterior no ar |
+| Limite da API do GitHub estourado durante a publicação | baixa | Com a credencial de build autorizada pela emenda 1.0.1, o limite passa de 60 para 5000 requisições por hora, contra uma publicação que faz cerca de dez chamadas. Se ainda assim estourar, `RF-14` aborta, `RF-16` abre a questão e a versão anterior permanece no ar |
 | Convite do Discord expira e `RF-10` passa a apontar para lugar nenhum | média | Usar convite sem prazo de validade, e cobrir a existência das duas ligações no cenário BDD de `RF-10`. A validade do convite em si não é verificável por teste |
+| Questão de `RF-16` acumula duplicatas a cada publicação abortada em sequência | média | `report_publication_status_use_case` consulta as questões em aberto antes de abrir outra, e o cenário BDD afirma que nenhuma duplicata é criada enquanto a anterior seguir aberta |
 | Nota 90 de SEO e Boas Práticas no Lighthouse em perfil móvel é exigente para páginas com muitas ligações externas | média | `seo_tool` garante título e descrição por rota desde o início; ligações externas com `rel` apropriado. A auditoria roda em `make validate`, então a regressão aparece no ato, não na publicação |
 | A curadoria envelhece: repositório novo aparece na organização e ninguém acrescenta a entrada | alta | Consequência aceita da inclusão explícita que você escolheu. `make catalog` registra em log estruturado os repositórios públicos com commits **ausentes** da curadoria, para que a omissão seja visível sem quebrar a publicação |
 | `dist/` prerenderizado não cobre uma rota nova e ela cai em 404 | baixa | `prerender-routes.txt` é gerado pelo mesmo passo que monta o catálogo, das mesmas entidades. Cenário BDD de `RF-15` abre a página de projeto por endereço direto |
@@ -289,27 +300,24 @@ para elevar o limite de requisições à API. Ausente, o gerador usa acesso anô
 
 | Princípio | Como este plano o respeita |
 |---|---|
-| 1 — Contrato de operação | Nenhuma ferramenta é chamada direto: `ng`, `vitest`, `cucumber`, `lhci`, `eslint` e `prettier` só aparecem dentro de alvos do `Makefile`, executados por `docker compose exec dev`. Os dois alvos novos (`catalog`, `audit`) **estendem** o contrato e estão declarados acima; nenhum contorna |
+| 1 — Contrato de operação | Nenhuma ferramenta é chamada direto: `ng`, `vitest`, `cucumber`, `lhci`, `eslint` e `prettier` só aparecem dentro de alvos do `Makefile`, executados por `docker compose exec dev`. Os dois alvos novos (`catalog`, `audit`) **estendem** o contrato e estão declarados acima; nenhum contorna. A emenda 1.0.1 acrescentou `audit` à cadeia do `make validate`, encerrando a contradição com o Princípio 9 |
 | 2 — Arquitetura limpa | `core/` não importa Angular, Node, `fs` nem HTTP — só entidades e interfaces. `adapters/` e `infra/` conhecem `core`; nunca o inverso. Componente não injeta `HttpClient` e não guarda regra: chama caso de uso. Desvio único e declarado: dois entrypoints, por haver dois tempos de execução |
 | 3 — Testes provam a entrega | Todo arquivo de produção tem teste espelhado em `app/tests/unit/<mesmo caminho>`, exceto os quatro inicializadores que a própria constituição tira da conta. Limiar de 90% por arquivo via `coverageThresholds` com `perFile`. Mocks pela interface, com `vi.spyOn` sobre a referência tipada — sem nome de método em string. Integração em `app/tests/it/` contra WireMock, sem mock interno. BDD em `app/tests/bdd/` a partir dos sete blocos Gherkin da spec, sem reescrita |
 | 4 — Simplicidade defensável | Quatro padrões aplicados, todos por problema presente; seis considerados e recusados, com o motivo registrado. Nenhuma biblioteca de estado, de DI ou de cache foi adicionada — as três seriam antecipação |
 | 5 — Autoria | Nenhum artefato deste plano credita ferramenta de IA. `.github/workflows/publish.yml` publica com o autor configurado no repositório |
 | 6 — Idioma | Spec, plano, tarefas e mensagens de commit em português do Brasil; cenários em `# language: pt`; identificadores de código em inglês; conteúdo do sítio em pt-BR por `RNF-07` |
-| 7 — Publicação estática | `outputMode: "static"` e `prerender.routesFile` — o build produz diretório servível por qualquer servidor de arquivos, e `make bdd` prova isso servindo `dist/` com servidor de arquivos puro. Nenhum SSR, nenhuma função de servidor, nenhuma reescrita de rota. `RF-12` vira `404.html` estático. **Tensão a resolver por você**: o princípio, como está escrito, proíbe "credencial em variável de build", o que alcançaria o `GITHUB_TOKEN` usado por `make catalog` — um segredo de CI que nunca entra no artefato publicado |
+| 7 — Publicação estática | `outputMode: "static"` e `prerender.routesFile` — o build produz diretório servível por qualquer servidor de arquivos, e `make bdd` prova isso servindo `dist/` com servidor de arquivos puro. Nenhum SSR, nenhuma função de servidor, nenhuma reescrita de rota. `RF-12` vira `404.html` estático. A emenda 1.0.1 autorizou expressamente a credencial de build que não entra no artefato, e o `GITHUB_TOKEN` de `make catalog` é exatamente esse caso: ele constrói a página e não chega ao visitante |
 | 8 — O catálogo deriva do GitHub | Todo dado exibido nasce em `github_organization_client`; nenhum componente carrega texto de projeto. A curadoria vive em `app/data/curation.json`, versionada e fora do código, e cada entrada referencia o repositório que descreve. `assemble_catalog_use_case` exclui privado, arquivado e vazio ainda que a curadoria os declare |
-| 9 — Acessibilidade e performance medidas | `make audit` roda headless e entra em `make validate`. Lighthouse ≥ 90 nas quatro categorias em perfil móvel; `axe` falhando em violação crítica ou séria; `budgets` do builder cobrindo `RNF-04`; `RNF-05` verificado por viewport de 320 px no BDD. **Tensão a resolver por você**: o Princípio 1 lista a cadeia de `make validate` sem `audit`, enquanto o Princípio 9 manda que a medição integre `make validate`. A cadeia precisa ganhar `audit` na redação |
+| 9 — Acessibilidade e performance medidas | `make audit` roda headless e entra em `make validate`. Lighthouse ≥ 90 nas quatro categorias em perfil móvel; `axe` falhando em violação crítica ou séria; `budgets` do builder cobrindo `RNF-04`; `RNF-05` verificado por viewport de 320 px no BDD; `RF-13` anuncia a contagem por região viva, o que é o que faz a restrição de `RF-11` existir para quem usa leitor de tela |
 
-### Emendas à constituição que este plano requer
+### Emendas à constituição — aplicadas
 
-Nenhuma foi aplicada — emenda é decisão sua. Ambas são de redação, e nenhuma remove ou inverte
-princípio, portanto subiriam a versão para **1.0.1**:
+As duas tensões registradas na primeira versão deste plano foram decididas pelo usuário em
+2026-08-30 e a constituição subiu para **1.0.1**, emenda de redação que não remove nem inverte
+princípio:
 
-1. **Princípio 7** — distinguir credencial *no artefato publicado* (proibida, e é o que o
-   princípio quer impedir) de credencial *de build que nunca entra no artefato* (necessária para
-   falar com a API do GitHub de dentro do CI sem depender do limite anônimo por IP).
-2. **Princípio 1** — acrescentar `audit` à cadeia de `make validate`, para a tabela do Princípio
-   1 parar de contradizer a exigência do Princípio 9.
-
-Sem a emenda 1, o plano segue funcionando em acesso anônimo, com o risco de limite de
-requisições registrado acima. Sem a emenda 2, `make validate` fica em desacordo com um dos dois
-princípios, escolha qual.
+1. **Princípio 7** passou a distinguir credencial *no artefato publicado* — proibida, e é o que
+   o princípio sempre quis impedir — de credencial *de build que nunca entra no artefato*, agora
+   permitida, com o ônus da prova sobre quem a introduz.
+2. **Princípio 1** ganhou `audit` na cadeia do `make validate`, e o Princípio 9 passou a nomear
+   o alvo. A contradição entre os dois deixou de existir.

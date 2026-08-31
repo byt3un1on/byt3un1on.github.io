@@ -82,19 +82,20 @@ como ele entra na vitrine — sem tocar em código de apresentação.
 |---|---|---|
 | RF-01 | O sítio deve apresentar, na página inicial e acima da dobra, o que é a Byte Union e a que ela se propõe como oficina de projetos. | obrigatório |
 | RF-02 | O sítio deve exibir um catálogo dos projetos da organização, cujos dados têm origem no catálogo de repositórios obtido da API do GitHub da organização. | obrigatório |
-| RF-03 | Cada projeto no catálogo deve exibir, no mínimo: nome legível, resumo do que ele faz, tecnologia principal, sinal de atividade e ligação para o repositório de origem. | obrigatório |
+| RF-03 | Cada projeto no catálogo deve exibir, no mínimo: nome legível, resumo do que ele faz, as tecnologias que emprega, sinal de atividade e ligação para o repositório de origem. | obrigatório |
 | RF-04 | O catálogo deve ser de inclusão explícita: só aparece na vitrine o projeto declarado na curadoria, que é dado versionado no repositório e define ordem, destaque, resumo e composição, sem alteração de código de apresentação. | obrigatório |
-| RF-05 | Entrada de curadoria sem resumo escrito é inválida e deve impedir a publicação, em vez de gerar projeto com ficha incompleta. | obrigatório |
+| RF-05 | Curadoria inválida deve impedir a publicação, em vez de gerar catálogo defeituoso. É inválida a entrada sem resumo escrito, a que referencia repositório inexistente na organização, e o repositório declarado em mais de um projeto. | obrigatório |
 | RF-06 | O catálogo deve excluir repositórios privados, arquivados e sem nenhum commit, ainda que a curadoria os declare. | obrigatório |
-| RF-07 | Projeto composto por mais de um repositório deve ser exibido como um único item de catálogo, reunindo os repositórios que o compõem. | obrigatório |
+| RF-07 | Projeto composto por mais de um repositório deve ser exibido como um único item de catálogo, reunindo os repositórios que o compõem, exibindo a união das tecnologias desses repositórios e a data de atividade mais recente entre eles. | obrigatório |
 | RF-08 | Cada projeto deve ter uma página própria, acessível por endereço estável e direto, com o detalhamento do projeto e as ligações para seus repositórios. | obrigatório |
 | RF-09 | Quando um projeto tiver endereço publicado próprio, o sítio deve oferecer ligação para ele, distinta da ligação para o repositório. | obrigatório |
 | RF-10 | O sítio deve apresentar a autoria como organização — sem identificar pessoas — e oferecer dois canais acionáveis: o perfil da organização no GitHub e o grupo da comunidade no Discord. | obrigatório |
-| RF-11 | O sítio deve permitir ao visitante restringir o catálogo por tecnologia principal. | desejável |
+| RF-11 | O sítio deve permitir ao visitante restringir o catálogo por tecnologia, exibindo o projeto cuja lista de tecnologias contenha a tecnologia escolhida. | desejável |
 | RF-12 | O sítio deve responder a endereço inexistente com uma página de erro própria, que ofereça caminho de volta ao catálogo. | obrigatório |
-| RF-13 | O sítio deve exibir estado explicável quando a restrição aplicada pelo visitante não retornar itens — nunca uma área em branco sem explicação. | obrigatório |
+| RF-13 | O sítio deve anunciar a quantidade de projetos resultante sempre que o visitante alterar a restrição, e exibir estado explicável quando o resultado for vazio — nunca uma área em branco sem explicação. | obrigatório |
 | RF-14 | A publicação do sítio deve ser abortada, preservando no ar a versão anterior, quando o catálogo da organização não puder ser obtido integralmente. | obrigatório |
 | RF-15 | Todo endereço público do sítio deve responder a acesso direto, sem depender de navegação prévia a partir da página inicial. | obrigatório |
+| RF-16 | Publicação abortada deve registrar o motivo em uma questão aberta no repositório do sítio, encerrada automaticamente quando uma publicação voltar a concluir. | obrigatório |
 
 ## Requisitos não funcionais
 
@@ -147,7 +148,7 @@ Funcionalidade: Catálogo de projetos
   Cenário: RF-03 — ficha mínima de cada projeto
     Dado que o catálogo exibe um projeto declarado na curadoria
     Quando eu observo o item desse projeto no catálogo
-    Então eu vejo seu nome legível, um resumo do que ele faz, sua tecnologia principal e um sinal de sua atividade
+    Então eu vejo seu nome legível, um resumo do que ele faz, as tecnologias que ele emprega e um sinal de sua atividade
     E eu vejo uma ligação que leva ao repositório de origem
     Mas eu não vejo campo obrigatório exibido em branco ou com texto de preenchimento
 
@@ -176,13 +177,15 @@ Funcionalidade: Catálogo de projetos
     Dado que a curadoria declara um projeto composto pelos repositórios "shortsmaker-api", "shortsmaker-frontend", "shortsmaker-worker", "shortsmaker-infra" e "shortsmaker-docs"
     Quando eu abro o catálogo de projetos
     Então eu vejo um único item de catálogo para esse projeto
+    E esse item exibe a união das tecnologias dos cinco repositórios
+    E esse item exibe a data de atividade mais recente entre os cinco
     E ao abri-lo eu vejo os cinco repositórios que o compõem, cada um com sua ligação
     Mas eu não vejo cinco itens separados no catálogo
 
-  Cenário: RF-11 — restrição por tecnologia
-    Dado que o catálogo exibe projetos de mais de uma tecnologia principal
+  Cenário: RF-11 — restrição por tecnologia alcança projeto multi-tecnologia
+    Dado que o catálogo exibe um projeto cujas tecnologias são "Python" e "TypeScript"
     Quando eu restrinjo o catálogo à tecnologia "TypeScript"
-    Então eu vejo apenas os projetos cuja tecnologia principal é "TypeScript"
+    Então esse projeto continua visível
     E o critério aplicado permanece visível para mim
     Mas a restrição não altera o endereço dos projetos nem impede que eu a remova
 
@@ -192,6 +195,12 @@ Funcionalidade: Catálogo de projetos
     Então eu vejo uma mensagem que explica que nenhum projeto atende ao critério
     E eu vejo como remover a restrição
     Mas eu não vejo uma área vazia sem explicação
+
+  Cenário: RF-13 — a mudança de resultado é anunciada a quem usa leitor de tela
+    Dado que eu percorro o catálogo com leitor de tela
+    Quando eu altero a restrição por tecnologia
+    Então a quantidade de projetos resultante me é anunciada
+    Mas o meu foco permanece onde estava, no controle de restrição
 ```
 
 ```gherkin
@@ -219,6 +228,18 @@ Funcionalidade: Curadoria do catálogo
     Quando a publicação do sítio é executada
     Então a publicação falha indicando qual entrada de curadoria está sem resumo
     Mas nenhum projeto com ficha incompleta é publicado
+
+  Cenário: RF-05 — referência a repositório inexistente impede a publicação
+    Dado que a curadoria declara um repositório que não existe mais na organização
+    Quando a publicação do sítio é executada
+    Então a publicação falha indicando qual referência está quebrada
+    Mas a vitrine não é publicada omitindo silenciosamente esse projeto
+
+  Cenário: RF-05 — repositório declarado em dois projetos impede a publicação
+    Dado que a curadoria declara o mesmo repositório em dois projetos distintos
+    Quando a publicação do sítio é executada
+    Então a publicação falha indicando o repositório repetido e os dois projetos que o declaram
+    Mas nenhum catálogo com repositório duplicado é publicado
 ```
 
 ```gherkin
@@ -277,6 +298,18 @@ Funcionalidade: Frescura e integridade do catálogo
     E a versão anterior do sítio permanece no ar, intacta
     Mas nenhuma versão com catálogo parcial ou vazio é publicada
 
+  Cenário: RF-16 — publicação abortada abre questão no repositório
+    Dado que uma publicação foi abortada
+    Quando o aborto é registrado
+    Então existe uma questão aberta no repositório do sítio com o motivo da falha
+    Mas nenhuma questão duplicada é aberta enquanto a anterior seguir em aberto
+
+  Cenário: RF-16 — publicação bem-sucedida encerra a questão aberta
+    Dado que existe uma questão aberta por uma publicação abortada
+    Quando uma publicação conclui com sucesso
+    Então essa questão é encerrada automaticamente
+    Mas nenhuma outra questão do repositório é alterada
+
   Cenário: RNF-08 — o visitante não espera pela rede
     Dado que eu abro qualquer página pública do sítio
     Quando a página termina de carregar
@@ -334,8 +367,9 @@ Funcionalidade: Qualidade medida das páginas públicas
 
 ## Ambiguidades
 
-Nenhuma. As 11 marcas registradas na primeira versão desta spec foram respondidas pelo usuário
-em 2026-08-30 e aplicadas nos requisitos acima — ver *Esclarecimentos*.
+Nenhuma. As 11 marcas registradas na primeira versão desta spec foram respondidas em
+2026-08-30, e a revisão dos checklists levantou 5 lacunas adicionais, respondidas no mesmo dia.
+Todas estão aplicadas nos requisitos acima — ver *Esclarecimentos*.
 
 ## Esclarecimentos
 
@@ -353,6 +387,11 @@ em 2026-08-30 e aplicadas nos requisitos acima — ver *Esclarecimentos*.
 | 10 | Os cinco repositórios `shortsmaker-*` entram, e como? | **Sim, como um projeto só**, reunindo os cinco repositórios em um item de catálogo. Nome e resumo do projeto são conteúdo da curadoria. | 2026-08-30 | `RF-07` e seu cenário |
 | 11 | De onde vem o resumo de cada projeto, já que 9 dos 12 repositórios não têm descrição? | **A curadoria exige resumo**: entrada sem resumo escrito é inválida e impede a publicação. | 2026-08-30 | `RF-05` |
 | 12 | Como medir se a vitrine funcionou, sem rastrear o visitante? | **Sinais do próprio GitHub** — estrelas, forks, issues de terceiros e as estatísticas de tráfego e referenciador que o GitHub dá ao dono do repositório. Nenhuma instrumentação de rastreamento no sítio. | 2026-08-30 | *Métricas de sucesso*, *Fora de escopo* |
+| 13 | O que fazer quando a curadoria referencia repositório que sumiu ou mudou de nome? | **Aborta a publicação.** Referência quebrada invalida a curadoria, como já ocorre com resumo faltando. | 2026-08-30 | `RF-05` |
+| 14 | O que um projeto multi-repositório exibe como tecnologia e como atividade? | **União das tecnologias** dos repositórios que o compõem e a **data de atividade mais recente** entre eles. `RF-03` e `RF-11` passam a falar de tecnologias no plural, e a restrição alcança o projeto cuja lista contenha a tecnologia escolhida. | 2026-08-30 | `RF-03`, `RF-07`, `RF-11` |
+| 15 | Como o autor fica sabendo que uma publicação foi abortada? | **Questão aberta no repositório do sítio**, com o motivo, encerrada automaticamente quando a publicação voltar a concluir. | 2026-08-30 | `RF-16` |
+| 16 | Um mesmo repositório pode aparecer em mais de um projeto? | **Não.** Declaração repetida invalida a curadoria e impede a publicação. | 2026-08-30 | `RF-05` |
+| 17 | Como o visitante de leitor de tela percebe que a restrição mudou o resultado? | **Região viva anuncia a quantidade** de projetos resultante, sem mover o foco do controle de restrição. Cobre também o estado vazio. | 2026-08-30 | `RF-13` |
 
 ## Métricas de sucesso
 
