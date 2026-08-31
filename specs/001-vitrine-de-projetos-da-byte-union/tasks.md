@@ -45,25 +45,25 @@
 
 ## Fase 2 — Contratos
 
-- [ ] T034 [P] Declarar a abstração `app/interfaces/adapters/clients/i_github_organization_client.ts`
-- [ ] T035 [P] Declarar a abstração `app/interfaces/adapters/clients/i_github_issue_client.ts`
-- [ ] T036 [P] Declarar a abstração `app/interfaces/adapters/repositories/i_curation_repository.ts`
-- [ ] T037 [P] Declarar a abstração `app/interfaces/adapters/repositories/i_catalog_file_repository.ts`
-- [ ] T038 [P] Declarar a abstração `app/interfaces/adapters/repositories/i_static_catalog_repository.ts`
-- [ ] T039 [P] Declarar a abstração `app/interfaces/adapters/commands/i_generate_catalog_command.ts`
-- [ ] T040 [P] Declarar a abstração `app/interfaces/adapters/commands/i_report_publication_command.ts`
-- [ ] T041 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_validate_curation_use_case.ts`
-- [ ] T042 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_assemble_catalog_use_case.ts`
-- [ ] T043 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_generate_catalog_use_case.ts`
-- [ ] T044 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_report_publication_status_use_case.ts`
-- [ ] T045 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_list_projects_use_case.ts`
-- [ ] T046 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_filter_projects_by_technology_use_case.ts`
-- [ ] T047 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_list_technologies_use_case.ts`
-- [ ] T048 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_find_project_by_slug_use_case.ts`
-- [ ] T049 [P] Declarar a abstração `app/interfaces/infra/tools/i_logger_tool.ts`
-- [ ] T050 [P] Declarar a abstração `app/interfaces/infra/tools/i_config_tool.ts`
-- [ ] T051 [P] Declarar a abstração `app/interfaces/infra/tools/i_seo_tool.ts`
-- [ ] T052 [P] Declarar a abstração `app/interfaces/infra/cli/i_cli_entry.ts`
+- [x] T034 [P] Declarar a abstração `app/interfaces/adapters/clients/i_github_organization_client.ts`
+- [x] T035 [P] Declarar a abstração `app/interfaces/adapters/clients/i_github_issue_client.ts`
+- [x] T036 [P] Declarar a abstração `app/interfaces/adapters/repositories/i_curation_repository.ts`
+- [x] T037 [P] Declarar a abstração `app/interfaces/adapters/repositories/i_catalog_file_repository.ts`
+- [x] T038 [P] Declarar a abstração `app/interfaces/adapters/repositories/i_static_catalog_repository.ts`
+- [x] T039 [P] Declarar a abstração `app/interfaces/adapters/commands/i_generate_catalog_command.ts`
+- [x] T040 [P] Declarar a abstração `app/interfaces/adapters/commands/i_report_publication_command.ts`
+- [x] T041 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_validate_curation_use_case.ts`
+- [x] T042 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_assemble_catalog_use_case.ts`
+- [x] T043 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_generate_catalog_use_case.ts`
+- [x] T044 [P] Declarar a abstração `app/interfaces/core/application/catalog/i_report_publication_status_use_case.ts`
+- [x] T045 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_list_projects_use_case.ts`
+- [x] T046 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_filter_projects_by_technology_use_case.ts`
+- [x] T047 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_list_technologies_use_case.ts`
+- [x] T048 [P] Declarar a abstração `app/interfaces/core/application/showcase/i_find_project_by_slug_use_case.ts`
+- [x] T049 [P] Declarar a abstração `app/interfaces/infra/tools/i_logger_tool.ts`
+- [x] T050 [P] Declarar a abstração `app/interfaces/infra/tools/i_config_tool.ts`
+- [x] T051 [P] Declarar a abstração `app/interfaces/infra/tools/i_seo_tool.ts`
+- [x] T052 [P] Declarar a abstração `app/interfaces/infra/cli/i_cli_entry.ts`
 
 ## Fase 3 — Aplicação
 
