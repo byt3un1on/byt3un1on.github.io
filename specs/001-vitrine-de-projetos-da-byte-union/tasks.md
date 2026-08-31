@@ -10,8 +10,8 @@
 - [ ] T002 [P] Criar `app/tsconfig.json` em modo estrito, sem `any`, com os caminhos das camadas de `app/`
 - [ ] T003 [P] Criar `app/angular.json`: `sourceRoot` na própria `app/`, `outputMode: static`, `prerender.routesFile`, `baseHref` na raiz, `budgets` e builder `unit-test` com `runner: vitest`
 - [ ] T004 [P] Criar `app/Dockerfile` com Node 24 e Chromium do Playwright, imagem única para executar e desenvolver
-- [ ] T005 [P] Criar `app/docker-compose.yml` com os serviços `dev` (ocioso, código por volume) e `wiremock` em `wiremock/wiremock:3.13.2`
-- [ ] T006 [P] Criar `app/Makefile` com os 14 alvos do contrato mais `catalog`, `audit` e `report`, e `validate` encadeando `fmt → lint → test → cover → it → bdd → audit`
+- [ ] T005 [P] Criar `app/docker-compose.yml` com os serviços `dev` (ocioso, código por volume) e `wiremock` em `wiremock/wiremock:3.13.2`, consumido por `make it` e por `make bdd`
+- [ ] T006 [P] Criar `app/Makefile` com os 14 alvos do contrato mais `catalog`, `audit` e `report`; `validate` encadeando `fmt → lint → test → cover → it → bdd → audit`; e `bdd` exigindo o `dist/` construído e o serviço `wiremock` de pé
 - [ ] T007 [P] Criar `app/vitest.config.ts` com limiar de cobertura de 90% por arquivo e a exclusão dos seis arquivos de fiação isentos pela emenda 1.0.2: `app/main.ts`, `app/main_catalog.ts`, `app/main_report.ts`, `app/infra/init/ioc_init.ts`, `app/infra/init/cli_ioc_init.ts` e `app/infra/init/web_init.ts`
 - [ ] T008 [P] Criar os dotfiles `app/eslint.config.js`, `app/.prettierrc` e `app/.editorconfig`
 - [ ] T009 [P] Criar `app/lighthouserc.json` com asserções de 90 nas quatro categorias, LCP ≤ 2,5 s, CLS ≤ 0,1 e `total-byte-weight` ≤ 300 KB, em perfil móvel
@@ -152,74 +152,78 @@
 
 ## Fase 8 — BDD
 
-- [ ] T123 [P] Criar `app/tests/bdd/support/world.ts` e a configuração do Cucumber com Playwright sobre o `dist/` servido estaticamente
-- [ ] T124 [P] Cenário *RF-01 — proposta visível na chegada* em `app/tests/bdd/features/apresentacao_da_oficina.feature` (`# language: pt`)
-- [ ] T125 [P] Cenário *RF-02 — catálogo tem origem no GitHub da organização* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T126 Cenário *RF-03 — ficha mínima de cada projeto* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T127 Cenário *RF-04 — repositório não declarado na curadoria não aparece* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T128 Cenário *RF-06 — repositório privado não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T129 Cenário *RF-06 — repositório sem commit não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T130 Cenário *RF-07 — sistema de vários repositórios é um projeto só* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T131 Cenário *RF-11 — restrição por tecnologia alcança projeto multi-tecnologia* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T132 Cenário *RF-13 — restrição sem resultado se explica* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T133 Cenário *RF-13 — a mudança de resultado é anunciada a quem usa leitor de tela* em `app/tests/bdd/features/catalogo_de_projetos.feature` (`# language: pt`)
-- [ ] T134 [P] Cenário *RF-04 — ordem e destaque vêm da curadoria* em `app/tests/bdd/features/curadoria_do_catalogo.feature` (`# language: pt`)
-- [ ] T135 Cenário *RF-04 — resumo editorial supre a descrição ausente* em `app/tests/bdd/features/curadoria_do_catalogo.feature` (`# language: pt`)
-- [ ] T136 Cenário *RF-05 — entrada sem resumo impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature` (`# language: pt`)
-- [ ] T137 Cenário *RF-05 — referência a repositório inexistente impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature` (`# language: pt`)
-- [ ] T138 Cenário *RF-05 — repositório declarado em dois projetos impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature` (`# language: pt`)
-- [ ] T139 [P] Cenário *RF-08 — página própria por projeto* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature` (`# language: pt`)
-- [ ] T140 Cenário *RF-09 — endereço publicado é distinto do repositório* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature` (`# language: pt`)
-- [ ] T141 Cenário *RF-15 — endereço direto funciona sem navegação prévia* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature` (`# language: pt`)
-- [ ] T142 [P] Cenário *RF-10 — autoria como organização e dois canais acionáveis* em `app/tests/bdd/features/contato_com_a_organizacao.feature` (`# language: pt`)
-- [ ] T143 [P] Cenário *RF-14 — falha na obtenção não publica catálogo incompleto* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature` (`# language: pt`)
-- [ ] T144 Cenário *RF-16 — publicação abortada abre questão no repositório* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature` (`# language: pt`)
-- [ ] T145 Cenário *RF-16 — publicação bem-sucedida encerra a questão aberta* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature` (`# language: pt`)
-- [ ] T146 Cenário *RNF-08 — o visitante não espera pela rede* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature` (`# language: pt`)
-- [ ] T147 [P] Cenário *RF-12 — endereço inexistente tem página própria* em `app/tests/bdd/features/resiliencia_e_bordas.feature` (`# language: pt`)
-- [ ] T148 [P] Cenário *RNF-01 e RNF-03 — limiares de qualidade em perfil móvel* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` (`# language: pt`)
-- [ ] T149 Cenário *RNF-02 — operação apenas por teclado* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` (`# language: pt`)
-- [ ] T150 Cenário *RNF-05 — alcance de dispositivos* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` (`# language: pt`)
-- [ ] T151 Cenário *RNF-07 — idioma único* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` (`# language: pt`)
-- [ ] T152 [P] Implementar as definições de passo em `app/tests/bdd/steps/catalog_steps.ts`
-- [ ] T153 [P] Implementar as definições de passo em `app/tests/bdd/steps/publication_steps.ts`
-- [ ] T154 [P] Implementar as definições de passo em `app/tests/bdd/steps/accessibility_steps.ts`, incluindo a varredura `axe` que reprova violação crítica ou séria
+- [ ] T123 [P] Criar `app/tests/bdd/support/browser_driver.ts`: Playwright sobre o `dist/` servido estaticamente
+- [ ] T124 [P] Criar `app/tests/bdd/support/process_driver.ts`: executa os alvos de publicação em diretório de trabalho isolado, contra WireMock, expondo código de saída, arquivos gerados e chamadas capturadas
+- [ ] T125 [P] Criar `app/tests/bdd/support/world.ts`: escolhe o motor pela etiqueta do cenário e o inicializa preguiçosamente, sem subir navegador para cenário de processo
+- [ ] T126 [P] Cenário *RF-01 — proposta visível na chegada* em `app/tests/bdd/features/apresentacao_da_oficina.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T127 [P] Cenário *RF-02 — catálogo tem origem no GitHub da organização* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T128 Cenário *RF-03 — ficha mínima de cada projeto* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T129 Cenário *RF-04 — repositório não declarado na curadoria não aparece* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T130 Cenário *RF-06 — repositório privado não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T131 Cenário *RF-06 — repositório sem commit não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T132 Cenário *RF-07 — sistema de vários repositórios é um projeto só* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T133 Cenário *RF-11 — restrição por tecnologia alcança projeto multi-tecnologia* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T134 Cenário *RF-13 — restrição sem resultado se explica* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T135 Cenário *RF-13 — a mudança de resultado é anunciada a quem usa leitor de tela* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T136 [P] Cenário *RF-04 — ordem e destaque vêm da curadoria* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T137 Cenário *RF-04 — resumo editorial supre a descrição ausente* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T138 Cenário *RF-05 — entrada sem resumo impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T139 Cenário *RF-05 — referência a repositório inexistente impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T140 Cenário *RF-05 — repositório declarado em dois projetos impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T141 [P] Cenário *RF-08 — página própria por projeto* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T142 Cenário *RF-09 — endereço publicado é distinto do repositório* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T143 Cenário *RF-15 — endereço direto funciona sem navegação prévia* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T144 [P] Cenário *RF-10 — autoria como organização e dois canais acionáveis* em `app/tests/bdd/features/contato_com_a_organizacao.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T145 [P] Cenário *RF-14 — falha na obtenção não publica catálogo incompleto* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T146 Cenário *RF-16 — publicação abortada abre questão no repositório* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T147 Cenário *RF-16 — publicação bem-sucedida encerra a questão aberta* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T148 Cenário *RNF-08 — o visitante não espera pela rede* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T149 [P] Cenário *RF-12 — endereço inexistente tem página própria* em `app/tests/bdd/features/resiliencia_e_bordas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T150 [P] Cenário *RNF-01 e RNF-03 — limiares de qualidade em perfil móvel* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@processo` (`# language: pt`)
+- [ ] T151 Cenário *RNF-02 — operação apenas por teclado* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T152 Cenário *RNF-05 — alcance de dispositivos* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T153 Cenário *RNF-07 — idioma único* em `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, etiquetado `@navegador` (`# language: pt`)
+- [ ] T154 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/catalog_steps.ts` — catálogo, curadoria vista pelo visitante e aprofundamento
+- [ ] T155 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/site_steps.ts` — apresentação, contato e endereço inexistente
+- [ ] T156 [P] Implementar os passos de navegador em `app/tests/bdd/steps/browser/quality_steps.ts` — teclado, viewport, idioma, ausência de requisição à API e a varredura `axe` que reprova violação crítica ou séria
+- [ ] T157 [P] Implementar os passos de processo em `app/tests/bdd/steps/process/publication_steps.ts` — curadoria inválida, inelegibilidade, aborto e questão
+- [ ] T158 [P] Implementar os passos de processo em `app/tests/bdd/steps/process/audit_steps.ts` — execução do Lighthouse e leitura dos limiares
 
 ## Fase 9 — Auditoria e fechamento
 
-- [ ] T155 [P] Ligar o alvo `audit` de `app/Makefile` ao Lighthouse de `app/lighthouserc.json`, à varredura `axe` de `app/tests/bdd/steps/accessibility_steps.ts` e ao `app/scripts/check_links.sh`, todos headless sobre o `dist/` servido por `app/scripts/serve_dist.sh`
-- [ ] T156 `make validate` verde de ponta a ponta pelo alvo `validate` de `app/Makefile`: `fmt → lint → test → cover → it → bdd → audit`, com cobertura ≥ 90% por arquivo
+- [ ] T159 [P] Ligar o alvo `audit` de `app/Makefile` ao Lighthouse de `app/lighthouserc.json`, à varredura `axe` de `app/tests/bdd/steps/browser/quality_steps.ts` e ao `app/scripts/check_links.sh`, todos headless sobre o `dist/` servido por `app/scripts/serve_dist.sh`
+- [ ] T160 `make validate` verde de ponta a ponta pelo alvo `validate` de `app/Makefile`: `fmt → lint → test → cover → it → bdd → audit`, com cobertura ≥ 90% por arquivo
 
 ## Rastreabilidade
 
 | Requisito | Tarefas |
 |---|---|
-| RF-01 | T096, T097, T100, T101, T124 |
-| RF-02 | T020, T021, T024, T025, T034, T038, T045, T050, T055, T056, T061, T062, T071, T072, T073, T074, T092, T093, T106, T107, T117, T118, T122, T125 |
-| RF-03 | T016, T017, T018, T019, T102, T103, T126 |
-| RF-04 | T022, T023, T036, T042, T055, T056, T061, T062, T077, T078, T102, T103, T115, T120, T127, T134, T135 |
-| RF-05 | T022, T023, T026, T027, T041, T053, T054, T081, T082, T115, T120, T136, T137, T138 |
-| RF-06 | T016, T017, T034, T055, T056, T073, T074, T117, T118, T128, T129 |
-| RF-07 | T018, T019, T042, T055, T056, T108, T109, T115, T130 |
-| RF-08 | T030, T031, T037, T048, T067, T068, T079, T080, T094, T095, T108, T109, T121, T139 |
-| RF-09 | T018, T019, T108, T109, T140 |
-| RF-10 | T032, T033, T098, T099, T142 |
-| RF-11 | T046, T047, T063, T064, T065, T066, T104, T105, T106, T107, T131 |
-| RF-12 | T030, T031, T067, T068, T079, T080, T094, T095, T110, T111, T147 |
-| RF-13 | T063, T064, T104, T105, T106, T107, T132, T133 |
-| RF-14 | T028, T029, T039, T043, T049, T052, T057, T058, T069, T070, T081, T082, T085, T086, T088, T116, T143 |
-| RF-15 | T003, T030, T031, T037, T079, T080, T094, T095, T121, T141 |
-| RF-16 | T006, T035, T040, T044, T059, T060, T075, T076, T083, T084, T089, T116, T117, T119, T144, T145 |
-| RNF-01 | T009, T148, T155 |
-| RNF-02 | T149, T154, T155 |
-| RNF-03 | T009, T148, T155 |
-| RNF-04 | T003, T009, T155 |
-| RNF-05 | T011, T150 |
-| RNF-06 | T013, T051, T090, T091, T096, T097, T155 |
-| RNF-07 | T010, T151 |
-| RNF-08 | T012, T038, T092, T093, T116, T122, T123, T146 |
-| RNF-09 | T011, T154, T155 |
-| RNF-10 | T003, T013, T030, T031, T155 |
+| RF-01 | T096, T097, T100, T101, T126, T155 |
+| RF-02 | T020, T021, T024, T025, T034, T038, T045, T050, T055, T056, T061, T062, T071, T072, T073, T074, T092, T093, T106, T107, T117, T118, T122, T127, T154 |
+| RF-03 | T016, T017, T018, T019, T102, T103, T128, T154 |
+| RF-04 | T022, T023, T036, T042, T055, T056, T061, T062, T077, T078, T102, T103, T115, T120, T129, T136, T137, T154 |
+| RF-05 | T022, T023, T026, T027, T041, T053, T054, T081, T082, T115, T120, T138, T139, T140, T157 |
+| RF-06 | T016, T017, T034, T055, T056, T073, T074, T117, T118, T130, T131, T157 |
+| RF-07 | T018, T019, T042, T055, T056, T108, T109, T115, T132, T154 |
+| RF-08 | T030, T031, T037, T048, T067, T068, T079, T080, T094, T095, T108, T109, T121, T141, T154 |
+| RF-09 | T018, T019, T108, T109, T142, T154 |
+| RF-10 | T032, T033, T098, T099, T144, T155 |
+| RF-11 | T046, T047, T063, T064, T065, T066, T104, T105, T106, T107, T133, T154 |
+| RF-12 | T030, T031, T067, T068, T079, T080, T094, T095, T110, T111, T149, T155 |
+| RF-13 | T063, T064, T104, T105, T106, T107, T134, T135, T154 |
+| RF-14 | T028, T029, T039, T043, T049, T052, T057, T058, T069, T070, T081, T082, T085, T086, T088, T116, T124, T145, T157 |
+| RF-15 | T003, T030, T031, T037, T079, T080, T094, T095, T121, T143, T154 |
+| RF-16 | T006, T035, T040, T044, T059, T060, T075, T076, T083, T084, T089, T116, T117, T119, T124, T146, T147, T157 |
+| RNF-01 | T009, T150, T158, T159 |
+| RNF-02 | T151, T156, T159 |
+| RNF-03 | T009, T150, T158, T159 |
+| RNF-04 | T003, T009, T158, T159 |
+| RNF-05 | T011, T152, T156 |
+| RNF-06 | T013, T051, T090, T091, T096, T097, T159 |
+| RNF-07 | T010, T153, T156 |
+| RNF-08 | T012, T038, T092, T093, T116, T122, T123, T148, T156 |
+| RNF-09 | T011, T156, T159 |
+| RNF-10 | T003, T013, T030, T031, T159 |
 
 ## Convergence
 
