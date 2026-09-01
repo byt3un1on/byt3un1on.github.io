@@ -27,8 +27,7 @@ Funcionalidade: Promoção entre branches por merge
   Cenário: RF-08 — mergear a terceira PR publica, marca e libera
     Dado que a Pull Request "PR - release/vX.Y.Z -> master" foi mergeada
     Quando a ação "Action - release/vX.Y.Z -> master" é executada
-    Então a promoção é disparada pelo merge, e não pela aprovação
-    E a ação só reage a merge de branch de release em master
+    Então a publicação reage ao que entrou em master, e não à Pull Request
     E o sítio é publicado no GitHub Pages
     E são criadas a tag e a release da versão "vX.Y.Z"
     Mas a marca da versão não é criada antes de a publicação ter concluído com sucesso
@@ -38,7 +37,7 @@ Funcionalidade: Promoção entre branches por merge
     Dado que a Pull Request "PR - feature/nome-curto -> develop" foi fechada sem merge
     Quando a ação "Action - feature/nome-curto -> develop" é executada
     Então a ação exige merge consumado, e fechamento sem merge não a dispara
-    Mas isso vale igualmente para os três estágios da cadeia
+    Mas isso vale igualmente para os dois estágios de promoção
 
   @esteira
   Cenário: RF-13 — versão inválida reprova em vez de virar nome de branch
