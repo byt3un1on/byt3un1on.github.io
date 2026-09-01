@@ -19,6 +19,13 @@ Funcionalidade: Legibilidade da esteira
     Mas nenhuma etapa da esteira deixa de aparecer no diagrama por ter virado passo interno
 
   @esteira
+  Cenário: RNF-01 — um merge produz uma execução, e não três
+    Dado que as ações da esteira estão definidas
+    Quando eu observo o gatilho de cada estágio de promoção
+    Então cada estágio filtra sua branch de destino já no gatilho
+    Mas nenhum estágio depende só do "if" do job para se descartar
+
+  @esteira
   Cenário: RNF-07 — nenhuma execução fica pendurada
     Dado que um job da esteira deixou de responder
     Quando o tempo máximo declarado para esse job se esgota

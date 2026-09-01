@@ -7,8 +7,14 @@ name: Action - release -> master
 run-name: Action - ${{ github.event.pull_request.head.ref }} -> master
 
 on:
+  # O filtro de destino vive no gatilho, e nao so no `if:` do job. Os tres
+  # estagios escutam o mesmo evento: sem ele, um merge cria tres execucoes, duas
+  # das quais so aparecem para se descartarem — e com nome errado, porque o
+  # `run-name` e calculado antes do descarte. Filtro de gatilho e avaliado antes
+  # de a execucao existir.
   pull_request:
     types: [closed]
+    branches: [master]
 
 permissions:
   contents: read

@@ -154,6 +154,10 @@ When('eu leio o nome de cada job', function (): void {
   return;
 });
 
+When('eu observo o gatilho de cada estágio de promoção', function (): void {
+  return;
+});
+
 When('eu conto os passos de cada job', function (): void {
   return;
 });
@@ -484,6 +488,37 @@ Then(
       !fluxo.raw.includes('gh pr merge'),
       'o portão humano é o merge da Pull Request de feature',
     );
+  },
+);
+
+/** Destino que cada estagio promove, e que seu gatilho precisa filtrar. */
+const DESTINO_DO_ESTAGIO: ReadonlyArray<readonly [string, string]> = [
+  [PROMOVER_DEVELOP, 'branches: [develop]'],
+  [PROMOVER_RELEASE, "branches: ['release/**']"],
+  [PUBLICAR_MASTER, 'branches: [master]'],
+];
+
+// Os tres estagios escutam o mesmo evento. Sem filtro no gatilho, um merge cria
+// tres execucoes: duas nascem so para se descartarem, e exibem nome errado,
+// porque o `run-name` e calculado antes de o `if:` do job ser avaliado.
+Then(
+  'cada estágio filtra sua branch de destino já no gatilho',
+  async function (this: VitrineWorld): Promise<void> {
+    for (const [arquivo, filtro] of DESTINO_DO_ESTAGIO) {
+      const fluxo = await this.workflow.byFile(arquivo);
+      assert.ok(fluxo.raw.includes(filtro), `${arquivo} não filtra o destino no gatilho`);
+    }
+  },
+);
+
+Then(
+  'nenhum estágio depende só do "if" do job para se descartar',
+  async function (this: VitrineWorld): Promise<void> {
+    for (const [arquivo] of DESTINO_DO_ESTAGIO) {
+      const fluxo = await this.workflow.byFile(arquivo);
+      const gatilho: string = fluxo.raw.slice(fluxo.raw.indexOf('on:'), fluxo.raw.indexOf('jobs:'));
+      assert.ok(gatilho.includes('branches:'), `${arquivo} filtra o destino tarde demais`);
+    }
   },
 );
 
