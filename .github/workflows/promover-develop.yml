@@ -36,9 +36,11 @@ jobs:
       modo: ${{ steps.decidir.outputs.modo }}
     steps:
       - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
         working-directory: app
-        run: make infra
+        run: make infra init
       - name: Decidir o modo
         id: decidir
         working-directory: app
@@ -100,9 +102,11 @@ jobs:
         with:
           fetch-depth: 0
           ref: develop
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
         working-directory: app
-        run: make infra
+        run: make infra init
       - name: Calcular a próxima versão
         id: calcular
         working-directory: app

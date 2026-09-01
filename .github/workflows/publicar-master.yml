@@ -33,9 +33,11 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
         working-directory: app
-        run: make infra
+        run: make infra init
       - name: Construir o sítio
         working-directory: app
         env:
@@ -70,9 +72,11 @@ jobs:
         with:
           name: sitio
           path: app/dist/browser
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
         working-directory: app
-        run: make infra
+        run: make infra init
       # Principio 9: nada e publicado sem a medicao passar. Aqui ela e portao.
       - name: Auditar acessibilidade e desempenho
         working-directory: app
