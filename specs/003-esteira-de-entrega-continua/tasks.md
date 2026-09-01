@@ -278,3 +278,35 @@ Tarefas acrescentadas: nenhuma.
 **Duas condições de operação, fora do que esta feature produz, sem as quais a esteira não roda:**
 criar o segredo `ESTEIRA_TOKEN` no repositório (RF-20) e trocar o GitHub Pages para publicação
 por ação (RF-14). Ambas são atos do proprietário, e são apontadas na entrega.
+
+### Rodada 2 — 2026-09-01 — prova em execução real
+
+A esteira foi exercitada contra o GitHub de verdade, empurrando a própria branch. Quatro
+execuções, três defeitos encontrados e corrigidos.
+
+| Execução | Desfecho | O que revelou |
+|---|---|---|
+| 1 | reprovada em `Testes unitários`, `Cobertura 90%` e `Integração` | `data/catalog.generated.json` é gerado e não versionado; em máquina limpa o build do Angular não resolve o import. Os fluxos chamavam `make infra` mas nunca `make init`. Corrigido nos 18 passos de preparação, e provado localmente com o catálogo removido |
+| 2 | reprovada em `Comportamento`, portão reprovou, `PR para develop` **pulada** | O relatório do Lighthouse é gravado em `coverage/lighthouse`, e o fluxo empacotava `.lighthouseci`. Corrigido, com `if-no-files-found: error` para a falha aparecer onde nasce |
+| 3 | reprovada só em `PR para develop` | Dois defeitos: oito jobs escreviam no resumo sem subir o serviço `dev`; e a organização proibia Actions de criar Pull Request. O primeiro foi corrigido; o segundo, liberado na organização a pedido do proprietário |
+| 4 | **sucesso nos dez jobs** | `PR - feature/esteira-de-entrega-continua -> develop` aberta como a especificação exige |
+
+**O que a execução real provou, além do que a suíte já provava:**
+
+- **RF-05 e RF-13** — na execução 2, uma verificação reprovou, o portão reprovou junto e o job
+  `PR para develop` foi **pulado**. A cadeia parou sozinha, sem PR aberta. É o portão bloqueante
+  funcionando contra o GitHub, e não contra um dublê.
+- **RF-02 e RNF-05** — as sete verificações rodaram em jobs próprios; construção e auditoria
+  aconteceram uma vez cada, e o artefato viajou entre os jobs.
+- **RF-04** — a Pull Request nasceu com o título `PR - feature/esteira-de-entrega-continua -> develop`.
+- **RF-12** — cada job escreveu seu bloco no resumo da execução, inclusive os que falharam.
+
+**Defeito conhecido, sem correção possível em expressão do GitHub Actions:**
+`run-name: ${{ github.event.head_commit.message }}` carrega a mensagem **inteira** do commit,
+corpo incluído — a linguagem de expressão não tem função de divisão de texto, então não há como
+isolar a primeira linha no momento do disparo. O requisito RF-01 pede a descrição do último
+commit, e é isso que a expressão entrega; o ruído vem de mensagens com corpo longo. Fica
+registrado para decisão do proprietário: ou aceita-se, ou adota-se a convenção de assunto
+autossuficiente na primeira linha.
+
+**Veredito: convergido, com prova de execução.**
