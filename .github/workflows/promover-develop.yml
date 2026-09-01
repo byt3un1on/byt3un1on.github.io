@@ -85,10 +85,26 @@ jobs:
       - name: Subir o serviço dev
         working-directory: app
         run: make infra init
+      # `echo "x=$(cmd)"` engole a falha de `cmd`: quem decide o codigo de saida
+      # e o `echo`, que sempre da certo. Foi assim que este job reportou sucesso
+      # entregando um JSON de erro no lugar da versao, e o job seguinte tentou
+      # criar `release/{"level":"error"...}`. Portao que mente e pior que portao
+      # que falha: aqui o valor e conferido antes de virar saida.
       - name: Calcular a próxima versão
         id: calcular
         working-directory: app
-        run: echo "versao=$(make -s pipeline version)" >> "$GITHUB_OUTPUT"
+        run: |
+          VERSAO=$(make -s pipeline version)
+          case "$VERSAO" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *)
+              ESTEIRA_JOB="Versão" ESTEIRA_STATUS=failure \
+                ESTEIRA_DETALHE="versao invalida: recebido '$VERSAO', esperado vX.Y.Z" \
+                make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+              ;;
+          esac
+          echo "versao=$VERSAO" >> "$GITHUB_OUTPUT"
       - name: Resumo
         if: always()
         working-directory: app
@@ -107,20 +123,21 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: master
-          fetch-depth: 0
-      # A branch de release nasce de master, e nao de develop: e master que
-      # carrega o que esta publicado.
       # O resumo passa pelo contrato de operacao, entao o servico dev precisa
       # estar de pe tambem nos jobs que so falam com o GitHub.
       - name: Subir o serviço dev
         working-directory: app
         run: make infra init
+      # A branch de release nasce de master, e nao de develop: e master que
+      # carrega o que esta publicado. Mas a ref e criada pela API, e nao por
+      # checkout: master nao contem `app/`, e todo passo com
+      # `working-directory: app` morreria ali. Criar a ref pelo sha dispensa
+      # trazer a arvore de master para o runner.
       - name: Abrir a branch de release
         run: |
-          git switch -c "release/${{ needs.versao.outputs.versao }}"
-          git push origin "release/${{ needs.versao.outputs.versao }}"
+          SHA=$(gh api "repos/${{ github.repository }}/git/ref/heads/master" --jq .object.sha)
+          gh api "repos/${{ github.repository }}/git/refs" \
+            -f ref="refs/heads/release/${{ needs.versao.outputs.versao }}" -f sha="$SHA"
       - name: Resumo
         if: always()
         working-directory: app

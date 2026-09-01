@@ -329,10 +329,35 @@ Then(
     assert.ok(branch.startsWith('release/'), `branch inesperada no cenario: ${branch}`);
     const fluxo = await this.workflow.byFile(PROMOVER_DEVELOP);
     const criador = acha(fluxo.jobs, 'Branch release');
-    assert.ok(criador.script.includes('git switch -c "release/'), 'o job precisa criar a branch');
-    assert.ok(criador.script.includes('git push origin "release/'), 'o job precisa publica-la');
-    // O corte a partir de master esta no `ref:` do checkout, que nao e `run`.
-    assert.ok(fluxo.raw.includes('ref: master'), 'a release precisa nascer de master');
+    assert.ok(criador.script.includes('git/refs'), 'o job precisa criar a ref da release');
+    assert.ok(
+      criador.script.includes('refs/heads/release/'),
+      'a ref criada precisa ser a da release',
+    );
+    assert.ok(criador.script.includes('heads/master'), 'a release precisa nascer de master');
+  },
+);
+
+// O valor da versao atravessa a fronteira entre dois jobs. `echo "x=$(cmd)"`
+// engole a falha de `cmd`, e foi assim que um JSON de erro virou nome de
+// branch: o job reportou sucesso entregando lixo.
+Then(
+  'o job da versão confere o valor antes de entregá-lo ao job seguinte',
+  async function (this: VitrineWorld): Promise<void> {
+    const calculo = acha(await this.workflow.jobsOf(PROMOVER_DEVELOP), 'Versão');
+    assert.ok(calculo.script.includes('v[0-9]'), 'o job precisa conferir o formato da versão');
+    assert.ok(calculo.script.includes('exit 1'), 'formato inválido precisa reprovar o job');
+  },
+);
+
+Then(
+  'a branch de release nasce de master sem trazer a árvore de master para o runner',
+  async function (this: VitrineWorld): Promise<void> {
+    const fluxo = await this.workflow.byFile(PROMOVER_DEVELOP);
+    assert.ok(
+      !fluxo.raw.includes('ref: master'),
+      'master não contém app/, e todo passo do contrato de operação morreria nela',
+    );
   },
 );
 
