@@ -1,0 +1,158 @@
+# Atualidade do catalogo (RNF-08 da feature 001): a esteira de entrega e
+# disparada por mudanca de codigo, e o catalogo envelhece sozinho. Este fluxo
+# cobre o que ela nao cobre — e obedece as mesmas regras de legibilidade.
+name: Publicar catálogo
+
+run-name: Publicar catálogo - ${{ github.event_name }}
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-catalogo
+  cancel-in-progress: false
+
+jobs:
+  catalog:
+    name: Catálogo
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra
+      # RF-14 da feature 001: catalogo incompleto aborta, e a versao anterior
+      # continua no ar.
+      - name: Montar o catálogo
+        working-directory: app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make catalog
+      - uses: actions/upload-artifact@v4
+        with:
+          name: catalogo
+          path: app/data
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Catálogo"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Construção
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: catalog
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: catalogo
+          path: app/data
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra
+      - name: Construir o sítio
+        working-directory: app
+        run: make build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sitio-catalogo
+          path: app/dist/browser
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Construção"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  audit:
+    name: Auditoria
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: build
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio-catalogo
+          path: app/dist/browser
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra
+      - name: Auditar acessibilidade e desempenho
+        working-directory: app
+        run: make audit-only
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Auditoria"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Publicação
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: audit
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio-catalogo
+          path: sitio
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: sitio
+      - id: pages
+        uses: actions/deploy-pages@v4
+
+  report:
+    name: Registro
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # `always()`: aborto de catalogo, de construcao ou de auditoria tambem
+    # precisa abrir questao. E por isso que o registro vive fora do catalogo.
+    if: always()
+    needs: [catalog, build, audit, deploy]
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra
+      - name: Registrar o desfecho
+        working-directory: app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DESFECHO: ${{ (needs.deploy.result == 'success') && 'success' || 'failure' }}
+        run: make report "$DESFECHO" "publicacao do catalogo na execucao ${{ github.run_id }}"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Registro"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "desfecho: ${{ needs.deploy.result }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"

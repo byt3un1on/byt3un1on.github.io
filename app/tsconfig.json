@@ -46,6 +46,7 @@
     "tests/**/*.ts",
     "main.ts",
     "main_catalog.ts",
-    "main_report.ts"
+    "main_report.ts",
+    "main_pipeline.ts"
   ]
 }

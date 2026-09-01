@@ -39,8 +39,45 @@ export class ConfigTool implements IConfigTool {
     return this.read('SITE_REPOSITORY', 'byt3un1on/byt3un1on.github.io');
   }
 
+  public pipelineMode(): string | null {
+    return this.readOptional('ESTEIRA_MODO');
+  }
+
+  public pipelineModeLabel(): string | null {
+    return this.readOptional('ESTEIRA_MODO_ROTULO');
+  }
+
+  public runSummaryPath(): string | null {
+    return this.readOptional('ESTEIRA_RESUMO');
+  }
+
+  public pipelineResults(): string | null {
+    return this.readOptional('ESTEIRA_RESULTADOS');
+  }
+
+  public summaryJob(): string | null {
+    return this.readOptional('ESTEIRA_JOB');
+  }
+
+  public summaryStatus(): string | null {
+    return this.readOptional('ESTEIRA_STATUS');
+  }
+
+  public summaryDetail(): string | null {
+    return this.readOptional('ESTEIRA_DETALHE');
+  }
+
   private read(key: string, fallback: string): string {
     const value = this.env[key];
     return value !== undefined && value.trim().length > 0 ? value : fallback;
+  }
+
+  /**
+   * Ausente ou em branco vira `null`, e nao string vazia: quem consome precisa
+   * distinguir "o ambiente nao disse" de "o ambiente disse nada".
+   */
+  private readOptional(key: string): string | null {
+    const value = this.env[key];
+    return value !== undefined && value.trim().length > 0 ? value : null;
   }
 }

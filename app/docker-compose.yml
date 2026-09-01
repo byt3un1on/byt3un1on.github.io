@@ -9,6 +9,10 @@ services:
       - ./:/app
       # Volume nomeado para node_modules nao ser encoberto pelo bind mount.
       - node_modules:/app/node_modules
+      # A esteira vive em .github/, fora de app/, porque o GitHub so a resolve
+      # ali. Somente leitura: os cenarios precisam **medir** a esteira, nao
+      # altera-la de dentro do container.
+      - ../.github:/app/.github:ro
     environment:
       WIREMOCK_BASE_URL: http://wiremock:8080
       GITHUB_API_BASE_URL: ${GITHUB_API_BASE_URL:-https://api.github.com}

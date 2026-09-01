@@ -1,4 +1,4 @@
 {
-  "active": "specs/002-identidade-visual-da-vitrine",
-  "title": "Utilizando como principais referências: https://oxide.computer/, https://zed.dev/ e https://thebigcb.com/, trace uma paleta de cores, escolhe um framework de estilo adequado, e ajuste a aparência da nossa vitrine para ficar agradável e seguir um estilo similar a estes das referências. Misture eles para gerar um original nosso!"
+  "active": "specs/003-esteira-de-entrega-continua",
+  "title": "Pipeline CI/CD que entrega o site como GitHub Pages por meio de esteira em git flow, com portoes bloqueantes e modos manual e automatico"
 }

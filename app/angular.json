@@ -74,6 +74,8 @@
               "main_report.ts",
               "infra/init/ioc_init.ts",
               "infra/init/cli_ioc_init.ts",
+              "infra/init/pipeline_ioc_init.ts",
+              "main_pipeline.ts",
               "infra/init/web_init.ts",
               "infra/init/web_server.ts",
               "tests/**",
