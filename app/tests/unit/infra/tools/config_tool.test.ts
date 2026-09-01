@@ -133,4 +133,167 @@ describe('ConfigTool', () => {
     // Assert
     expect(repositorio).toBe('byt3un1on/byt3un1on.github.io');
   });
+  it('deve devolver o modo da esteira quando o ambiente o declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_MODO: 'manual' });
+
+    // Act
+    const modo = config.pipelineMode();
+
+    // Assert
+    expect(modo).toBe('manual');
+  });
+
+  it('deve devolver nulo para o modo quando o ambiente nao o declara', () => {
+    // Arrange
+    const config = new ConfigTool({});
+
+    // Act
+    const modo = config.pipelineMode();
+
+    // Assert
+    expect(modo).toBeNull();
+  });
+
+  it('deve devolver nulo para o modo quando o ambiente o declara em branco', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_MODO: '   ' });
+
+    // Act
+    const modo = config.pipelineMode();
+
+    // Assert
+    expect(modo).toBeNull();
+  });
+
+  it('deve devolver as marcacoes da Pull Request quando o ambiente as declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_MODO_ROTULO: 'manual,urgente' });
+
+    // Act
+    const rotulos = config.pipelineModeLabel();
+
+    // Assert
+    expect(rotulos).toBe('manual,urgente');
+  });
+
+  it('deve devolver nulo para as marcacoes quando o ambiente nao as declara', () => {
+    // Arrange
+    const config = new ConfigTool({});
+
+    // Act
+    const rotulos = config.pipelineModeLabel();
+
+    // Assert
+    expect(rotulos).toBeNull();
+  });
+
+  it('deve devolver o arquivo de resumo quando o ambiente o declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_RESUMO: '/tmp/resumo.md' });
+
+    // Act
+    const caminho = config.runSummaryPath();
+
+    // Assert
+    expect(caminho).toBe('/tmp/resumo.md');
+  });
+
+  it('deve devolver nulo para o arquivo de resumo quando o ambiente nao o declara', () => {
+    // Arrange
+    const config = new ConfigTool({});
+
+    // Act
+    const caminho = config.runSummaryPath();
+
+    // Assert
+    expect(caminho).toBeNull();
+  });
+  it('deve devolver os resultados dos jobs quando o ambiente os declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_RESULTADOS: '[{"name":"Portão","status":"success"}]' });
+
+    // Act
+    const resultados = config.pipelineResults();
+
+    // Assert
+    expect(resultados).toBe('[{"name":"Portão","status":"success"}]');
+  });
+
+  it('deve devolver nulo para os resultados quando o ambiente nao os declara', () => {
+    // Arrange
+    const config = new ConfigTool({});
+
+    // Act
+    const resultados = config.pipelineResults();
+
+    // Assert
+    expect(resultados).toBeNull();
+  });
+
+  it('deve devolver o nome do job do resumo quando o ambiente o declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_JOB: 'Análise estática' });
+
+    // Act
+    const job = config.summaryJob();
+
+    // Assert
+    expect(job).toBe('Análise estática');
+  });
+
+  it('deve devolver nulo para o nome do job quando o ambiente nao o declara', () => {
+    // Arrange
+    const config = new ConfigTool({});
+
+    // Act
+    const job = config.summaryJob();
+
+    // Assert
+    expect(job).toBeNull();
+  });
+
+  it('deve devolver a situacao do job quando o ambiente a declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_STATUS: 'failure' });
+
+    // Act
+    const situacao = config.summaryStatus();
+
+    // Assert
+    expect(situacao).toBe('failure');
+  });
+
+  it('deve devolver nulo para a situacao quando o ambiente nao a declara', () => {
+    // Arrange
+    const config = new ConfigTool({});
+
+    // Act
+    const situacao = config.summaryStatus();
+
+    // Assert
+    expect(situacao).toBeNull();
+  });
+
+  it('deve devolver o detalhe do job quando o ambiente o declara', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_DETALHE: 'cobertura em 84%' });
+
+    // Act
+    const detalhe = config.summaryDetail();
+
+    // Assert
+    expect(detalhe).toBe('cobertura em 84%');
+  });
+
+  it('deve devolver nulo para o detalhe quando o ambiente o declara em branco', () => {
+    // Arrange
+    const config = new ConfigTool({ ESTEIRA_DETALHE: '' });
+
+    // Act
+    const detalhe = config.summaryDetail();
+
+    // Assert
+    expect(detalhe).toBeNull();
+  });
 });

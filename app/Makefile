@@ -2,7 +2,7 @@
 # fora daqui, e todo alvo roda dentro do servico `dev` do compose.
 
 .PHONY: infra init install build run test cover it bdd lint fmt validate \
-        down ps logs catalog audit report
+        down ps logs catalog audit report pipeline audit-only bdd-only
 
 COMPOSE := docker compose
 # A credencial de build e repassada por exec, e nao so na criacao do container:
@@ -14,6 +14,11 @@ COMPOSE := docker compose
 GITHUB_TOKEN ?= $(GH_TOKEN)
 export GITHUB_TOKEN
 DEV     := $(COMPOSE) exec -T -e GITHUB_TOKEN dev
+# A esteira passa dado por ambiente, e nao por argumento: `make` quebra o
+# argumento em espacos, e "Análise estática=success" viraria dois alvos.
+ESTEIRA := $(COMPOSE) exec -T -e ESTEIRA_MODO -e ESTEIRA_MODO_ROTULO \
+           -e ESTEIRA_RESULTADOS -e ESTEIRA_JOB -e ESTEIRA_STATUS \
+           -e ESTEIRA_DETALHE -e ESTEIRA_RESUMO dev
 # Expansao adiada com '=': com ':=' o $@ estaria vazio e o proprio alvo
 # entraria no argumento (make fmt viraria 'prettier --write fmt').
 ARG      = $(filter-out $@,$(MAKECMDGOALS))
@@ -60,7 +65,12 @@ it:
 
 # Depende de audit porque o cenario de RNF-01 e RNF-03 afirma sobre o relatorio
 # do Lighthouse que o audit produz. A dependencia e de dado, nao de gosto.
-bdd: build audit
+bdd: build audit-only
+	@$(MAKE) --no-print-directory bdd-only
+
+# Mesma receita de `bdd`, sem reconstruir nem reauditar: na esteira, construcao
+# e auditoria ja rodaram em jobs proprios e o artefato chega baixado.
+bdd-only:
 	$(COMPOSE) up -d wiremock
 	# Servidor de arquivos puro sobre o dist: se o sitio funciona aqui, funciona
 	# no Pages, e o Principio 7 fica provado pela propria suite.
@@ -72,11 +82,22 @@ bdd: build audit
 # Nao chama cucumber: a varredura axe vive em tests/bdd/steps/browser, sob o
 # alvo bdd. Se audit a chamasse, os dois alvos se chamariam em circulo.
 audit: build
+	@$(MAKE) --no-print-directory audit-only
+
+# Mesma receita de `audit`, sem reconstruir: o comportamento externo de `audit`
+# fica identico, e a esteira ganha como auditar o artefato que ja tem.
+audit-only:
 	$(DEV) npx lhci autorun --config=lighthouserc.json
 	$(DEV) sh scripts/check_links.sh
 
 report:
 	$(DEV) $(NODETS) main_report.ts $(ARG)
+
+# Subcomandos da esteira: version, mode, gate, summary. Silencioso de proposito
+# — a saida e capturada por `$$(make -s pipeline version)` e redirecionada para
+# o resumo da execucao, e eco de comando corromperia as duas coisas.
+pipeline:
+	@$(ESTEIRA) $(NODETS) main_pipeline.ts $(ARG)
 
 lint:
 	$(DEV) npx eslint $(if $(ARG),$(ARG),.)

@@ -1,0 +1,198 @@
+# Estagio 2: a aprovacao da Pull Request de feature promove a mudanca a develop
+# e abre a release. O gatilho e a **revisao**, porque e por aprovacao que o
+# pedido encadeia a esteira.
+name: Action - feature -> develop
+
+run-name: Action - ${{ github.event.pull_request.head.ref }} -> develop
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: promover-develop-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  # A credencial dedicada opera a esteira. A padrao nao dispara outra acao, e
+  # sem disparo a cadeia por aprovacao nao existe (RF-20).
+  GH_TOKEN: ${{ secrets.ESTEIRA_TOKEN }}
+  ESTEIRA_MODO: ${{ vars.ESTEIRA_MODO }}
+  ESTEIRA_MODO_ROTULO: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+
+jobs:
+  modo:
+    name: Modo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: >-
+      github.event.review.state == 'approved' &&
+      startsWith(github.event.pull_request.head.ref, 'feature/') &&
+      github.event.pull_request.base.ref == 'develop'
+    outputs:
+      modo: ${{ steps.decidir.outputs.modo }}
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Decidir o modo
+        id: decidir
+        working-directory: app
+        run: |
+          # RF-20: sem a credencial dedicada a cadeia nao encadeia. Falhar
+          # nomeando a causa vale mais que falhar no primeiro `gh` sem token.
+          if [ -z "$GH_TOKEN" ]; then
+            ESTEIRA_JOB=Modo ESTEIRA_STATUS=failure \
+              ESTEIRA_DETALHE="credencial ESTEIRA_TOKEN ausente no repositorio" \
+              make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "modo=$(make -s pipeline mode)" >> "$GITHUB_OUTPUT"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Modo"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "modo em vigor: ${{ steps.decidir.outputs.modo }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  merge:
+    name: Merge develop
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: modo
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      # RF-17: conflito nao e resolvido aqui. A saida do comando vai para a
+      # classificacao, que nomeia a causa em vez de deixar erro generico.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Integrar a feature em develop
+        run: |
+          gh pr merge "${{ github.event.pull_request.number }}" --merge --delete-branch=false 2>merge.log \
+            || { echo "DETALHE=$(tail -c 400 merge.log)" >> "$GITHUB_ENV"; exit 1; }
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Merge develop"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "${{ env.DETALHE }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  versao:
+    name: Versão
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: merge
+    outputs:
+      versao: ${{ steps.calcular.outputs.versao }}
+    steps:
+      # Historico completo: sem ele `git tag` nao enxerga a ultima versao e o
+      # calculo devolveria numero errado (RF-10).
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: develop
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Calcular a próxima versão
+        id: calcular
+        working-directory: app
+        run: echo "versao=$(make -s pipeline version)" >> "$GITHUB_OUTPUT"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Versão"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "próxima versão: ${{ steps.calcular.outputs.versao }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  branch:
+    name: Branch release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: versao
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: master
+          fetch-depth: 0
+      # A branch de release nasce de master, e nao de develop: e master que
+      # carrega o que esta publicado.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Abrir a branch de release
+        run: |
+          git switch -c "release/${{ needs.versao.outputs.versao }}"
+          git push origin "release/${{ needs.versao.outputs.versao }}"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Branch release"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "release/${{ needs.versao.outputs.versao }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  pr:
+    name: PR para release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [modo, versao, branch]
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      # Aberta com a credencial padrao para que a aprovacao automatica, feita
+      # pela credencial dedicada, seja de outra identidade — o GitHub proibe
+      # que quem abre aprove.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Abrir a Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base "release/${{ needs.versao.outputs.versao }}" --head develop \
+            --title "PR - develop -> release/${{ needs.versao.outputs.versao }}" \
+            --body "Aberta pela esteira. Modo em vigor: ${{ needs.modo.outputs.modo }}."
+      # RF-09: no modo automatico so a primeira Pull Request espera por gente.
+      - name: Aprovar sozinha no modo automático
+        if: needs.modo.outputs.modo == 'automatico'
+        run: |
+          gh pr review "$(gh pr list --head develop --state open --json number --jq '.[0].number')" \
+            --approve --body "Aprovada pela esteira: modo automático em vigor."
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "PR para release"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "modo: ${{ needs.modo.outputs.modo }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"

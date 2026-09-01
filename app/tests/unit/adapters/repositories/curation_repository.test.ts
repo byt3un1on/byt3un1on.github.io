@@ -15,6 +15,13 @@ function config(path = 'data/curation.json'): IConfigTool {
     catalogOutputPath: vi.fn(),
     prerenderRoutesPath: vi.fn(),
     siteRepositoryFullName: vi.fn(),
+    pipelineMode: vi.fn().mockReturnValue(null),
+    pipelineModeLabel: vi.fn().mockReturnValue(null),
+    runSummaryPath: vi.fn().mockReturnValue(null),
+    pipelineResults: vi.fn().mockReturnValue(null),
+    summaryJob: vi.fn().mockReturnValue(null),
+    summaryStatus: vi.fn().mockReturnValue(null),
+    summaryDetail: vi.fn().mockReturnValue(null),
   };
 }
 

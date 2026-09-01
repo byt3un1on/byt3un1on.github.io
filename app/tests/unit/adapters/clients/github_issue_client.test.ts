@@ -14,6 +14,13 @@ function config(): IConfigTool {
     catalogOutputPath: vi.fn().mockReturnValue('data/catalog.generated.json'),
     prerenderRoutesPath: vi.fn().mockReturnValue('data/prerender-routes.txt'),
     siteRepositoryFullName: vi.fn().mockReturnValue('byt3un1on/byt3un1on.github.io'),
+    pipelineMode: vi.fn().mockReturnValue(null),
+    pipelineModeLabel: vi.fn().mockReturnValue(null),
+    runSummaryPath: vi.fn().mockReturnValue(null),
+    pipelineResults: vi.fn().mockReturnValue(null),
+    summaryJob: vi.fn().mockReturnValue(null),
+    summaryStatus: vi.fn().mockReturnValue(null),
+    summaryDetail: vi.fn().mockReturnValue(null),
   };
 }
 
