@@ -1,0 +1,160 @@
+# Estagio 4: o merge da release em master publica a vitrine e marca a versao.
+# E o unico fluxo da esteira que publica. Como o merge ja aconteceu — ele e o
+# gatilho —, o que se constroi e o que master passou a conter, e nao mais o que
+# uma branch pretendia levar ate la.
+name: Action - release -> master
+
+run-name: Action - ${{ github.event.pull_request.head.ref }} -> master
+
+on:
+  # O filtro de destino vive no gatilho, e nao so no `if:` do job. Os tres
+  # estagios escutam o mesmo evento: sem ele, um merge cria tres execucoes, duas
+  # das quais so aparecem para se descartarem — e com nome errado, porque o
+  # `run-name` e calculado antes do descarte. Filtro de gatilho e avaliado antes
+  # de a execucao existir.
+  pull_request:
+    types: [closed]
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publicar-master
+  cancel-in-progress: false
+
+env:
+  # Este estagio nao encadeia nenhum outro, entao nao precisa da credencial
+  # dedicada: a padrao publica, marca e libera sem disparar nada adiante.
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    name: Construção
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # `merged == true` separa merge de fechamento sem merge: uma Pull Request
+    # descartada tambem emite `closed`, e descartar nao publica.
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/') &&
+      github.event.pull_request.base.ref == 'master'
+    outputs:
+      versao: ${{ steps.versao.outputs.versao }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: master
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Construir o sítio
+        working-directory: app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make build
+      - name: Nomear a versão
+        id: versao
+        run: echo "versao=${{ github.event.pull_request.head.ref }}" | sed 's|release/||' >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sitio
+          path: app/dist/browser
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Construção"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  audit:
+    name: Auditoria
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: build
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: master
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio
+          path: app/dist/browser
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # Principio 9: nada e publicado sem a medicao passar. Aqui ela e portao.
+      - name: Auditar acessibilidade e desempenho
+        working-directory: app
+        run: make audit-only
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Auditoria"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Publicação
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: audit
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      # RF-14: publica o artefato que a auditoria aprovou. Nao ha `make build`
+      # aqui, de proposito — construir de novo publicaria coisa nao verificada.
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio
+          path: sitio
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: sitio
+      - id: pages
+        uses: actions/deploy-pages@v4
+
+  release:
+    name: Tag e release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # A marca so existe depois de a publicacao concluir: a tag descreve o que
+    # esta no ar, e nao o que se pretendia pôr no ar.
+    needs: [build, deploy]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: master
+          fetch-depth: 0
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Marcar e liberar a versão
+        run: |
+          gh release create "${{ needs.build.outputs.versao }}" --target master \
+            --title "${{ needs.build.outputs.versao }}" --generate-notes
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Tag e release"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "${{ needs.build.outputs.versao }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"

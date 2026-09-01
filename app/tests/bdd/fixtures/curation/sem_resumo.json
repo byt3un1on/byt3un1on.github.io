@@ -1,0 +1,11 @@
+{
+  "projects": [
+    {
+      "slug": "shortsmaker",
+      "name": "Shortsmaker",
+      "summary": "   ",
+      "highlighted": false,
+      "repositories": ["shortsmaker-api"]
+    }
+  ]
+}

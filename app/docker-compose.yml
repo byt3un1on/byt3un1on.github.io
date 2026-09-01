@@ -1,0 +1,35 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: byt3un1on/vitrine-dev
+    working_dir: /app
+    volumes:
+      - ./:/app
+      # Volume nomeado para node_modules nao ser encoberto pelo bind mount.
+      - node_modules:/app/node_modules
+      # A esteira vive em .github/, fora de app/, porque o GitHub so a resolve
+      # ali. Somente leitura: os cenarios precisam **medir** a esteira, nao
+      # altera-la de dentro do container.
+      - ../.github:/app/.github:ro
+      # O `.git` vive na raiz do repositorio, um nivel acima de `app/`: sem
+      # monta-lo, o calculo da versao nao enxerga etiqueta nem commit algum.
+      # Somente leitura porque a esteira le a historia, nunca a reescreve.
+      - ../.git:/gitdir:ro
+    environment:
+      WIREMOCK_BASE_URL: http://wiremock:8080
+      GITHUB_API_BASE_URL: ${GITHUB_API_BASE_URL:-https://api.github.com}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    depends_on:
+      - wiremock
+    command: ['sleep', 'infinity']
+
+  wiremock:
+    image: wiremock/wiremock:3.13.2
+    command: ['--verbose', '--global-response-templating']
+    ports:
+      - '8080'
+
+volumes:
+  node_modules:

@@ -1,0 +1,11 @@
+dist/
+coverage/
+node_modules/
+data/catalog.generated.json
+data/prerender-routes.txt
+
+# A esteira vive em .github/, fora de app/, e e montada somente leitura no
+# servico dev para os cenarios a medirem sem poderem altera-la. Formatar aqui
+# falharia por escrita, e o formatador de codigo da aplicacao nao manda em
+# configuracao de repositorio.
+.github/

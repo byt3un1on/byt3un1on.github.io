@@ -1,0 +1,18 @@
+{
+  "projects": [
+    {
+      "slug": "com-privado",
+      "name": "Projeto com repositorio privado",
+      "summary": "Declara um repositorio publico e um privado.",
+      "highlighted": false,
+      "repositories": ["shortsmaker-api", "niche-scout"]
+    },
+    {
+      "slug": "so-vazio",
+      "name": "Projeto so com repositorio vazio",
+      "summary": "Declara apenas um repositorio sem commit algum.",
+      "highlighted": false,
+      "repositories": ["documentation-site"]
+    }
+  ]
+}

@@ -1,0 +1,347 @@
+/* Identidade visual da vitrine: escura, tipografica, sem imagem.
+   Toda cor daqui teve o contraste calculado pela formula de luminancia
+   relativa da WCAG antes de entrar — o RF-02 exige que o conjunto seja finito
+   e declarado, e e este bloco que o declara. */
+
+/* Geist variavel, subconjunto latino, servida pelo proprio sitio.
+   Declarada aqui em vez de importar a folha do pacote porque a do pacote traz
+   cinco subconjuntos — cirilico, grego, vietnamita, latin-ext e latin —, e a
+   vitrine so escreve portugues. Um arquivo, 29,4 kB, e o RNF-06 satisfeito por
+   construcao: nenhum dominio externo. */
+@font-face {
+  font-family: 'Geist Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  /* `swap` para o texto aparecer antes da fonte chegar; a face de recuo abaixo
+     e quem impede que a troca desloque o layout e estoure o CLS. */
+  font-display: swap;
+  src: url('./node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Face de recuo com as metricas aproximadas da Geist: enquanto a variavel nao
+   chegou, o texto ja ocupa uma caixa do mesmo tamanho, e a troca nao empurra
+   nada. E esta declaracao, e nao a pre-carga, que sustenta o CLS de 0,1. */
+@font-face {
+  font-family: 'Geist recuo';
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans');
+  size-adjust: 96%;
+  ascent-override: 95%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+:root {
+  /* Contraste medido sobre --surface (#0e1011), nao estimado:
+       --text        15,73:1
+       --text-muted   7,41:1
+       --accent      10,69:1
+       --line         3,02:1  — limite que carrega significado, minimo do RNF-02
+     --surface-raised (1,08:1) e --hairline (1,33:1) sao separacao decorativa e
+     por isso nunca carregam texto nem informam sozinhos. */
+  --surface: #0e1011;
+  --surface-raised: #16191b;
+  --text: #e6eaea;
+  --text-muted: #9aa3a5;
+  --accent: #3ddc84;
+  --line: #5a6163;
+  --hairline: #262b2d;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+  --space-6: 4rem;
+
+  --measure: 66ch;
+
+  --font-sans:
+    'Geist Variable', 'Geist recuo', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  /* Quatro niveis, e o RF-03 exige que cada par difira em mais de um atributo.
+     Por isso cada nivel muda tamanho E ao menos um entre peso, entrelinha,
+     espacamento e familia. */
+  --font-display: clamp(2.5rem, 1.6rem + 4vw, 4.5rem);
+  --font-title: clamp(1.25rem, 1.1rem + 0.7vw, 1.75rem);
+  --font-body: clamp(1rem, 0.97rem + 0.13vw, 1.125rem);
+  --font-meta: 0.8125rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Uma paleta so, por decisao de identidade: quem prefere tema claro no
+     sistema tambem ve a vitrine escura. Isto faz barra de rolagem e controle
+     nativo acompanharem, em vez de aparecerem claros sobre o fundo escuro. */
+  color-scheme: dark;
+  background: var(--surface);
+  /* Sem isto a raiz fica com a cor inicial que o navegador sintetiza — branco
+     puro sob `color-scheme: dark` —, que e cor exibida fora do conjunto do
+     RF-02 e que ninguem declarou. */
+  color: var(--text);
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+/* Nenhum elemento pode forcar rolagem horizontal a 320 px — RNF-07. */
+img,
+svg,
+video,
+table,
+pre {
+  max-width: 100%;
+}
+
+/* --- Tipografia: os quatro niveis ---------------------------------------- */
+
+h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--font-display);
+  /* Grande e leve, com espacamento negativo e entrelinha de 1,02 — a licao
+     medida na Oxide, onde o h1 tem peso 400 e nao 700. */
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+h2 {
+  margin: var(--space-5) 0 var(--space-3);
+  font-size: var(--font-title);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+h3 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-title);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+
+p {
+  margin: 0 0 var(--space-3);
+  max-width: var(--measure);
+}
+
+/* --- Ligacoes ------------------------------------------------------------ */
+
+a {
+  color: var(--accent);
+  text-decoration-color: var(--line);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  text-decoration-color: var(--accent);
+}
+
+:focus-visible {
+  /* RNF-02: o acento fica em 10,69:1 contra o fundo, muito acima dos 3:1. */
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --- Enquadramento: identico em toda rota, RF-08 ------------------------- */
+
+.bu-container {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+header.bu-container {
+  padding-block: var(--space-4);
+  border-bottom: 1px solid var(--hairline);
+}
+
+header nav {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+}
+
+header nav a {
+  font-family: var(--font-mono);
+  font-size: var(--font-meta);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+header nav a:hover,
+header nav a.ativo {
+  color: var(--text);
+}
+
+main.bu-container {
+  padding-block: var(--space-6) var(--space-6);
+  min-height: 60vh;
+}
+
+footer.bu-container {
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--hairline);
+  color: var(--text-muted);
+  font-size: var(--font-meta);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+footer p {
+  margin-bottom: var(--space-2);
+}
+
+footer ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* --- Catalogo ------------------------------------------------------------ */
+
+.bu-prose {
+  max-width: var(--measure);
+}
+
+/* RF-06: o espaco entre itens supera o espaco interno do item, para o olho
+   agrupar cada projeto como uma unidade sem precisar de moldura. */
+.bu-grid {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  margin-top: var(--space-5);
+}
+
+/* --- Controles ----------------------------------------------------------- */
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-meta);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+button {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: var(--font-meta);
+  letter-spacing: 0.04em;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--text-muted);
+}
+
+/* Regiao viva da contagem, e listas de tecnologia: metadado. */
+[role='status'] {
+  font-family: var(--font-mono);
+  font-size: var(--font-meta);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+ul[aria-label='Tecnologias'] {
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+ul[aria-label='Tecnologias'] li {
+  font-family: var(--font-mono);
+  font-size: var(--font-meta);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  padding: 0 var(--space-2);
+}
+
+/* Lista de repositorios da pagina de projeto. */
+main ul:not([aria-label='Tecnologias']) {
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+}
+
+main ul:not([aria-label='Tecnologias']) li {
+  padding-block: var(--space-1);
+}
+
+.bu-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* RNF-08: cobre animacao E transicao — a 001 ja trazia esta regra, e ela
+   continua valendo com a identidade nova. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
