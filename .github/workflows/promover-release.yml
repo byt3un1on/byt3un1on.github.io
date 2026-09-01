@@ -1,12 +1,13 @@
-# Estagio 3: a aprovacao da Pull Request de develop leva o conteudo a branch de
-# release e abre a ultima Pull Request, a que publica. Nada e publicado aqui.
+# Estagio 3: o merge de develop na branch de release abre a ultima Pull
+# Request, a que publica. Nada e publicado aqui. O gatilho e o merge, e nao a
+# aprovacao — mesma razao do estagio anterior.
 name: Action - develop -> release
 
 run-name: Action - develop -> ${{ github.event.pull_request.base.ref }}
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types: [closed]
 
 permissions:
   contents: read
@@ -25,8 +26,10 @@ jobs:
     name: Modo
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # `merged == true` separa merge de fechamento sem merge: uma Pull Request
+    # descartada tambem emite `closed`, e descartar nao promove.
     if: >-
-      github.event.review.state == 'approved' &&
+      github.event.pull_request.merged == true &&
       github.event.pull_request.head.ref == 'develop' &&
       startsWith(github.event.pull_request.base.ref, 'release/')
     outputs:
@@ -60,11 +63,52 @@ jobs:
           ESTEIRA_DETALHE: "modo em vigor: ${{ steps.decidir.outputs.modo }}"
         run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
 
+  pr:
+    name: PR para master
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: modo
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      numero: ${{ steps.abrir.outputs.numero }}
+    steps:
+      - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Abrir a Pull Request
+        id: abrir
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE: ${{ github.event.pull_request.base.ref }}
+        run: |
+          gh pr create --base master --head "$RELEASE" \
+            --title "PR - $RELEASE -> master" \
+            --body "Aberta pela esteira. O merge desta publica a vitrine e cria a release."
+          echo "numero=$(gh pr list --head "$RELEASE" --base master --state open \
+            --json number --jq '.[0].number')" >> "$GITHUB_OUTPUT"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "PR para master"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "modo: ${{ needs.modo.outputs.modo }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
   merge:
-    name: Merge release
+    name: Merge master
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: modo
+    needs: [modo, pr]
+    # RF-09: no modo automatico so a primeira Pull Request espera por gente.
+    # A credencial dedicada faz o merge porque a padrao nao dispara o estagio
+    # que publica.
+    if: needs.modo.outputs.modo == 'automatico'
     permissions:
       contents: write
       pull-requests: write
@@ -75,54 +119,17 @@ jobs:
       - name: Subir o serviço dev
         working-directory: app
         run: make infra init
-      - name: Integrar develop na release
+      # RF-17: conflito nao e resolvido aqui. A saida do comando vai para a
+      # classificacao, que nomeia a causa em vez de deixar erro generico.
+      - name: Integrar a release em master
         run: |
-          gh pr merge "${{ github.event.pull_request.number }}" --merge --delete-branch=false 2>merge.log \
+          gh pr merge "${{ needs.pr.outputs.numero }}" --merge --delete-branch=false 2>merge.log \
             || { echo "DETALHE=$(tail -c 400 merge.log)" >> "$GITHUB_ENV"; exit 1; }
       - name: Resumo
         if: always()
         working-directory: app
         env:
-          ESTEIRA_JOB: "Merge release"
+          ESTEIRA_JOB: "Merge master"
           ESTEIRA_STATUS: "${{ job.status }}"
           ESTEIRA_DETALHE: "${{ env.DETALHE }}"
-        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
-
-  pr:
-    name: PR para master
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [modo, merge]
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v5
-      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
-      # estar de pe tambem nos jobs que so falam com o GitHub.
-      - name: Subir o serviço dev
-        working-directory: app
-        run: make infra init
-      - name: Abrir a Pull Request
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE: ${{ github.event.pull_request.base.ref }}
-        run: |
-          gh pr create --base master --head "$RELEASE" \
-            --title "PR - $RELEASE -> master" \
-            --body "Aberta pela esteira. Aprovar publica a vitrine e cria a release."
-      - name: Aprovar sozinha no modo automático
-        if: needs.modo.outputs.modo == 'automatico'
-        env:
-          RELEASE: ${{ github.event.pull_request.base.ref }}
-        run: |
-          gh pr review "$(gh pr list --head "$RELEASE" --base master --state open --json number --jq '.[0].number')" \
-            --approve --body "Aprovada pela esteira: modo automático em vigor."
-      - name: Resumo
-        if: always()
-        working-directory: app
-        env:
-          ESTEIRA_JOB: "PR para master"
-          ESTEIRA_STATUS: "${{ job.status }}"
-          ESTEIRA_DETALHE: "modo: ${{ needs.modo.outputs.modo }}"
         run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"

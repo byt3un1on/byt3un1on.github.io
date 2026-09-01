@@ -73,14 +73,14 @@ Given(
 );
 
 Given(
-  'que a Pull Request {string} recebeu aprovação de proprietário',
+  'que a Pull Request {string} foi mergeada',
   function (this: VitrineWorld, titulo: string): void {
     this.esteiraPullRequest = titulo;
   },
 );
 
 Given(
-  'que a Pull Request {string} recebeu aprovação',
+  'que a Pull Request {string} foi fechada sem merge',
   function (this: VitrineWorld, titulo: string): void {
     this.esteiraPullRequest = titulo;
   },
@@ -146,7 +146,7 @@ When('a publicação no GitHub Pages acontece', function (): void {
   return;
 });
 
-When('uma Pull Request da esteira aguarda aprovação', function (): void {
+When('uma Pull Request da esteira aguarda revisão', function (): void {
   return;
 });
 
@@ -295,16 +295,31 @@ Then(
   },
 );
 
+// O gatilho da promocao e o merge consumado, e nao a revisao aprovada: aprovar
+// registra opiniao, mergear consuma o fato. Estes dois passos guardam essa
+// distincao contra regressao — foi por ela que a cadeia ficou parada uma vez.
 Then(
-  'a branch de feature é integrada em develop',
+  'a promoção é disparada pelo merge, e não pela aprovação',
+  function (this: VitrineWorld): void {
+    const fluxo = this.esteiraFluxo;
+    assert.ok(fluxo, 'nenhuma ação foi executada antes desta verificação');
+    assert.ok(fluxo.triggers.includes('pull_request'), 'o gatilho precisa ser pull_request');
+    assert.ok(
+      !fluxo.triggers.includes('pull_request_review'),
+      'aprovação não pode disparar estágio algum',
+    );
+    assert.ok(fluxo.raw.includes('types: [closed]'), 'o fluxo precisa reagir ao fechamento');
+    assert.ok(fluxo.raw.includes('merged == true'), 'só merge consumado promove');
+    assert.ok(!fluxo.raw.includes('review.state'), 'nenhum estágio pode filtrar estado de revisão');
+  },
+);
+
+Then(
+  'a ação só reage a merge de branch de feature em develop',
   async function (this: VitrineWorld): Promise<void> {
     const fluxo = await this.workflow.byFile(PROMOVER_DEVELOP);
-    assert.ok(fluxo.triggers.includes('pull_request_review'));
-    // O merge e feito pelo numero da Pull Request, nao pelo nome da branch: e a
-    // condicao do fluxo que garante origem e destino.
     assert.ok(fluxo.raw.includes("base.ref == 'develop'"), 'o destino precisa ser develop');
     assert.ok(fluxo.raw.includes("head.ref, 'feature/'"), 'a origem precisa ser feature');
-    assert.ok(acha(fluxo.jobs, 'Merge develop').script.includes('gh pr merge'));
   },
 );
 
@@ -346,14 +361,11 @@ Then('master não é alterada nesta etapa', async function (this: VitrineWorld):
 });
 
 Then(
-  'develop é integrada em {string}',
-  async function (this: VitrineWorld, branch: string): Promise<void> {
-    assert.ok(branch.startsWith('release/'), `branch inesperada no cenario: ${branch}`);
+  'a ação só reage a merge de develop em branch de release',
+  async function (this: VitrineWorld): Promise<void> {
     const fluxo = await this.workflow.byFile(PROMOVER_RELEASE);
-    assert.ok(fluxo.triggers.includes('pull_request_review'));
     assert.ok(fluxo.raw.includes("head.ref == 'develop'"), 'a origem precisa ser develop');
     assert.ok(fluxo.raw.includes("base.ref, 'release/'"), 'o destino precisa ser release');
-    assert.ok(acha(fluxo.jobs, 'Merge release').script.includes('gh pr merge'));
   },
 );
 
@@ -368,12 +380,33 @@ Then('o sítio é publicado no GitHub Pages', async function (this: VitrineWorld
 });
 
 Then(
-  'a branch de release é integrada em master',
+  'a ação só reage a merge de branch de release em master',
   async function (this: VitrineWorld): Promise<void> {
     const fluxo = await this.workflow.byFile(PUBLICAR_MASTER);
     assert.ok(fluxo.raw.includes("base.ref == 'master'"), 'o destino precisa ser master');
     assert.ok(fluxo.raw.includes("head.ref, 'release/'"), 'a origem precisa ser release');
-    assert.ok(acha(fluxo.jobs, 'Merge master').script.includes('gh pr merge'));
+  },
+);
+
+Then(
+  'a ação exige merge consumado, e fechamento sem merge não a dispara',
+  function (this: VitrineWorld): void {
+    const fluxo = this.esteiraFluxo;
+    assert.ok(fluxo, 'nenhuma ação foi executada antes desta verificação');
+    assert.ok(
+      fluxo.raw.includes('merged == true'),
+      'sem essa condição, descartar uma Pull Request promoveria a mudança',
+    );
+  },
+);
+
+Then(
+  'isso vale igualmente para os três estágios da cadeia',
+  async function (this: VitrineWorld): Promise<void> {
+    for (const arquivo of [PROMOVER_DEVELOP, PROMOVER_RELEASE, PUBLICAR_MASTER]) {
+      const fluxo = await this.workflow.byFile(arquivo);
+      assert.ok(fluxo.raw.includes('merged == true'), `${arquivo} promove sem merge consumado`);
+    }
   },
 );
 
@@ -387,10 +420,10 @@ Then(
 );
 
 Then(
-  'a integração em master não acontece antes de a publicação ter concluído com sucesso',
+  'a marca da versão não é criada antes de a publicação ter concluído com sucesso',
   async function (this: VitrineWorld): Promise<void> {
     const jobs = await this.workflow.jobsOf(PUBLICAR_MASTER);
-    assert.ok(acha(jobs, 'Merge master').needs.includes(acha(jobs, 'Publicação').id));
+    assert.ok(acha(jobs, 'Tag e release').needs.includes(acha(jobs, 'Publicação').id));
   },
 );
 
@@ -411,7 +444,7 @@ Then(
 );
 
 Then(
-  'a aprovação que satisfaz o portão é a de um proprietário declarado',
+  'a revisão que satisfaz o portão é a de um proprietário declarado',
   async function (this: VitrineWorld): Promise<void> {
     const proprietarios = await this.workflow.readCodeowners();
     assert.ok(/^\s*\*\s+@\S+/m.test(proprietarios), 'CODEOWNERS sem proprietario para a raiz');
@@ -419,10 +452,13 @@ Then(
 );
 
 Then(
-  'aprovação de quem não é proprietário não libera a cadeia',
+  'a esteira nunca mergeia a Pull Request de feature sozinha',
   async function (this: VitrineWorld): Promise<void> {
-    const fluxo = await this.workflow.byFile(PROMOVER_DEVELOP);
-    assert.ok(fluxo.raw.includes('review.state'), 'o fluxo precisa filtrar o estado da revisao');
+    const fluxo = await this.workflow.byFile(VALIDAR);
+    assert.ok(
+      !fluxo.raw.includes('gh pr merge'),
+      'o portão humano é o merge da Pull Request de feature',
+    );
   },
 );
 

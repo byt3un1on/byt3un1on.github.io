@@ -36,12 +36,13 @@ encadeados por Pull Request**, em que:
 - **todo portão é bloqueante** e, ao reprovar, diz o motivo em texto legível na própria
   execução, sem exigir leitura de log;
 - a promoção entre branches acontece sozinha assim que o portão humano correspondente é
-  vencido, e termina em publicação no GitHub Pages, merge em `master`, tag e release;
-- existe **modo automático** (padrão), em que só a primeira PR exige aprovação humana, e
+  vencido — e o portão é o **merge** da Pull Request, não a aprovação —, e termina em
+  publicação no GitHub Pages, tag e release;
+- existe **modo automático** (padrão), em que só a primeira PR exige merge humano, e
   **modo manual**, em que toda PR exige.
 
-Observável quando pronto: um push em `feature/**` produz, sem intervenção adicional além das
-aprovações previstas, um sítio publicado e uma release versionada — e qualquer reprovação
+Observável quando pronto: um push em `feature/**` produz, sem intervenção adicional além dos
+merges previstos, um sítio publicado e uma release versionada — e qualquer reprovação
 interrompe a cadeia com o motivo à vista.
 
 ## Fora de escopo
@@ -66,8 +67,8 @@ diagrama. Espera saber, em segundos e sem abrir log, se passou; e, se não passo
 verificações reprovou e por quê.
 
 **Owner da organização** — não escreveu o código. Chega pela notificação da PR, precisa decidir
-aprovar ou não. Espera ver o resultado das verificações antes de decidir, e espera que a
-aprovação seja o único ato que lhe cabe: o que vem depois anda sozinho.
+aprovar e mergear, ou não. Espera ver o resultado das verificações antes de decidir, e espera
+que o merge seja o único ato que lhe cabe: o que vem depois anda sozinho.
 
 **Quem observa a esteira** — pode ser qualquer um dos dois em outro momento. Abre a aba de
 Actions e quer responder, só olhando: em que estágio a mudança está, o que já passou, o que
@@ -82,21 +83,21 @@ falta, e se algo está parado esperando gente.
 | RF-03 | A esteira de validação deve reprovar quando a cobertura ficar **abaixo de 90%**, e a reprovação deve nomear a cobertura medida | obrigatório |
 | RF-04 | Com todos os jobs de verificação aprovados, a esteira deve abrir a Pull Request de título **`PR - feature/<nome-curto> -> develop`**, ou atualizar a que já existir para a mesma branch, sem abrir duplicata | obrigatório |
 | RF-05 | Com qualquer job reprovado, a esteira **não deve abrir nem avançar** a Pull Request, e deve registrar o motivo da reprovação de forma visível na execução | obrigatório |
-| RF-06 | A aprovação da PR `feature -> develop` deve disparar a ação **`Action - feature/<nome-curto> -> develop`**, que faz o merge da feature em `develop`, cria a branch `release/vX.Y.Z` a partir de `master` e abre a PR **`PR - develop -> release/vX.Y.Z`** | obrigatório |
-| RF-07 | A aprovação da PR `develop -> release` deve disparar a ação **`Action - develop -> release/vX.Y.Z`**, que faz o merge de `develop` em `release/vX.Y.Z` e abre a PR **`PR - release/vX.Y.Z -> master`** | obrigatório |
-| RF-08 | A aprovação da PR `release -> master` deve disparar a ação **`Action - release/vX.Y.Z -> master`**, que publica o sítio no GitHub Pages, faz o merge de `release/vX.Y.Z` em `master` e cria a **tag** e a **release** daquela versão | obrigatório |
-| RF-09 | A esteira deve operar em dois modos: **automático**, em que só a PR `feature -> develop` exige aprovação humana e as demais são aprovadas pela própria esteira; e **manual**, em que as três PRs exigem aprovação humana. O modo padrão é uma **configuração do repositório**, cujo valor de fábrica é `automatico`, e uma **marcação aplicada à PR de feature** força o modo manual naquela cadeia | obrigatório |
+| RF-06 | O **merge** da PR `feature -> develop` deve disparar a ação **`Action - feature/<nome-curto> -> develop`**, que cria a branch `release/vX.Y.Z` a partir de `master` e abre a PR **`PR - develop -> release/vX.Y.Z`**. O gatilho é o merge consumado, e não a aprovação: aprovar sem mergear não promove nada, e fechar a PR sem mergear não dispara estágio algum | obrigatório |
+| RF-07 | O **merge** da PR `develop -> release` deve disparar a ação **`Action - develop -> release/vX.Y.Z`**, que abre a PR **`PR - release/vX.Y.Z -> master`** | obrigatório |
+| RF-08 | O **merge** da PR `release -> master` deve disparar a ação **`Action - release/vX.Y.Z -> master`**, que publica em `master` o sítio no GitHub Pages e cria a **tag** e a **release** daquela versão | obrigatório |
+| RF-09 | A esteira deve operar em dois modos: **automático**, em que só a PR `feature -> develop` exige merge humano e as demais são mergeadas pela própria esteira; e **manual**, em que as três PRs exigem merge humano. O modo padrão é uma **configuração do repositório**, cujo valor de fábrica é `automatico`, e uma **marcação aplicada à PR de feature** força o modo manual naquela cadeia | obrigatório |
 | RF-10 | A versão `vX.Y.Z` deve seguir versionamento semântico, derivado das **mensagens de commit no padrão de commits convencionais**: mudança incompatível eleva a *major*, funcionalidade nova eleva a *minor*, e o restante eleva a *patch*. **Não havendo versão anterior alguma**, a primeira versão publicada é **`v1.0.0`**, sem aplicar incremento — o incremento só passa a valer da segunda em diante. Nenhuma versão já existente é repetida ou sobrescrita | obrigatório |
 | RF-11 | Cada ação da esteira deve expor suas etapas como **jobs separados**, de modo que o diagrama do GitHub Actions mostre a sequência sem que seja preciso abrir um job para saber o que ele faz | obrigatório |
 | RF-12 | Quem acompanha uma execução deve conseguir responder, **pelo resumo da execução**, sem abrir log: o que foi verificado, o que passou, o que reprovou e por qual motivo | obrigatório |
-| RF-13 | Toda reprovação de portão deve **interromper a cadeia**: nenhum estágio posterior é executado, e nenhuma PR posterior é aberta ou aprovada | obrigatório |
+| RF-13 | Toda reprovação de portão deve **interromper a cadeia**: nenhum estágio posterior é executado, e nenhuma PR posterior é aberta ou mergeada | obrigatório |
 | RF-14 | A publicação no GitHub Pages deve usar o **mesmo artefato** construído e verificado pelo estágio anterior — não uma construção nova e não verificada | obrigatório |
 | RF-15 | Quando a esteira falhar por motivo de permissão, credencial ausente ou conflito de integração, a execução deve declarar **qual** dessas causas ocorreu, em lugar de terminar com erro genérico | obrigatório |
 | RF-16 | O job de formatação deve **reprovar quando a formatação deixar arquivos modificados**, nomeando os arquivos fora de formato, sem alterar a branch de quem programa | obrigatório |
 | RF-17 | Havendo conflito de integração com a branch de destino, a esteira deve **reprovar e devolver à autora**, nomeando a branch de destino e os arquivos em conflito, sem tentar resolvê-lo sozinha | obrigatório |
 | RF-18 | A publicação agendada existente, que mantém a atualidade do catálogo independentemente de mudança de código, deve **permanecer**, reescrita com as mesmas regras de legibilidade desta esteira — etapas como jobs separados e motivo de falha visível no resumo | obrigatório |
-| RF-19 | O repositório deve declarar seus **proprietários de código**, de modo que a aprovação exigida nas Pull Requests da esteira seja aprovação de proprietário declarado | obrigatório |
-| RF-20 | A esteira deve operar sob **credencial dedicada, registrada como segredo do repositório**, distinta da credencial padrão da execução — sem a qual as ações seguintes não seriam disparadas nem as aprovações automáticas seriam possíveis. Ausente o segredo, a execução deve reprovar declarando essa causa | obrigatório |
+| RF-19 | O repositório deve declarar seus **proprietários de código**, de modo que a revisão exigida na Pull Request de feature seja de proprietário declarado. A esteira nunca mergeia essa Pull Request sozinha, em modo algum | obrigatório |
+| RF-20 | A esteira deve operar sob **credencial dedicada, registrada como segredo do repositório**, distinta da credencial padrão da execução — sem a qual as ações seguintes não seriam disparadas nem os merges automáticos seriam possíveis. Ausente o segredo, a execução deve reprovar declarando essa causa | obrigatório |
 
 ## Requisitos não funcionais
 
@@ -175,30 +176,39 @@ Funcionalidade: Validação da branch de feature
 
 ```gherkin
 # language: pt
-Funcionalidade: Promoção entre branches por aprovação
+Funcionalidade: Promoção entre branches por merge
 
-  Cenário: RF-06 — aprovar a primeira PR promove a feature e abre a release
-    Dado que a Pull Request "PR - feature/nome-curto -> develop" recebeu aprovação de proprietário
+  Cenário: RF-06 — mergear a primeira PR abre a release
+    Dado que a Pull Request "PR - feature/nome-curto -> develop" foi mergeada
     Quando a ação "Action - feature/nome-curto -> develop" é executada
-    Então a branch de feature é integrada em develop
+    Então a promoção é disparada pelo merge, e não pela aprovação
+    E a ação só reage a merge de branch de feature em develop
     E é criada a branch "release/vX.Y.Z" a partir de master
     E é aberta a Pull Request "PR - develop -> release/vX.Y.Z"
     Mas master não é alterada nesta etapa
 
-  Cenário: RF-07 — aprovar a segunda PR leva develop à branch de release
-    Dado que a Pull Request "PR - develop -> release/vX.Y.Z" recebeu aprovação
+  Cenário: RF-07 — mergear a segunda PR abre a Pull Request que publica
+    Dado que a Pull Request "PR - develop -> release/vX.Y.Z" foi mergeada
     Quando a ação "Action - develop -> release/vX.Y.Z" é executada
-    Então develop é integrada em "release/vX.Y.Z"
+    Então a promoção é disparada pelo merge, e não pela aprovação
+    E a ação só reage a merge de develop em branch de release
     E é aberta a Pull Request "PR - release/vX.Y.Z -> master"
     Mas nada é publicado nesta etapa
 
-  Cenário: RF-08 — aprovar a terceira PR publica, integra, marca e libera
-    Dado que a Pull Request "PR - release/vX.Y.Z -> master" recebeu aprovação
+  Cenário: RF-08 — mergear a terceira PR publica, marca e libera
+    Dado que a Pull Request "PR - release/vX.Y.Z -> master" foi mergeada
     Quando a ação "Action - release/vX.Y.Z -> master" é executada
-    Então o sítio é publicado no GitHub Pages
-    E a branch de release é integrada em master
+    Então a promoção é disparada pelo merge, e não pela aprovação
+    E a ação só reage a merge de branch de release em master
+    E o sítio é publicado no GitHub Pages
     E são criadas a tag e a release da versão "vX.Y.Z"
-    Mas a integração em master não acontece antes de a publicação ter concluído com sucesso
+    Mas a marca da versão não é criada antes de a publicação ter concluído com sucesso
+
+  Cenário: RF-06 — fechar a Pull Request sem mergear não promove nada
+    Dado que a Pull Request "PR - feature/nome-curto -> develop" foi fechada sem merge
+    Quando a ação "Action - feature/nome-curto -> develop" é executada
+    Então a ação exige merge consumado, e fechamento sem merge não a dispara
+    Mas isso vale igualmente para os três estágios da cadeia
 
   Cenário: RF-10 — funcionalidade nova eleva a minor
     Dado que a última versão publicada é "v1.2.3"
@@ -249,32 +259,32 @@ Funcionalidade: Promoção entre branches por aprovação
 
 ```gherkin
 # language: pt
-Funcionalidade: Modos de aprovação da esteira
+Funcionalidade: Modos de operação da esteira
 
   Cenário: RF-09 — no modo automático só a primeira PR espera por gente
     Dado que a esteira opera em modo automático
-    Quando a Pull Request "PR - feature/nome-curto -> develop" é aprovada por um proprietário
-    Então as Pull Requests seguintes da cadeia são aprovadas pela própria esteira
-    Mas a primeira Pull Request não é aprovada pela esteira em nenhuma hipótese
+    Quando a Pull Request "PR - feature/nome-curto -> develop" é mergeada por um proprietário
+    Então as Pull Requests seguintes da cadeia são mergeadas pela própria esteira
+    Mas a primeira Pull Request não é mergeada pela esteira em nenhuma hipótese
 
   Cenário: RF-09 — a marcação na PR de feature força o modo manual
     Dado que a configuração do repositório define o modo automático
     E que a Pull Request de feature recebeu a marcação de modo manual
     Quando a Pull Request "PR - develop -> release/vX.Y.Z" é aberta
-    Então a esteira aguarda aprovação humana antes de prosseguir
-    Mas a esteira não aprova essa Pull Request sozinha
+    Então a esteira aguarda merge humano antes de prosseguir
+    Mas a esteira não mergeia essa Pull Request sozinha
 
   Cenário: RF-09 — sem configuração nem marcação vale o modo automático
     Dado que o repositório não define modo algum e a Pull Request não tem marcação
-    Quando a esteira decide como tratar as aprovações
+    Quando a esteira decide como tratar os merges da cadeia
     Então ela opera em modo automático
     Mas ela registra no resumo da execução qual modo está em vigor
 
-  Cenário: RF-19 — a aprovação exigida é de proprietário declarado
+  Cenário: RF-19 — quem revisa a Pull Request de feature é proprietário declarado
     Dado que o repositório declara seus proprietários de código
-    Quando uma Pull Request da esteira aguarda aprovação
-    Então a aprovação que satisfaz o portão é a de um proprietário declarado
-    Mas aprovação de quem não é proprietário não libera a cadeia
+    Quando uma Pull Request da esteira aguarda revisão
+    Então a revisão que satisfaz o portão é a de um proprietário declarado
+    Mas a esteira nunca mergeia a Pull Request de feature sozinha
 ```
 
 ```gherkin
@@ -339,11 +349,13 @@ Nenhuma. As dez marcas da primeira redação e a décima primeira, aberta pela a
 | # | O que mudou | Por quê | Data |
 |---|---|---|---|
 | 1 | RNF-05 e seu cenário: `comportamento` deixa de depender só da construção e passa a depender da **auditoria** | A leitura do contrato de operação durante o planejamento mostrou que o alvo de comportamento afirma sobre o relatório que a auditoria produz — a dependência já existe e é de dado, não de gosto. A redação anterior descrevia uma cadeia que não existe. | 2026-09-01 |
+| 2 | RF-06, RF-07, RF-08, RF-09, RF-13, RF-19 e RF-20: o gatilho de cada estágio deixa de ser a **aprovação** da Pull Request e passa a ser o **merge**; o modo automático deixa de aprovar sozinho e passa a **mergear** sozinho; os jobs que faziam o merge desaparecem, porque o merge virou o gatilho | A primeira execução real provou o defeito: o owner fez a coisa natural — clicou em *Merge pull request* — e a cadeia não viu, porque escutava `pull_request_review`. Aprovação é opinião registrada; merge é fato consumado. Só o fato deve mover a esteira, e quem mergeia sem aprovar promoveu do mesmo jeito. Efeito colateral bem-vindo: some a necessidade de duas identidades para contornar a proibição de auto-aprovação do GitHub. | 2026-09-01 |
 
 ## Métricas de sucesso
 
-- **Nenhuma promoção manual.** Após a adoção, 100% das integrações em `develop` e `master`
-  têm origem em execução da esteira — nenhuma em merge feito na máquina de alguém.
+- **Nenhuma promoção manual.** Após a adoção, 100% das integrações em `master` têm origem em
+  execução da esteira — nenhuma em merge feito na máquina de alguém. A integração em `develop`
+  é o portão humano, e acontece na interface do GitHub.
 - **Toda publicação é rastreável a uma versão.** Cada estado publicado corresponde a uma tag e
   a uma release; hoje são zero.
 - **Diagnóstico sem log.** Em toda execução reprovada, a etapa e a causa estão no resumo da

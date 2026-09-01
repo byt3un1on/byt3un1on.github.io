@@ -177,12 +177,12 @@ When('a esteira tenta a integração', function (this: VitrineWorld): void {
   this.pipeline.classifyFailure(this.pipeline.summary);
 });
 
-When('a esteira decide como tratar as aprovações', function (this: VitrineWorld): void {
+When('a esteira decide como tratar os merges da cadeia', function (this: VitrineWorld): void {
   this.pipeline.resolveMode();
 });
 
 When(
-  'a Pull Request {string} é aprovada por um proprietário',
+  'a Pull Request {string} é mergeada por um proprietário',
   function (this: VitrineWorld, titulo: string): void {
     assert.ok(titulo.startsWith('PR - feature/'), `esperada a PR de feature, recebido ${titulo}`);
     this.pipeline.resolveMode();
@@ -308,32 +308,32 @@ Then(
 );
 
 Then(
-  'as Pull Requests seguintes da cadeia são aprovadas pela própria esteira',
+  'as Pull Requests seguintes da cadeia são mergeadas pela própria esteira',
   async function (this: VitrineWorld): Promise<void> {
     assert.equal(this.pipeline.mode, 'automatico');
     const fluxo = await this.workflow.byFile('promover-develop.yml');
     assert.ok(fluxo.raw.includes("needs.modo.outputs.modo == 'automatico'"));
-    assert.ok(fluxo.raw.includes('gh pr review'));
+    assert.ok(fluxo.raw.includes('gh pr merge'));
   },
 );
 
 Then(
-  'a primeira Pull Request não é aprovada pela esteira em nenhuma hipótese',
+  'a primeira Pull Request não é mergeada pela esteira em nenhuma hipótese',
   async function (this: VitrineWorld): Promise<void> {
     const fluxo = await this.workflow.byFile('validar.yml');
     assert.ok(
-      !fluxo.raw.includes('gh pr review'),
-      'a esteira nunca aprova a Pull Request de feature',
+      !fluxo.raw.includes('gh pr merge'),
+      'a esteira nunca mergeia a Pull Request de feature',
     );
   },
 );
 
-Then('a esteira aguarda aprovação humana antes de prosseguir', function (this: VitrineWorld): void {
+Then('a esteira aguarda merge humano antes de prosseguir', function (this: VitrineWorld): void {
   assert.equal(this.pipeline.mode, 'manual');
 });
 
 Then(
-  'a esteira não aprova essa Pull Request sozinha',
+  'a esteira não mergeia essa Pull Request sozinha',
   async function (this: VitrineWorld): Promise<void> {
     const fluxo = await this.workflow.byFile('promover-develop.yml');
     assert.ok(fluxo.raw.includes("needs.modo.outputs.modo == 'automatico'"));
