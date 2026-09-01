@@ -1,34 +1,44 @@
 # language: pt
-Funcionalidade: Promoção entre branches por aprovação
-  Para que a mudança suba da feature até a publicação sem merge feito à mão
-  Como owner que aprova a Pull Request
-  Quero que cada aprovação dispare o estágio seguinte sozinha
+Funcionalidade: Promoção entre branches por merge
+  Para que a mudança suba da feature até a publicação sem etapa feita à mão
+  Como owner que mergeia a Pull Request
+  Quero que cada merge dispare o estágio seguinte sozinho
 
   @esteira
-  Cenário: RF-06 — aprovar a primeira PR promove a feature e abre a release
-    Dado que a Pull Request "PR - feature/nome-curto -> develop" recebeu aprovação de proprietário
+  Cenário: RF-06 — mergear a primeira PR abre a release
+    Dado que a Pull Request "PR - feature/nome-curto -> develop" foi mergeada
     Quando a ação "Action - feature/nome-curto -> develop" é executada
-    Então a branch de feature é integrada em develop
+    Então a promoção é disparada pelo merge, e não pela aprovação
+    E a ação só reage a merge de branch de feature em develop
     E é criada a branch "release/vX.Y.Z" a partir de master
     E é aberta a Pull Request "PR - develop -> release/vX.Y.Z"
     Mas master não é alterada nesta etapa
 
   @esteira
-  Cenário: RF-07 — aprovar a segunda PR leva develop à branch de release
-    Dado que a Pull Request "PR - develop -> release/vX.Y.Z" recebeu aprovação
+  Cenário: RF-07 — mergear a segunda PR abre a Pull Request que publica
+    Dado que a Pull Request "PR - develop -> release/vX.Y.Z" foi mergeada
     Quando a ação "Action - develop -> release/vX.Y.Z" é executada
-    Então develop é integrada em "release/vX.Y.Z"
+    Então a promoção é disparada pelo merge, e não pela aprovação
+    E a ação só reage a merge de develop em branch de release
     E é aberta a Pull Request "PR - release/vX.Y.Z -> master"
     Mas nada é publicado nesta etapa
 
   @esteira
-  Cenário: RF-08 — aprovar a terceira PR publica, integra, marca e libera
-    Dado que a Pull Request "PR - release/vX.Y.Z -> master" recebeu aprovação
+  Cenário: RF-08 — mergear a terceira PR publica, marca e libera
+    Dado que a Pull Request "PR - release/vX.Y.Z -> master" foi mergeada
     Quando a ação "Action - release/vX.Y.Z -> master" é executada
-    Então o sítio é publicado no GitHub Pages
-    E a branch de release é integrada em master
+    Então a promoção é disparada pelo merge, e não pela aprovação
+    E a ação só reage a merge de branch de release em master
+    E o sítio é publicado no GitHub Pages
     E são criadas a tag e a release da versão "vX.Y.Z"
-    Mas a integração em master não acontece antes de a publicação ter concluído com sucesso
+    Mas a marca da versão não é criada antes de a publicação ter concluído com sucesso
+
+  @esteira
+  Cenário: RF-06 — fechar a Pull Request sem mergear não promove nada
+    Dado que a Pull Request "PR - feature/nome-curto -> develop" foi fechada sem merge
+    Quando a ação "Action - feature/nome-curto -> develop" é executada
+    Então a ação exige merge consumado, e fechamento sem merge não a dispara
+    Mas isso vale igualmente para os três estágios da cadeia
 
   @esteira
   Cenário: RF-14 — publica o artefato que foi verificado

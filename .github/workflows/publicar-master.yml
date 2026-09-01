@@ -1,12 +1,14 @@
-# Estagio 4: a aprovacao da Pull Request de release publica a vitrine, integra
-# em master e marca a versao. E o unico fluxo da esteira que publica.
+# Estagio 4: o merge da release em master publica a vitrine e marca a versao.
+# E o unico fluxo da esteira que publica. Como o merge ja aconteceu — ele e o
+# gatilho —, o que se constroi e o que master passou a conter, e nao mais o que
+# uma branch pretendia levar ate la.
 name: Action - release -> master
 
 run-name: Action - ${{ github.event.pull_request.head.ref }} -> master
 
 on:
-  pull_request_review:
-    types: [submitted]
+  pull_request:
+    types: [closed]
 
 permissions:
   contents: read
@@ -16,15 +18,19 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  GH_TOKEN: ${{ secrets.ESTEIRA_TOKEN }}
+  # Este estagio nao encadeia nenhum outro, entao nao precisa da credencial
+  # dedicada: a padrao publica, marca e libera sem disparar nada adiante.
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
     name: Construção
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # `merged == true` separa merge de fechamento sem merge: uma Pull Request
+    # descartada tambem emite `closed`, e descartar nao publica.
     if: >-
-      github.event.review.state == 'approved' &&
+      github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.head.ref, 'release/') &&
       github.event.pull_request.base.ref == 'master'
     outputs:
@@ -32,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: master
       # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
       # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
@@ -67,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: master
       - uses: actions/download-artifact@v4
         with:
           name: sitio
@@ -115,41 +121,13 @@ jobs:
       - id: pages
         uses: actions/deploy-pages@v4
 
-  merge:
-    name: Merge master
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    # A integracao so acontece depois de a publicacao concluir: master passa a
-    # descrever o que esta no ar, e nao o que se pretendia pôr no ar.
-    needs: [build, deploy]
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v5
-      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
-      # estar de pe tambem nos jobs que so falam com o GitHub.
-      - name: Subir o serviço dev
-        working-directory: app
-        run: make infra init
-      - name: Integrar a release em master
-        run: |
-          gh pr merge "${{ github.event.pull_request.number }}" --merge --delete-branch 2>merge.log \
-            || { echo "DETALHE=$(tail -c 400 merge.log)" >> "$GITHUB_ENV"; exit 1; }
-      - name: Resumo
-        if: always()
-        working-directory: app
-        env:
-          ESTEIRA_JOB: "Merge master"
-          ESTEIRA_STATUS: "${{ job.status }}"
-          ESTEIRA_DETALHE: "${{ env.DETALHE }}"
-        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
-
   release:
     name: Tag e release
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: [build, merge]
+    # A marca so existe depois de a publicacao concluir: a tag descreve o que
+    # esta no ar, e nao o que se pretendia pôr no ar.
+    needs: [build, deploy]
     permissions:
       contents: write
     steps:
