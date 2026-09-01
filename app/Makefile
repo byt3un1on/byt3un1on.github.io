@@ -16,7 +16,12 @@ export GITHUB_TOKEN
 DEV     := $(COMPOSE) exec -T -e GITHUB_TOKEN dev
 # A esteira passa dado por ambiente, e nao por argumento: `make` quebra o
 # argumento em espacos, e "Análise estática=success" viraria dois alvos.
-ESTEIRA := $(COMPOSE) exec -T -e ESTEIRA_MODO -e ESTEIRA_MODO_ROTULO \
+# `GIT_DIR` aponta so o CLI da esteira para a historia montada em /gitdir — o
+# `.git` mora na raiz do repositorio, um nivel acima de `app/`, e sem ele o
+# calculo da versao nao enxerga etiqueta alguma. Fica aqui, e nao no compose,
+# de proposito: definido para o servico inteiro, sequestraria tambem o `git`
+# dos testes de integracao, que criam repositorios temporarios.
+ESTEIRA := $(COMPOSE) exec -T -e GIT_DIR=/gitdir -e ESTEIRA_MODO -e ESTEIRA_MODO_ROTULO \
            -e ESTEIRA_RESULTADOS -e ESTEIRA_JOB -e ESTEIRA_STATUS \
            -e ESTEIRA_DETALHE -e ESTEIRA_RESUMO dev
 # Expansao adiada com '=': com ':=' o $@ estaria vazio e o proprio alvo

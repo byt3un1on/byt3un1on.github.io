@@ -13,6 +13,10 @@ services:
       # ali. Somente leitura: os cenarios precisam **medir** a esteira, nao
       # altera-la de dentro do container.
       - ../.github:/app/.github:ro
+      # O `.git` vive na raiz do repositorio, um nivel acima de `app/`: sem
+      # monta-lo, o calculo da versao nao enxerga etiqueta nem commit algum.
+      # Somente leitura porque a esteira le a historia, nunca a reescreve.
+      - ../.git:/gitdir:ro
     environment:
       WIREMOCK_BASE_URL: http://wiremock:8080
       GITHUB_API_BASE_URL: ${GITHUB_API_BASE_URL:-https://api.github.com}

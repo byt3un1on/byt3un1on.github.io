@@ -41,6 +41,13 @@ Funcionalidade: Promoção entre branches por merge
     Mas isso vale igualmente para os três estágios da cadeia
 
   @esteira
+  Cenário: RF-13 — versão inválida reprova em vez de virar nome de branch
+    Dado que a Pull Request "PR - feature/nome-curto -> develop" foi mergeada
+    Quando a ação "Action - feature/nome-curto -> develop" é executada
+    Então o job da versão confere o valor antes de entregá-lo ao job seguinte
+    Mas a branch de release nasce de master sem trazer a árvore de master para o runner
+
+  @esteira
   Cenário: RF-14 — publica o artefato que foi verificado
     Dado que o estágio anterior construiu e auditou o sítio
     Quando a publicação no GitHub Pages acontece
