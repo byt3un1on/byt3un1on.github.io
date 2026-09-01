@@ -13,6 +13,13 @@ export const SITE_ROUTES = {
 
 export type SiteRouteName = keyof typeof SITE_ROUTES;
 
+/**
+ * Nome do parametro que carrega a restricao por tecnologia no endereco do
+ * catalogo (RF-11). Fica aqui, e nao solto no componente, porque e endereco
+ * publico: o passo de BDD e a ligacao compartilhada leem o mesmo nome.
+ */
+export const CATALOG_FILTER_PARAM = 'tecnologia';
+
 const SLUG_TOKEN = ':slug';
 
 /**

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CATALOG_FILTER_PARAM,
   SITE_ROUTES,
   projectRoute,
   staticRoutes,
@@ -87,5 +88,16 @@ describe('staticRoutes', () => {
 
     // Assert
     expect(routes).not.toContain(parametrizada);
+  });
+
+  it('deve nomear o parametro de restricao quando declarado', () => {
+    // Arrange
+    const esperado = 'tecnologia';
+
+    // Act
+    const parametro = CATALOG_FILTER_PARAM;
+
+    // Assert
+    expect(parametro).toBe(esperado);
   });
 });

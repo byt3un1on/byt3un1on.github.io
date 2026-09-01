@@ -12,6 +12,20 @@ if [ ! -d "$DIST" ]; then
   exit 1
 fi
 
+# A imagem nao tem procps, entao `pkill` nao existe: varrer /proc e o unico
+# jeito portavel de derrubar o servidor. Sem isto o servidor sobrevive ao alvo,
+# e o `make bdd` seguinte reaproveita um servidor velho sem avisar ninguem.
+if [ "${1:-}" = "--stop" ]; then
+  for entrada in /proc/[0-9]*; do
+    pid="${entrada#/proc/}"
+    cmd=$(tr '\0' ' ' < "$entrada/cmdline" 2>/dev/null || true)
+    case "$cmd" in
+      *http-server*) kill "$pid" 2>/dev/null || true ;;
+    esac
+  done
+  exit 0
+fi
+
 if [ "${1:-}" = "--wait" ]; then
   npx http-server "$DIST" -p "$PORT" -s --silent &
   PID=$!

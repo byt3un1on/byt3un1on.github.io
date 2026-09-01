@@ -1,6 +1,11 @@
 import { Given, Then, When } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
-import { ORGANIZATION } from '../../../../core/domain/constants/organization_constants.ts';
+import {
+  ORGANIZATION,
+  pendingContactChannels,
+  readyContactChannels,
+} from '../../../../core/domain/constants/organization_constants.ts';
+import { staticRoutes } from '../../../../core/domain/constants/site_routes_constants.ts';
 import type { VitrineWorld } from '../../support/world.ts';
 
 // --- RF-01: apresentacao ---------------------------------------------------
@@ -71,7 +76,7 @@ Then(
 );
 
 Then(
-  'encontro uma ligação para o perfil da organização no GitHub e outra para o grupo da comunidade no Discord',
+  'encontro uma ligação para o perfil da organização no GitHub',
   async function (this: VitrineWorld): Promise<void> {
     const enderecos = await this.browser.page
       .getByRole('contentinfo')
@@ -80,10 +85,6 @@ Then(
     assert.ok(
       enderecos.some((e) => e.includes('github.com/byt3un1on')),
       'ligacao para o perfil da organizacao no GitHub ausente',
-    );
-    assert.ok(
-      enderecos.some((e) => e.includes('discord')),
-      'ligacao para o grupo no Discord ausente: o canal segue pendente na curadoria',
     );
   },
 );
@@ -139,5 +140,57 @@ Then(
     const conteudo = await this.browser.page.content();
     assert.equal(/GitHub Pages|404 File not found/i.test(conteudo), false);
     assert.match(conteudo, new RegExp(ORGANIZATION.name));
+  },
+);
+
+// --- RF-10: canal declarado mas ainda inexistente ---------------------------
+
+Given(
+  'que a organização declara um canal de comunidade que ainda não foi criado',
+  function (): void {
+    assert.ok(
+      pendingContactChannels().length > 0,
+      'nenhum canal pendente declarado: o cenario ficaria sem objeto de verificacao',
+    );
+  },
+);
+
+When(
+  'eu procuro os canais de contato em qualquer página pública',
+  async function (this: VitrineWorld): Promise<void> {
+    await this.browser.visit('/');
+  },
+);
+
+Then(
+  'esse canal não me é oferecido em lugar nenhum do sítio',
+  async function (this: VitrineWorld): Promise<void> {
+    for (const rota of staticRoutes()) {
+      await this.browser.visit(rota);
+      const conteudo = await this.browser.page.content();
+      for (const canal of pendingContactChannels()) {
+        assert.ok(
+          !conteudo.includes(canal.label),
+          `a rota ${rota} oferece o canal pendente "${canal.label}", que ainda nao existe`,
+        );
+      }
+    }
+  },
+);
+
+Then(
+  'os canais que já existem continuam acionáveis',
+  async function (this: VitrineWorld): Promise<void> {
+    await this.browser.visit('/');
+    const enderecos = await this.browser.page
+      .getByRole('contentinfo')
+      .getByRole('link')
+      .evaluateAll((links) => links.map((l) => (l as HTMLAnchorElement).href));
+    for (const canal of readyContactChannels()) {
+      assert.ok(
+        enderecos.some((e) => e.startsWith(canal.url)),
+        `canal pronto "${canal.label}" nao esta acionavel: esperado ${canal.url}`,
+      );
+    }
   },
 );

@@ -1,4 +1,4 @@
-import { chromium, type Browser, type Page } from '@playwright/test';
+import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
 
 /**
  * Motor de navegador: Playwright sobre o `dist/browser` servido por um servidor
@@ -7,6 +7,7 @@ import { chromium, type Browser, type Page } from '@playwright/test';
  */
 export class BrowserDriver {
   private browser: Browser | null = null;
+  private context: BrowserContext | null = null;
   private currentPage: Page | null = null;
   private readonly baseUrl = process.env['SITE_BASE_URL'] ?? 'http://127.0.0.1:8080';
   private readonly apiCalls: string[] = [];
@@ -14,7 +15,10 @@ export class BrowserDriver {
   public async start(): Promise<void> {
     // Mesmo motivo do Lighthouse: o container do agente roda como root.
     this.browser = await chromium.launch({ args: ['--no-sandbox', '--disable-dev-shm-usage'] });
-    this.currentPage = await this.browser.newPage();
+    // Contexto explicito, e nao `browser.newPage()`: o @axe-core/playwright
+    // recusa pagina de contexto implicito com "Please use browser.newContext()".
+    this.context = await this.browser.newContext();
+    this.currentPage = await this.context.newPage();
     // RNF-08: o visitante nao pode falar com a API do GitHub. Registrar aqui e
     // o que permite ao cenario afirmar isso em vez de supor.
     this.currentPage.on('request', (request) => {
@@ -25,8 +29,10 @@ export class BrowserDriver {
   }
 
   public async stop(): Promise<void> {
+    await this.context?.close();
     await this.browser?.close();
     this.browser = null;
+    this.context = null;
     this.currentPage = null;
   }
 

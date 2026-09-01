@@ -21,3 +21,9 @@ app/data/prerender-routes.txt
 # Padrao sem barra inicial para valer em qualquer nivel, e nao so na raiz
 **/.claude/settings.local.json
 **/.claude/.bu-state.json
+
+# Metodo da organizacao — gerado pelo plugin, vive so no disco.
+# `/bu:constitution` recria a constituicao sempre que ela falta.
+# Barra inicial obrigatoria: `CLAUDE.md` solto casaria em qualquer nivel.
+/.specify/memory/constitution.md
+/CLAUDE.md

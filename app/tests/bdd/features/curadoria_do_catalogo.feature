@@ -14,7 +14,7 @@ Funcionalidade: Curadoria do catálogo
 
   @navegador
   Cenário: RF-04 — resumo editorial supre a descrição ausente
-    Dado que o repositório "templates-library" não tem descrição preenchida no GitHub
+    Dado que o repositório "shortsmaker-api" não tem descrição preenchida no GitHub
     E que a curadoria declara um resumo para esse repositório
     Quando eu observo esse projeto no catálogo
     Então eu vejo o resumo declarado pela curadoria

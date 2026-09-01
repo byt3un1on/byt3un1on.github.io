@@ -69,9 +69,18 @@ Funcionalidade: Catálogo de projetos
 
 
   @navegador
+  Cenário: RF-11 — a restrição aplicada é compartilhável
+    Dado que o catálogo exibe projetos em mais de uma tecnologia
+    Quando eu restrinjo o catálogo a uma tecnologia
+    Então o endereço da página de catálogo passa a carregar a tecnologia escolhida
+    E abrir esse endereço diretamente me devolve a mesma vista restrita
+    Mas o endereço das páginas de projeto permanece inalterado
+
+
+  @navegador
   Cenário: RF-13 — restrição sem resultado se explica
-    Dado que o catálogo está exibindo projetos
-    Quando eu aplico uma restrição que não corresponde a nenhum projeto
+    Dado que eu abro o catálogo por um endereço que restringe a uma tecnologia ausente do catálogo
+    Quando eu observo o resultado da restrição
     Então eu vejo uma mensagem que explica que nenhum projeto atende ao critério
     E eu vejo como remover a restrição
     Mas eu não vejo uma área vazia sem explicação

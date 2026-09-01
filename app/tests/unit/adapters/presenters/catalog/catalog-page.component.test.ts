@@ -1,4 +1,5 @@
-import { provideRouter } from '@angular/router';
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, provideRouter } from '@angular/router';
 import { fireEvent, render, screen } from '@testing-library/angular';
 import { describe, expect, it, vi } from 'vitest';
 import { CatalogPageComponent } from '../../../../../adapters/presenters/catalog/catalog-page.component.ts';
@@ -35,11 +36,13 @@ function projeto(slug: string, technologies: readonly string[] = ['Python']): Ca
 
 function montar(
   porTecnologia: (tecnologia: string | null) => readonly CatalogProjectDto[],
+  tecnologia: string | null = null,
   tecnologias: readonly string[] = ['Go', 'Python'],
 ): Promise<unknown> {
   const filtro: IFilterProjectsByTechnologyUseCase = { execute: vi.fn(porTecnologia) };
   const lista: IListTechnologiesUseCase = { execute: vi.fn().mockReturnValue(tecnologias) };
   return render(CatalogPageComponent, {
+    inputs: { tecnologia },
     providers: [
       provideRouter([]),
       { provide: FILTER_PROJECTS_USE_CASE, useValue: filtro },
@@ -83,17 +86,42 @@ describe('CatalogPageComponent', () => {
     expect(anuncio.textContent?.trim()).toBe('1 projeto encontrado');
   });
 
-  it('deve anunciar a nova quantidade quando o visitante restringe', async () => {
+  it('deve restringir o catalogo quando o endereco carrega a tecnologia', async () => {
     // Arrange
-    await montar((tecnologia) =>
-      tecnologia === null ? [projeto('a'), projeto('b')] : [projeto('a')],
+    await montar(
+      (tecnologia) => (tecnologia === 'Go' ? [projeto('a')] : [projeto('a'), projeto('b')]),
+      'Go',
     );
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Go' }));
+    const anuncio = screen.getByRole('status');
 
     // Assert
-    expect(screen.getByRole('status').textContent?.trim()).toBe('1 projeto encontrado');
+    expect(anuncio.textContent?.trim()).toBe('1 projeto encontrado');
+  });
+
+  it('deve consultar o caso de uso com a tecnologia do endereco quando ela vem', async () => {
+    // Arrange
+    const porTecnologia = vi.fn().mockReturnValue([projeto('a')]);
+    await montar(porTecnologia, 'Go');
+
+    // Act
+    const chamadas = porTecnologia.mock.calls;
+
+    // Assert
+    expect(chamadas).toEqual([['Go']]);
+  });
+
+  it('deve consultar o caso de uso com nulo quando o endereco nao restringe', async () => {
+    // Arrange
+    const porTecnologia = vi.fn().mockReturnValue([projeto('a')]);
+    await montar(porTecnologia);
+
+    // Act
+    const chamadas = porTecnologia.mock.calls;
+
+    // Assert
+    expect(chamadas).toEqual([[null]]);
   });
 
   it('deve manter a regiao de anuncio educada quando renderizada', async () => {
@@ -107,49 +135,69 @@ describe('CatalogPageComponent', () => {
     expect(anuncio.getAttribute('aria-live')).toBe('polite');
   });
 
-  it('deve explicar o vazio quando a restricao nao retorna projeto', async () => {
+  it('deve explicar o vazio quando o endereco restringe a tecnologia ausente', async () => {
     // Arrange
-    await montar((tecnologia) => (tecnologia === null ? [projeto('a')] : []));
+    await montar(() => [], 'Rust');
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Go' }));
+    const mensagem = screen.getByText('Nenhum projeto atende ao criterio escolhido.');
 
     // Assert
-    expect(screen.getByText('Nenhum projeto atende ao criterio escolhido.')).toBeDefined();
+    expect(mensagem).toBeDefined();
   });
 
   it('deve oferecer remover a restricao quando o resultado e vazio', async () => {
     // Arrange
-    await montar((tecnologia) => (tecnologia === null ? [projeto('a')] : []));
+    await montar(() => [], 'Rust');
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Go' }));
+    const botao = screen.getByRole('button', { name: 'Remover a restricao' });
 
     // Assert
-    expect(screen.getByRole('button', { name: 'Remover a restricao' })).toBeDefined();
+    expect(botao).toBeDefined();
   });
 
   it('deve anunciar zero quando a restricao nao retorna projeto', async () => {
     // Arrange
-    await montar((tecnologia) => (tecnologia === null ? [projeto('a')] : []));
+    await montar(() => [], 'Rust');
+
+    // Act
+    const anuncio = screen.getByRole('status');
+
+    // Assert
+    expect(anuncio.textContent?.trim()).toBe('0 projetos encontrados');
+  });
+
+  it('deve levar a tecnologia para o endereco quando o visitante restringe', async () => {
+    // Arrange
+    await montar(() => [projeto('a')]);
+    const router = TestBed.inject(Router);
+    const rota = TestBed.inject(ActivatedRoute);
+    const navegar = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
     // Act
     fireEvent.click(screen.getByRole('button', { name: 'Go' }));
 
     // Assert
-    expect(screen.getByRole('status').textContent?.trim()).toBe('0 projetos encontrados');
+    expect(navegar.mock.calls).toEqual([
+      [[], { relativeTo: rota, queryParams: { tecnologia: 'Go' }, queryParamsHandling: 'merge' }],
+    ]);
   });
 
-  it('deve devolver o catalogo inteiro quando o visitante remove a restricao', async () => {
+  it('deve retirar a tecnologia do endereco quando o visitante remove a restricao', async () => {
     // Arrange
-    await montar((tecnologia) => (tecnologia === null ? [projeto('a'), projeto('b')] : []));
-    fireEvent.click(screen.getByRole('button', { name: 'Go' }));
+    await montar(() => [], 'Rust');
+    const router = TestBed.inject(Router);
+    const rota = TestBed.inject(ActivatedRoute);
+    const navegar = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
     // Act
     fireEvent.click(screen.getByRole('button', { name: 'Remover a restricao' }));
 
     // Assert
-    expect(screen.getByRole('status').textContent?.trim()).toBe('2 projetos encontrados');
+    expect(navegar.mock.calls).toEqual([
+      [[], { relativeTo: rota, queryParams: { tecnologia: null }, queryParamsHandling: 'merge' }],
+    ]);
   });
 
   it('deve exibir titulo da pagina quando renderizada', async () => {

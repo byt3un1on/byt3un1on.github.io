@@ -1,11 +1,18 @@
 import { Given, Then, When } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { CATALOG_FILTER_PARAM } from '../../../../core/domain/constants/site_routes_constants.ts';
 import type { CurationDto } from '../../../../core/domain/dtos/curation_dto.ts';
 import type { VitrineWorld } from '../../support/world.ts';
 
 let slugObservado = '';
 let enderecoAntes: string[] = [];
+let tecnologiaEscolhida = '';
+let titulosRestritos: string[] = [];
+
+/** Tecnologia que a curadoria nao emprega. E o unico jeito de o visitante
+ *  alcancar o estado vazio, ja que o filtro so oferece o que existe (RF-13). */
+const TECNOLOGIA_AUSENTE = 'Fortran';
 
 async function curadoria(): Promise<CurationDto> {
   return JSON.parse(await readFile('data/curation.json', 'utf8')) as CurationDto;
@@ -186,25 +193,6 @@ When(
         links.map((l) => (l as HTMLAnchorElement).getAttribute('href') ?? ''),
       );
     await this.browser.page.getByRole('button', { name: tecnologia, exact: true }).click();
-  },
-);
-
-When(
-  'eu aplico uma restrição que não corresponde a nenhum projeto',
-  async function (this: VitrineWorld): Promise<void> {
-    const botoes = await this.browser.page
-      .getByRole('button')
-      .evaluateAll((b) => b.map((x) => x.textContent?.trim() ?? ''));
-    const tecnologias = botoes.filter((t) => t !== 'Todas');
-    const catalogo = JSON.parse(await readFile('data/catalog.generated.json', 'utf8')) as {
-      projects: readonly { technologies: readonly string[] }[];
-    };
-    const rara = tecnologias.find(
-      (t) => catalogo.projects.filter((p) => p.technologies.includes(t)).length === 0,
-    );
-    await this.browser.page
-      .getByRole('button', { name: rara ?? tecnologias[0] ?? 'Todas', exact: true })
-      .click();
   },
 );
 
@@ -538,3 +526,100 @@ Then(
     }
   },
 );
+
+// --- RF-11: a restricao aplicada vive no endereco --------------------------
+
+Given(
+  'que o catálogo exibe projetos em mais de uma tecnologia',
+  async function (this: VitrineWorld): Promise<void> {
+    const catalogo = await catalogoGerado();
+    const tecnologias = new Set(catalogo.projects.flatMap((p) => p.technologies));
+    assert.ok(
+      tecnologias.size > 1,
+      `catalogo com uma tecnologia so: recebido ${tecnologias.size}, esperado mais de uma`,
+    );
+    await this.browser.visit('/projetos');
+  },
+);
+
+When(
+  'eu restrinjo o catálogo a uma tecnologia',
+  async function (this: VitrineWorld): Promise<void> {
+    const catalogo = await catalogoGerado();
+    const primeira = catalogo.projects.flatMap((p) => p.technologies)[0];
+    assert.ok(primeira, 'catalogo sem tecnologia alguma');
+    tecnologiaEscolhida = primeira;
+    enderecoAntes = await this.browser.page
+      .locator('article h3 a')
+      .evaluateAll((links) =>
+        links.map((l) => (l as HTMLAnchorElement).getAttribute('href') ?? ''),
+      );
+    const esperados = catalogo.projects.filter((p) => p.technologies.includes(primeira)).length;
+    await this.browser.page.getByRole('button', { name: primeira, exact: true }).click();
+    // Esperar so o endereco mudar nao basta: a lista ainda nao re-renderizou, e
+    // o passo capturaria o catalogo inteiro. O criterio de pronto e a contagem.
+    await this.browser.page.waitForFunction(
+      (total) => document.querySelectorAll('article').length === total,
+      esperados,
+    );
+    titulosRestritos = await this.browser.page
+      .locator('article h3 a')
+      .evaluateAll((links) => links.map((l) => l.textContent?.trim() ?? ''));
+  },
+);
+
+Then(
+  'o endereço da página de catálogo passa a carregar a tecnologia escolhida',
+  function (this: VitrineWorld): void {
+    const endereco = new URL(this.browser.page.url());
+    assert.equal(endereco.searchParams.get(CATALOG_FILTER_PARAM), tecnologiaEscolhida);
+  },
+);
+
+Then(
+  'abrir esse endereço diretamente me devolve a mesma vista restrita',
+  async function (this: VitrineWorld): Promise<void> {
+    const alvo = `/projetos?${CATALOG_FILTER_PARAM}=${encodeURIComponent(tecnologiaEscolhida)}`;
+    await this.browser.visit(alvo);
+    const titulos = await this.browser.page
+      .locator('article h3 a')
+      .evaluateAll((links) => links.map((l) => l.textContent?.trim() ?? ''));
+    assert.deepEqual(titulos, titulosRestritos);
+  },
+);
+
+Then(
+  'o endereço das páginas de projeto permanece inalterado',
+  async function (this: VitrineWorld): Promise<void> {
+    const agora = await this.browser.page
+      .locator('article h3 a')
+      .evaluateAll((links) =>
+        links.map((l) => (l as HTMLAnchorElement).getAttribute('href') ?? ''),
+      );
+    const sobreviventes = agora.filter((e) => enderecoAntes.includes(e));
+    assert.deepEqual(
+      sobreviventes,
+      agora,
+      'a restricao mudou o endereco de alguma pagina de projeto',
+    );
+  },
+);
+
+// --- RF-13: o estado vazio, agora alcancavel pelo endereco -----------------
+
+Given(
+  'que eu abro o catálogo por um endereço que restringe a uma tecnologia ausente do catálogo',
+  async function (this: VitrineWorld): Promise<void> {
+    const catalogo = await catalogoGerado();
+    const empregadas = new Set(catalogo.projects.flatMap((p) => p.technologies));
+    assert.ok(
+      !empregadas.has(TECNOLOGIA_AUSENTE),
+      `"${TECNOLOGIA_AUSENTE}" passou a existir no catalogo: escolha outra ausente`,
+    );
+    await this.browser.visit(`/projetos?${CATALOG_FILTER_PARAM}=${TECNOLOGIA_AUSENTE}`);
+  },
+);
+
+When('eu observo o resultado da restrição', async function (this: VitrineWorld): Promise<void> {
+  await this.browser.page.waitForLoadState('load');
+});

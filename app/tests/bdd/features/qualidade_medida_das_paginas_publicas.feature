@@ -14,6 +14,14 @@ Funcionalidade: Qualidade medida das páginas públicas
 
 
   @navegador
+  Cenário: RNF-02 e RNF-09 — varredura automática de acessibilidade
+    Dado que percorro todas as páginas públicas do sítio
+    Quando a verificação automática de acessibilidade é executada
+    Então nenhuma violação crítica ou séria de acessibilidade é encontrada
+    Mas nenhuma página é dispensada da verificação
+
+
+  @navegador
   Cenário: RNF-02 — operação apenas por teclado
     Dado que estou em qualquer página pública do sítio
     Quando eu percorro a página usando somente o teclado

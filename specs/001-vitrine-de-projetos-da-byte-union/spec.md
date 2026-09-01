@@ -89,8 +89,8 @@ como ele entra na vitrine — sem tocar em código de apresentação.
 | RF-07 | Projeto composto por mais de um repositório deve ser exibido como um único item de catálogo, reunindo os repositórios que o compõem, exibindo a união das tecnologias desses repositórios e a data de atividade mais recente entre eles. | obrigatório |
 | RF-08 | Cada projeto deve ter uma página própria, acessível por endereço estável e direto, com o detalhamento do projeto e as ligações para seus repositórios. | obrigatório |
 | RF-09 | Quando um projeto tiver endereço publicado próprio, o sítio deve oferecer ligação para ele, distinta da ligação para o repositório. | obrigatório |
-| RF-10 | O sítio deve apresentar a autoria como organização — sem identificar pessoas — e oferecer dois canais acionáveis: o perfil da organização no GitHub e o grupo da comunidade no Discord. | obrigatório |
-| RF-11 | O sítio deve permitir ao visitante restringir o catálogo por tecnologia, exibindo o projeto cuja lista de tecnologias contenha a tecnologia escolhida. | desejável |
+| RF-10 | O sítio deve apresentar a autoria como organização — sem identificar pessoas — e oferecer ao menos um canal acionável, sendo o perfil da organização no GitHub o canal obrigatório. Canal declarado mas ainda inexistente deve permanecer registrado como pendente e **não** ser exibido ao visitante, para que a vitrine nunca publique ligação morta. | obrigatório |
+| RF-11 | O sítio deve permitir ao visitante restringir o catálogo por tecnologia, exibindo o projeto cuja lista de tecnologias contenha a tecnologia escolhida. A restrição aplicada deve viver no endereço da página de catálogo, para que a vista restrita seja compartilhável e alcançável por acesso direto. | desejável |
 | RF-12 | O sítio deve responder a endereço inexistente com uma página de erro própria, que ofereça caminho de volta ao catálogo. | obrigatório |
 | RF-13 | O sítio deve anunciar a quantidade de projetos resultante sempre que o visitante alterar a restrição, e exibir estado explicável quando o resultado for vazio — nunca uma área em branco sem explicação. | obrigatório |
 | RF-14 | A publicação do sítio deve ser abortada, preservando no ar a versão anterior, quando o catálogo da organização não puder ser obtido integralmente. | obrigatório |
@@ -189,9 +189,16 @@ Funcionalidade: Catálogo de projetos
     E o critério aplicado permanece visível para mim
     Mas a restrição não altera o endereço dos projetos nem impede que eu a remova
 
+  Cenário: RF-11 — a restrição aplicada é compartilhável
+    Dado que o catálogo exibe projetos em mais de uma tecnologia
+    Quando eu restrinjo o catálogo a uma tecnologia
+    Então o endereço da página de catálogo passa a carregar a tecnologia escolhida
+    E abrir esse endereço diretamente me devolve a mesma vista restrita
+    Mas o endereço das páginas de projeto permanece inalterado
+
   Cenário: RF-13 — restrição sem resultado se explica
-    Dado que o catálogo está exibindo projetos
-    Quando eu aplico uma restrição que não corresponde a nenhum projeto
+    Dado que eu abro o catálogo por um endereço que restringe a uma tecnologia ausente do catálogo
+    Quando eu observo o resultado da restrição
     Então eu vejo uma mensagem que explica que nenhum projeto atende ao critério
     E eu vejo como remover a restrição
     Mas eu não vejo uma área vazia sem explicação
@@ -217,7 +224,7 @@ Funcionalidade: Curadoria do catálogo
     Mas nenhuma alteração de ordem ou destaque exigiu mudança em código de apresentação
 
   Cenário: RF-04 — resumo editorial supre a descrição ausente
-    Dado que o repositório "templates-library" não tem descrição preenchida no GitHub
+    Dado que o repositório "shortsmaker-api" não tem descrição preenchida no GitHub
     E que a curadoria declara um resumo para esse repositório
     Quando eu observo esse projeto no catálogo
     Então eu vejo o resumo declarado pela curadoria
@@ -276,12 +283,18 @@ Funcionalidade: Contato com a organização
   Como visitante convencido pelo portfólio
   Quero alcançar o código da organização e conversar com quem o mantém
 
-  Cenário: RF-10 — autoria como organização e dois canais acionáveis
+  Cenário: RF-10 — autoria como organização e canal acionável
     Dado que estou em qualquer página pública do sítio
     Quando eu procuro por quem mantém a Byte Union
     Então eu encontro a autoria apresentada como organização
-    E encontro uma ligação para o perfil da organização no GitHub e outra para o grupo da comunidade no Discord
+    E encontro uma ligação para o perfil da organização no GitHub
     Mas eu não vejo nome, papel, biografia ou perfil individual de nenhum autor
+
+  Cenário: RF-10 — canal ainda inexistente não vira ligação morta
+    Dado que a organização declara um canal de comunidade que ainda não foi criado
+    Quando eu procuro os canais de contato em qualquer página pública
+    Então esse canal não me é oferecido em lugar nenhum do sítio
+    Mas os canais que já existem continuam acionáveis
 ```
 
 ```gherkin
@@ -346,6 +359,12 @@ Funcionalidade: Qualidade medida das páginas públicas
     E o LCP não excede 2,5 segundos e o CLS não excede 0,1
     Mas nenhuma página é dispensada da auditoria
 
+  Cenário: RNF-02 e RNF-09 — varredura automática de acessibilidade
+    Dado que percorro todas as páginas públicas do sítio
+    Quando a verificação automática de acessibilidade é executada
+    Então nenhuma violação crítica ou séria de acessibilidade é encontrada
+    Mas nenhuma página é dispensada da verificação
+
   Cenário: RNF-02 — operação apenas por teclado
     Dado que estou em qualquer página pública do sítio
     Quando eu percorro a página usando somente o teclado
@@ -379,7 +398,7 @@ Todas estão aplicadas nos requisitos acima — ver *Esclarecimentos*.
 | 2 | Qual defasagem do catálogo é aceitável, e o catálogo é fixado na publicação ou buscado na visita? | **≤ 24 h, por publicação agendada.** Catálogo fixado no momento da publicação; o navegador do visitante não consulta a API do GitHub. | 2026-08-30 | `RNF-08`, `RF-14` |
 | 3 | Quais dos 12 repositórios públicos entram na vitrine? | **Só os que a curadoria listar** — inclusão explícita, não exclusão. | 2026-08-30 | `RF-04` |
 | 4 | Como os autores aparecem na vitrine? | **Apenas como organização.** Sem nome, papel, biografia ou perfil individual. | 2026-08-30 | `RF-10`, *Fora de escopo* |
-| 5 | Qual é o canal de contato acionável? | **Perfil da organização no GitHub e grupo da comunidade no Discord** — dois canais. | 2026-08-30 | `RF-10` |
+| 5 | Qual é o canal de contato acionável? | **Perfil da organização no GitHub**, obrigatório. O grupo da comunidade no Discord segue **pendente** — declarado no código como canal por criar, não exibido enquanto não existir. Entra por feature futura. | 2026-08-31 | `RF-10` |
 | 6 | Em que idioma a vitrine é publicada? | **Português do Brasil**, idioma único. | 2026-08-30 | `RNF-07` |
 | 7 | A vitrine deve ter conteúdo próprio sobre o método de trabalho da oficina? | **Não.** O método é plugin privado, instalado no ambiente do autor e fora dos projetos; a vitrine não o apresenta nem expõe o repositório que o contém. Os artefatos que ele produz (`specs/`, `.specify/`) seguem versionados normalmente nos repositórios — o que não se expõe é o plugin inteiro. | 2026-08-30 | *Fora de escopo*, `RF-04` |
 | 8 | O sítio fica em `byt3un1on.github.io` ou usa domínio próprio? | **`byt3un1on.github.io`**, com ligações internas relativas para não travar a adoção futura de domínio próprio. | 2026-08-30 | `RNF-10` |

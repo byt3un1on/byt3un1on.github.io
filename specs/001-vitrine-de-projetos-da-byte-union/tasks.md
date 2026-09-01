@@ -175,17 +175,17 @@
 - [x] T143 Cenário *RF-06 — repositório sem commit não é exposto ainda que declarado* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T144 Cenário *RF-07 — sistema de vários repositórios é um projeto só* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T145 Cenário *RF-11 — restrição por tecnologia alcança projeto multi-tecnologia* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T146 Cenário *RF-13 — restrição sem resultado se explica* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T146 Cenário *RF-13 — restrição sem resultado se explica* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`) — **fecha em 2026-08-31**: o cenário passou a alcançar o estado vazio por endereço (`/projetos?tecnologia=…`), o que resolveu a contradição com o RF-11 apontada na rodada 1
 - [x] T147 Cenário *RF-13 — a mudança de resultado é anunciada a quem usa leitor de tela* em `app/tests/bdd/features/catalogo_de_projetos.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T148 [P] Cenário *RF-04 — ordem e destaque vêm da curadoria* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T149 Cenário *RF-04 — resumo editorial supre a descrição ausente* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T149 Cenário *RF-04 — resumo editorial supre a descrição ausente* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@navegador` (`# language: pt`) — **fecha em 2026-08-31**: exemplo trocado de `templates-library` para `shortsmaker-api`, curado e sem descrição no GitHub
 - [x] T150 Cenário *RF-05 — entrada sem resumo impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T151 Cenário *RF-05 — referência a repositório inexistente impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T152 Cenário *RF-05 — repositório declarado em dois projetos impede a publicação* em `app/tests/bdd/features/curadoria_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T153 [P] Cenário *RF-08 — página própria por projeto* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T154 Cenário *RF-09 — endereço publicado é distinto do repositório* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
 - [x] T155 Cenário *RF-15 — endereço direto funciona sem navegação prévia* em `app/tests/bdd/features/aprofundamento_em_um_projeto.feature`, etiquetado `@navegador` (`# language: pt`)
-- [ ] T156 [P] Cenário *RF-10 — autoria como organização e dois canais acionáveis* em `app/tests/bdd/features/contato_com_a_organizacao.feature`, etiquetado `@navegador` (`# language: pt`)
+- [x] T156 [P] Cenário *RF-10 — autoria como organização e dois canais acionáveis* em `app/tests/bdd/features/contato_com_a_organizacao.feature`, etiquetado `@navegador` (`# language: pt`) — **fecha em 2026-08-31**: o RF-10 foi emendado para um canal acionável obrigatório, e ganhou cenário irmão provando que o canal pendente do Discord não vira ligação morta
 - [x] T157 [P] Cenário *RF-14 — falha na obtenção não publica catálogo incompleto* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T158 Cenário *RF-16 — publicação abortada abre questão no repositório* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
 - [x] T159 Cenário *RF-16 — publicação bem-sucedida encerra a questão aberta* em `app/tests/bdd/features/frescura_e_integridade_do_catalogo.feature`, etiquetado `@processo` (`# language: pt`)
@@ -203,8 +203,8 @@
 
 ## Fase 9 — Auditoria e fechamento
 
-- [ ] T171 [P] Ligar o alvo `audit` de `app/Makefile` ao Lighthouse de `app/lighthouserc.json`, à varredura `axe` de `app/tests/bdd/steps/browser/quality_steps.ts` e ao `app/scripts/check_links.sh`, todos headless sobre o `dist/` servido por `app/scripts/serve_dist.sh`
-- [ ] T172 `make validate` verde de ponta a ponta pelo alvo `validate` de `app/Makefile`: `fmt → lint → test → cover → it → bdd → audit`, com cobertura ≥ 90% por arquivo
+- [x] T171 [P] `audit` liga Lighthouse (`app/lighthouserc.json`, 5 URLs) e `app/scripts/check_links.sh`; a varredura `axe` roda sob `bdd`, e não sob `audit`, para os dois alvos não se chamarem em círculo — decisão registrada no comentário do alvo. Três defeitos do arnês corrigidos aqui, todos encontrados por execução: (a) `BrowserDriver` usava `browser.newPage()` sem contexto explícito e o `@axe-core/playwright` recusava a página, de modo que a varredura **nunca havia rodado**; (b) o `Makefile` não fazia a ponte entre o `GH_TOKEN` da máquina e o `GITHUB_TOKEN` que `config_tool.ts` lê, e todo build local corria anônimo a 60 req/h; (c) a limpeza do servidor usava `pkill`, que **não existe na imagem**, e o `|| true` engolia o erro — cada `make bdd` deixava um servidor órfão que o seguinte reaproveitava. `serve_dist.sh` ganhou modo `--stop` varrendo `/proc`
+- [x] T172 `make validate` verde de ponta a ponta, exit 0, medido em 2026-08-31 com a porta 8080 livre: `fmt` ok · `lint` ok · `test` 283/283 em 38 arquivos · `cover` 283/283 com limiar `perFile` de 90% em statements, branches, functions e lines · `it` 22/22 em 5 arquivos · `bdd` 31/31 cenários e 203/203 passos · `audit` Lighthouse sobre 5 URLs, RNF-10 e RNF-06 ok
 
 ## Rastreabilidade
 
@@ -240,10 +240,10 @@
 
 ## Convergência — tarefas acrescentadas na rodada 1
 
-- [ ] T173 Substituir o canal `pending` do Discord por `ready` com convite sem prazo de validade em `app/core/domain/constants/organization_constants.ts` — **depende de o grupo existir** (RF-10)
-- [ ] T174 Trocar em `specs/001-vitrine-de-projetos-da-byte-union/spec.md` o exemplo do cenário *RF-04 — resumo editorial supre a descrição ausente*, hoje `templates-library`, por um repositório efetivamente curado, e regerar `app/tests/bdd/features/curadoria_do_catalogo.feature` (RF-04)
-- [ ] T175 Resolver a contradição entre `RF-11` e `RF-13` — o filtro só oferece tecnologias existentes no catálogo, então o estado vazio de `app/adapters/presenters/catalog/catalog-page.component.ts` é inalcançável pelo visitante (RF-11, RF-13)
-- [ ] T176 Acrescentar à spec um cenário que invoque a varredura automática de acessibilidade, e a `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature`, para o passo já implementado em `app/tests/bdd/steps/browser/quality_steps.ts` deixar de ser código morto (RNF-02, RNF-09)
+- [x] T173 **Decidido em 2026-08-31: o canal segue pendente.** O `RF-10` foi emendado para exigir ao menos um canal acionável — o GitHub da organização — e para proibir que canal declarado mas inexistente seja exibido. `pendingContactChannels()` e o canal `pending` do Discord permanecem em `app/core/domain/constants/organization_constants.ts`, e um cenário novo verifica que ele **não** vira ligação morta. Trocar por `ready` com convite sem prazo de validade fica para feature futura, quando o grupo existir (RF-10)
+- [x] T174 Trocado o exemplo do cenário *RF-04 — resumo editorial supre a descrição ausente* de `templates-library` para `shortsmaker-api`, que é curado e não tem descrição preenchida no GitHub — verificado na API em 2026-08-31. `spec.md`, `app/tests/bdd/features/curadoria_do_catalogo.feature` e o checklist de requisitos acompanham (RF-04)
+- [x] T175 **Resolvido pondo a restrição no endereço.** `RF-11` passou a exigir que a restrição viva no endereço do catálogo, o que torna a vista restrita compartilhável e — o ponto — torna o estado vazio de `app/adapters/presenters/catalog/catalog-page.component.ts` alcançável por acesso direto, deixando de ser código morto. `CATALOG_FILTER_PARAM` em `app/core/domain/constants/site_routes_constants.ts`; leitura por `input()` ligado pelo roteador, escrita por `Router.navigate` (RF-11, RF-13)
+- [x] T176 Acrescentado à spec e a `app/tests/bdd/features/qualidade_medida_das_paginas_publicas.feature` o cenário *RNF-02 e RNF-09 — varredura automática de acessibilidade*. O passo do `axe` foi separado em `Quando` que varre e `Então` que julga, mais um `Então` que verifica que nenhuma rota pública ficou de fora (RNF-02, RNF-09)
 
 ## Convergence
 
@@ -311,3 +311,71 @@ descoberto só aqui: a varredura automática de acessibilidade está implementad
 cenário a invoca, então `RNF-02` e `RNF-09` não são de fato verificados.
 
 Tarefas acrescentadas: T173, T174, T175, T176.
+
+### Rodada 2 — 2026-08-31
+
+Fecha os quatro desencontros da rodada 1. Duas emendas de spec foram decididas pelo usuário
+nesta rodada e estão registradas na própria `spec.md`: o `RF-10` passou a exigir **ao menos um**
+canal acionável — e a **proibir** que canal declarado mas inexistente seja exibido —, e o `RF-11`
+passou a exigir que a restrição por tecnologia viva no endereço.
+
+| Requisito | Estado | Evidência |
+|---|---|---|
+| RF-01 | realizado | `app/adapters/presenters/home/home-page.component.ts:17`; cenário passa |
+| RF-02 | realizado | `app/adapters/clients/github_organization_client.ts:23`; cenário passa |
+| RF-03 | realizado | `app/adapters/presenters/catalog/project-card.component.ts:13`; cenário passa |
+| RF-04 | realizado | `app/core/application/catalog/assemble_catalog_use_case.ts:6`. O cenário *resumo editorial* deixou de citar `templates-library`, que ficou fora da curadoria, e passou a citar `shortsmaker-api` — curado e sem descrição no GitHub, verificado na API. Os dois cenários passam |
+| RF-05 | realizado | `app/core/application/catalog/validate_curation_use_case.ts:10`; os três cenários passam |
+| RF-06 | realizado | `app/core/domain/entities/code_repository.ts:52`; dois cenários passam |
+| RF-07 | realizado | `app/core/domain/entities/project.ts:53`; cenário passa com os cinco repositórios reais |
+| RF-08 | realizado | `app/infra/init/web_routes.ts:15`; 6 rotas prerenderizadas |
+| RF-09 | realizado | `app/adapters/presenters/project/project-page.component.ts:23`; cenário passa |
+| RF-10 | realizado | `app/core/domain/constants/organization_constants.ts:50`. **Requisito emendado**: exige um canal acionável, o GitHub da organização, e proíbe exibir canal pendente. O Discord segue `pending` no código, com cenário próprio provando que **não** vira ligação morta. Trocar por `ready` depende de o grupo existir e fica para feature futura. Os dois cenários passam |
+| RF-11 | realizado | `app/adapters/presenters/catalog/catalog-page.component.ts:5` e `app/core/domain/constants/site_routes_constants.ts:21`. **Requisito ampliado**: a restrição vive no endereço, lida por `input()` ligado pelo roteador e escrita por `Router.navigate`. Os dois cenários passam |
+| RF-12 | realizado | `app/adapters/presenters/error/not-found-page.component.ts:13`; `dist/browser/404/index.html` gerado |
+| RF-13 | realizado | `app/adapters/presenters/catalog/catalog-page.component.ts:33`. A contradição da rodada 1 caiu: com a restrição no endereço, o estado vazio é alcançável por acesso direto e deixou de ser código morto. Os dois cenários passam |
+| RF-14 | realizado | `app/adapters/commands/generate_catalog_command.ts:21`; cenário passa |
+| RF-15 | realizado | `app/angular.json` com `routesFile`; cenário de acesso direto passa |
+| RF-16 | realizado | `app/core/application/catalog/report_publication_status_use_case.ts:21`; dois cenários passam |
+| RNF-01 | realizado | `app/lighthouserc.json`; `audit` verde sobre 5 URLs |
+| RNF-02 | realizado | `app/tests/bdd/steps/browser/quality_steps.ts`, agora **invocada por cenário**. A rodada 1 apontou o passo como código morto; a causa raiz era outra e pior: `BrowserDriver` criava a página com `browser.newPage()` sem contexto explícito, e o `@axe-core/playwright` recusava com *"Please use browser.newContext()"* — a varredura **nunca havia rodado**. Corrigido em `app/tests/bdd/support/browser_driver.ts` |
+| RNF-03 | realizado | `app/lighthouserc.json`; asserções de LCP e CLS passam |
+| RNF-04 | realizado | Orçamento em `app/angular.json`; medido **66,32 kB** transferidos contra teto de 300 kB |
+| RNF-05 | realizado | `app/styles.css:88`; cenário a 320 px passa sem rolagem horizontal |
+| RNF-06 | realizado | `app/infra/tools/seo_tool.ts:11` e `app/scripts/check_links.sh`; 2 cliques verificados |
+| RNF-07 | realizado | `app/index.html:2`; cenário passa nas rotas fixas |
+| RNF-08 | realizado | `app/adapters/repositories/static_catalog_repository.ts:1`; cenário mede **0** requisições à API |
+| RNF-09 | realizado | Contrastes medidos e documentados em `app/styles.css:11`. Ao contrário da rodada 1, agora **há** verificação automática: a varredura `axe` cobre contraste e roda sob o `bdd` |
+| RNF-10 | realizado | `app/scripts/check_links.sh`; `audit` reporta ok |
+
+**`make validate` — saída real, medida com a porta 8080 livre:**
+
+```
+fmt    ok
+lint   ok
+test   38 arquivos, 283 testes, 0 falhas
+cover  38 arquivos, 283 testes; limiar perFile de 90% em statements, branches, functions e lines
+it      5 arquivos,  22 testes, 0 falhas
+bdd    31 scenarios (31 passed) · 203 steps (203 passed)
+audit  Lighthouse sobre 5 URLs; RNF-10 ok, RNF-06 ok
+VALIDATE EXIT=0
+```
+
+**Cenários:** 31 na `spec.md` e 31 em `app/tests/bdd/features/`, correspondência exata verificada
+por comparação de conjuntos — nenhum cenário só na spec, nenhum só nas features. Todos passam.
+
+**Três defeitos do arnês, encontrados por execução e corrigidos nesta rodada.** Nenhum é do
+sítio; todos são do aparato que deveria prová-lo, e os três produziam verde falso:
+
+1. `browser.newPage()` sem contexto explícito — a varredura `axe` nunca rodou (ver `RNF-02`).
+2. O `Makefile` não ligava o `GH_TOKEN` da máquina ao `GITHUB_TOKEN` que `app/infra/tools/config_tool.ts:22` lê. Todo build local corria **anônimo**, a 60 requisições por hora, com `make catalog` gastando 13 por vez. Em CI não aparecia, porque o workflow injeta a variável certa — era defeito só do caminho local. Ponte registrada em `app/Makefile`.
+3. A limpeza do servidor de arquivos usava `pkill`, que **não existe na imagem**, e o `|| true` engolia o erro. Cada `make bdd` deixava um `http-server` órfão que o seguinte reaproveitava em silêncio — o `bdd` podia passar contra um `dist/` de outra execução. `app/scripts/serve_dist.sh` ganhou modo `--stop` varrendo `/proc`, e o alvo passou a chamá-lo.
+
+**Excesso de escopo:** nenhum. O diff desta rodada tem 17 arquivos e todos rastreiam a T146,
+T149, T156, T171–T176. Nada do que a spec proíbe foi entregue: sem runtime de servidor, sem
+formulário que envie dados, sem perfil pessoal, sem rastreamento do visitante, sem repositório
+privado ou arquivado exposto.
+
+**Veredito: convergido.**
+
+Tarefas acrescentadas: nenhuma. As 176 tarefas estão fechadas.

@@ -8,6 +8,11 @@ COMPOSE := docker compose
 # A credencial de build e repassada por exec, e nao so na criacao do container:
 # sem isso, quem exporta GITHUB_TOKEN depois de `make infra` cai no limite
 # anonimo de 60 requisicoes por hora e a publicacao aborta.
+# `gh` guarda a credencial em GH_TOKEN; a aplicacao le GITHUB_TOKEN
+# (config_tool.ts). Sem esta ponte, a maquina tem token, o build nao recebe
+# nenhum, e o catalogo cai no limite anonimo de 60 requisicoes por hora.
+GITHUB_TOKEN ?= $(GH_TOKEN)
+export GITHUB_TOKEN
 DEV     := $(COMPOSE) exec -T -e GITHUB_TOKEN dev
 # Expansao adiada com '=': com ':=' o $@ estaria vazio e o proprio alvo
 # entraria no argumento (make fmt viraria 'prettier --write fmt').
@@ -62,7 +67,7 @@ bdd: build audit
 	$(DEV) sh -c 'sh scripts/serve_dist.sh --wait \
 	  && NODE_OPTIONS=--experimental-transform-types npx cucumber-js $(if $(ARG),tests/bdd/features/$(ARG),tests/bdd/features) \
 	    --import "tests/bdd/support/**/*.ts" --import "tests/bdd/steps/**/*.ts"; \
-	  RC=$$?; pkill -f http-server || true; exit $$RC'
+	  RC=$$?; sh scripts/serve_dist.sh --stop; exit $$RC'
 
 # Nao chama cucumber: a varredura axe vive em tests/bdd/steps/browser, sob o
 # alvo bdd. Se audit a chamasse, os dois alvos se chamariam em circulo.

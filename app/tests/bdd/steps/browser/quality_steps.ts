@@ -8,6 +8,7 @@ import type { VitrineWorld } from '../../support/world.ts';
 const ROTAS_PUBLICAS = [...staticRoutes()];
 
 let violacoesGraves: string[] = [];
+let rotasVarridas: string[] = [];
 let alcancados = 0;
 let focosDistintos = 0;
 
@@ -146,21 +147,38 @@ Then(
 
 // --- RNF-02 e RNF-09: varredura axe ----------------------------------------
 
-Then(
-  'nenhuma violação crítica ou séria de acessibilidade é encontrada',
+When(
+  'a verificação automática de acessibilidade é executada',
   async function (this: VitrineWorld): Promise<void> {
-    const graves: string[] = [];
+    violacoesGraves = [];
+    rotasVarridas = [];
     for (const rota of ROTAS_PUBLICAS) {
       await this.browser.visit(rota);
       const resultado = await new AxeBuilder({ page: this.browser.page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
+      rotasVarridas.push(rota);
       for (const violacao of resultado.violations) {
         if (violacao.impact === 'critical' || violacao.impact === 'serious') {
-          graves.push(`${rota}: ${violacao.id} (${violacao.impact})`);
+          violacoesGraves.push(`${rota}: ${violacao.id} (${violacao.impact})`);
         }
       }
     }
-    assert.deepEqual(graves, [], `violacoes graves de acessibilidade: ${graves.join('; ')}`);
   },
 );
+
+Then('nenhuma violação crítica ou séria de acessibilidade é encontrada', function (): void {
+  assert.deepEqual(
+    violacoesGraves,
+    [],
+    `violacoes graves de acessibilidade: ${violacoesGraves.join('; ')}`,
+  );
+});
+
+Then('nenhuma página é dispensada da verificação', function (): void {
+  assert.deepEqual(
+    rotasVarridas,
+    [...ROTAS_PUBLICAS],
+    'alguma rota publica ficou de fora da varredura de acessibilidade',
+  );
+});

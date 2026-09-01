@@ -35,7 +35,7 @@
 ## Testabilidade
 
 - [x] Todo cenário Gherkin pode virar teste executável sem reinterpretação
-- [x] Os cenários que citam repositórios reais — `shared-claude-plugin`, `niche-scout`, `documentation-site`, `templates-library`, os cinco `shortsmaker-*` — continuarão válidos se esses repositórios mudarem de estado, ou está aceito que o teste os simule
+- [x] Os cenários que citam repositórios reais — `shared-claude-plugin`, `niche-scout`, `documentation-site`, os cinco `shortsmaker-*` — continuarão válidos se esses repositórios mudarem de estado, ou está aceito que o teste os simule
 - [x] Todo caminho de erro relevante tem cenário próprio: endereço inexistente (`RF-12`), restrição sem resultado (`RF-13`), falha de obtenção (`RF-14`), curadoria sem resumo (`RF-05`)
 - [x] Os blocos `Mas` dos cenários afirmam algo que de fato pode falhar, e não são só reforço retórico do `Então`
 
