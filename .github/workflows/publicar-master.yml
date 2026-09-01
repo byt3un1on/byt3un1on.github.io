@@ -1,19 +1,17 @@
-# Estagio 4: o merge da release em master publica a vitrine e marca a versao.
-# E o unico fluxo da esteira que publica. Como o merge ja aconteceu — ele e o
-# gatilho —, o que se constroi e o que master passou a conter, e nao mais o que
-# uma branch pretendia levar ate la.
+# Estagio 4: o que entra em master vai ao ar. E o unico fluxo da esteira que
+# publica.
+#
+# O gatilho e o push em master, e nao a Pull Request que o causou. Nao e
+# preferencia: o ambiente `github-pages` so aceita implantacao vinda de
+# `refs/heads/master`, e uma execucao de `pull_request` carrega
+# `refs/pull/<n>/merge` — a implantacao e recusada pela protecao do ambiente,
+# como foi. O merge continua sendo o que dispara: e ele que produz o push.
 name: Action - release -> master
 
-run-name: Action - ${{ github.event.pull_request.head.ref }} -> master
+run-name: Action - release -> master
 
 on:
-  # O filtro de destino vive no gatilho, e nao so no `if:` do job. Os tres
-  # estagios escutam o mesmo evento: sem ele, um merge cria tres execucoes, duas
-  # das quais so aparecem para se descartarem — e com nome errado, porque o
-  # `run-name` e calculado antes do descarte. Filtro de gatilho e avaliado antes
-  # de a execucao existir.
-  pull_request:
-    types: [closed]
+  push:
     branches: [master]
 
 permissions:
@@ -33,18 +31,14 @@ jobs:
     name: Construção
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    # `merged == true` separa merge de fechamento sem merge: uma Pull Request
-    # descartada tambem emite `closed`, e descartar nao publica.
-    if: >-
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release/') &&
-      github.event.pull_request.base.ref == 'master'
     outputs:
       versao: ${{ steps.versao.outputs.versao }}
     steps:
+      # Historico completo: e dele que sai o numero da versao, e o push nao
+      # carrega o nome da branch de release que acabou de entrar.
       - uses: actions/checkout@v5
         with:
-          ref: master
+          fetch-depth: 0
       # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
       # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
@@ -55,9 +49,24 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: make build
+      # A versao a publicar e a que ainda nao tem etiqueta: o mesmo calculo do
+      # estagio 2, sobre o mesmo historico, devolve o mesmo numero. Conferido
+      # antes de virar saida, como todo valor que atravessa jobs.
       - name: Nomear a versão
         id: versao
-        run: echo "versao=${{ github.event.pull_request.head.ref }}" | sed 's|release/||' >> "$GITHUB_OUTPUT"
+        working-directory: app
+        run: |
+          VERSAO=$(make -s pipeline version)
+          case "$VERSAO" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *)
+              ESTEIRA_JOB="Construção" ESTEIRA_STATUS=failure \
+                ESTEIRA_DETALHE="versao invalida: recebido '$VERSAO', esperado vX.Y.Z" \
+                make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+              ;;
+          esac
+          echo "versao=$VERSAO" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
           name: sitio
@@ -78,8 +87,6 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: master
       - uses: actions/download-artifact@v4
         with:
           name: sitio
@@ -139,7 +146,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: master
           fetch-depth: 0
       # O resumo passa pelo contrato de operacao, entao o servico dev precisa
       # estar de pe tambem nos jobs que so falam com o GitHub.

@@ -408,12 +408,20 @@ Then('o sítio é publicado no GitHub Pages', async function (this: VitrineWorld
   assert.ok(acha(jobs, 'Publicação').uses.some((acao) => acao.startsWith('actions/deploy-pages')));
 });
 
+// O gatilho do estagio que publica e o push em master, e nao a Pull Request que
+// o causou: o ambiente `github-pages` so aceita implantacao vinda de
+// `refs/heads/master`, e uma execucao de `pull_request` carrega
+// `refs/pull/<n>/merge`, que a protecao do ambiente recusa.
 Then(
-  'a ação só reage a merge de branch de release em master',
+  'a publicação reage ao que entrou em master, e não à Pull Request',
   async function (this: VitrineWorld): Promise<void> {
     const fluxo = await this.workflow.byFile(PUBLICAR_MASTER);
-    assert.ok(fluxo.raw.includes("base.ref == 'master'"), 'o destino precisa ser master');
-    assert.ok(fluxo.raw.includes("head.ref, 'release/'"), 'a origem precisa ser release');
+    assert.ok(fluxo.triggers.includes('push'), 'o gatilho precisa ser o push em master');
+    assert.ok(
+      !fluxo.triggers.includes('pull_request'),
+      'execução de pull_request não pode implantar: o ambiente recusa o ref dela',
+    );
+    assert.ok(fluxo.raw.includes('branches: [master]'), 'só master publica');
   },
 );
 
@@ -430,9 +438,9 @@ Then(
 );
 
 Then(
-  'isso vale igualmente para os três estágios da cadeia',
+  'isso vale igualmente para os dois estágios de promoção',
   async function (this: VitrineWorld): Promise<void> {
-    for (const arquivo of [PROMOVER_DEVELOP, PROMOVER_RELEASE, PUBLICAR_MASTER]) {
+    for (const arquivo of [PROMOVER_DEVELOP, PROMOVER_RELEASE]) {
       const fluxo = await this.workflow.byFile(arquivo);
       assert.ok(fluxo.raw.includes('merged == true'), `${arquivo} promove sem merge consumado`);
     }
@@ -495,6 +503,7 @@ Then(
 const DESTINO_DO_ESTAGIO: ReadonlyArray<readonly [string, string]> = [
   [PROMOVER_DEVELOP, 'branches: [develop]'],
   [PROMOVER_RELEASE, "branches: ['release/**']"],
+  // O estagio 4 filtra master no gatilho de push, e nao no de pull_request.
   [PUBLICAR_MASTER, 'branches: [master]'],
 ];
 
