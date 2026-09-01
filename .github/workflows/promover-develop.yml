@@ -1,0 +1,218 @@
+# Estagio 2: o merge da Pull Request de feature em develop abre a release.
+# O gatilho e o **merge**, nunca a aprovacao: aprovacao e opiniao registrada,
+# merge e fato consumado, e so o fato move a esteira. Quem aprova sem mergear
+# nao promoveu nada; quem mergeia promoveu, tenha aprovado ou nao.
+name: Action - feature -> develop
+
+run-name: Action - ${{ github.event.pull_request.head.ref }} -> develop
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: promover-develop-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+env:
+  # A credencial dedicada opera a esteira. A padrao nao dispara outra acao, e
+  # sem disparo a cadeia por merge nao existe (RF-20).
+  GH_TOKEN: ${{ secrets.ESTEIRA_TOKEN }}
+  ESTEIRA_MODO: ${{ vars.ESTEIRA_MODO }}
+  ESTEIRA_MODO_ROTULO: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+
+jobs:
+  modo:
+    name: Modo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # `merged == true` separa merge de fechamento sem merge: uma Pull Request
+    # descartada tambem emite `closed`, e descartar nao promove.
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'feature/') &&
+      github.event.pull_request.base.ref == 'develop'
+    outputs:
+      modo: ${{ steps.decidir.outputs.modo }}
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Decidir o modo
+        id: decidir
+        working-directory: app
+        run: |
+          # RF-20: sem a credencial dedicada a cadeia nao encadeia. Falhar
+          # nomeando a causa vale mais que falhar no primeiro `gh` sem token.
+          if [ -z "$GH_TOKEN" ]; then
+            ESTEIRA_JOB=Modo ESTEIRA_STATUS=failure \
+              ESTEIRA_DETALHE="credencial ESTEIRA_TOKEN ausente no repositorio" \
+              make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "modo=$(make -s pipeline mode)" >> "$GITHUB_OUTPUT"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Modo"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "modo em vigor: ${{ steps.decidir.outputs.modo }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  versao:
+    name: Versão
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: modo
+    outputs:
+      versao: ${{ steps.calcular.outputs.versao }}
+    steps:
+      # Historico completo: sem ele `git tag` nao enxerga a ultima versao e o
+      # calculo devolveria numero errado (RF-10).
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: develop
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # `echo "x=$(cmd)"` engole a falha de `cmd`: quem decide o codigo de saida
+      # e o `echo`, que sempre da certo. Foi assim que este job reportou sucesso
+      # entregando um JSON de erro no lugar da versao, e o job seguinte tentou
+      # criar `release/{"level":"error"...}`. Portao que mente e pior que portao
+      # que falha: aqui o valor e conferido antes de virar saida.
+      - name: Calcular a próxima versão
+        id: calcular
+        working-directory: app
+        run: |
+          VERSAO=$(make -s pipeline version)
+          case "$VERSAO" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *)
+              ESTEIRA_JOB="Versão" ESTEIRA_STATUS=failure \
+                ESTEIRA_DETALHE="versao invalida: recebido '$VERSAO', esperado vX.Y.Z" \
+                make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+              ;;
+          esac
+          echo "versao=$VERSAO" >> "$GITHUB_OUTPUT"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Versão"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "próxima versão: ${{ steps.calcular.outputs.versao }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  branch:
+    name: Branch release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: versao
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # A branch de release nasce de master, e nao de develop: e master que
+      # carrega o que esta publicado. Mas a ref e criada pela API, e nao por
+      # checkout: master nao contem `app/`, e todo passo com
+      # `working-directory: app` morreria ali. Criar a ref pelo sha dispensa
+      # trazer a arvore de master para o runner.
+      - name: Abrir a branch de release
+        run: |
+          SHA=$(gh api "repos/${{ github.repository }}/git/ref/heads/master" --jq .object.sha)
+          gh api "repos/${{ github.repository }}/git/refs" \
+            -f ref="refs/heads/release/${{ needs.versao.outputs.versao }}" -f sha="$SHA"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Branch release"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "release/${{ needs.versao.outputs.versao }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  pr:
+    name: PR para release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [modo, versao, branch]
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      numero: ${{ steps.abrir.outputs.numero }}
+    steps:
+      - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Abrir a Pull Request
+        id: abrir
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base "release/${{ needs.versao.outputs.versao }}" --head develop \
+            --title "PR - develop -> release/${{ needs.versao.outputs.versao }}" \
+            --body "Aberta pela esteira. Modo em vigor: ${{ needs.modo.outputs.modo }}."
+          echo "numero=$(gh pr list --head develop --base 'release/${{ needs.versao.outputs.versao }}' \
+            --state open --json number --jq '.[0].number')" >> "$GITHUB_OUTPUT"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "PR para release"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "modo: ${{ needs.modo.outputs.modo }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  merge:
+    name: Merge release
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [modo, pr]
+    # RF-09: no modo automatico so a primeira Pull Request espera por gente.
+    # O merge daqui e feito com a credencial dedicada, porque merge feito com a
+    # credencial padrao nao dispara o estagio seguinte.
+    if: needs.modo.outputs.modo == 'automatico'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # RF-17: conflito nao e resolvido aqui. A saida do comando vai para a
+      # classificacao, que nomeia a causa em vez de deixar erro generico.
+      - name: Integrar develop na release
+        run: |
+          gh pr merge "${{ needs.pr.outputs.numero }}" --merge --delete-branch=false 2>merge.log \
+            || { echo "DETALHE=$(tail -c 400 merge.log)" >> "$GITHUB_ENV"; exit 1; }
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Merge release"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "${{ env.DETALHE }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"

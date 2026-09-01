@@ -1,0 +1,325 @@
+# Estagio 1 da esteira: valida a branch de feature e, so entao, abre a Pull
+# Request para develop. Cada verificacao de `make validate` e um job proprio,
+# porque o diagrama do GitHub Actions so desenha job — passo nao aparece.
+name: Validar feature
+
+# RF-01: a execucao se identifica pela descricao do ultimo commit, e nao por um
+# nome fixo repetido em toda execucao.
+run-name: ${{ github.event.head_commit.message }}
+
+on:
+  push:
+    branches: ['feature/**']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validar-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fmt:
+    name: Formatação
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # RF-16: `fmt` reescreve em vez de conferir, entao quem reprova e a arvore
+      # suja. Os arquivos fora de formato vao para o resumo, nao so a contagem.
+      - name: Conferir a formatação
+        working-directory: app
+        run: |
+          make fmt
+          FORA=$(git -C .. diff --name-only)
+          echo "DETALHE=${FORA//$'\n'/, }" >> "$GITHUB_ENV"
+          test -z "$FORA"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Formatação"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "${{ env.DETALHE }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  lint:
+    name: Análise estática
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Analisar o código
+        working-directory: app
+        run: make lint
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Análise estática"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  unit:
+    name: Testes unitários
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Rodar os testes unitários
+        working-directory: app
+        run: make test
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Testes unitários"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  cover:
+    name: Cobertura 90%
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # RF-03: o limiar de 90% vive em angular.json e reprova aqui. A medida vai
+      # para o resumo — dizer "abaixo do minimo" sem o numero nao ajuda ninguem.
+      - name: Medir a cobertura
+        working-directory: app
+        run: |
+          set -o pipefail
+          make cover 2>&1 | tee cover.log
+          echo "DETALHE=$(grep -m1 -oE 'All files[^\n]*' cover.log || true)" >> "$GITHUB_ENV"
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Cobertura 90%"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: "${{ env.DETALHE }}"
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  it:
+    name: Integração
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Rodar os testes de integração
+        working-directory: app
+        run: make it
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Integração"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Construção
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # RNF-05: o sitio e construido **uma vez** por execucao. Auditoria e
+      # comportamento consomem este artefato em vez de reconstruir cada um.
+      - name: Construir o sítio
+        working-directory: app
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: make build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sitio
+          path: |
+            app/dist
+            app/data
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Construção"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  audit:
+    name: Auditoria
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: build
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio
+          path: app
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Auditar acessibilidade e desempenho
+        working-directory: app
+        run: make audit-only
+      # `lighthouserc.json` grava em coverage/lighthouse, e e la que os cenarios
+      # de comportamento leem o relatorio. Falhar aqui quando nao ha arquivo
+      # vale mais que falhar no job seguinte, ao baixar um artefato que nao existe.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: auditoria
+          path: app/coverage/lighthouse
+          if-no-files-found: error
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Auditoria"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  bdd:
+    name: Comportamento
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Depende da auditoria, e nao so da construcao: ha cenarios que afirmam
+    # sobre o relatorio do Lighthouse. A dependencia e de dado, nao de gosto.
+    needs: audit
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v4
+        with:
+          name: sitio
+          path: app
+      - uses: actions/download-artifact@v4
+        with:
+          name: auditoria
+          path: app/coverage/lighthouse
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Rodar os cenários
+        working-directory: app
+        run: make bdd-only
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "Comportamento"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+
+  gate:
+    name: Portão
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # `always()` para o portao enxergar quem falhou; sem isso ele seria pulado
+    # e a execucao terminaria sem dizer o que reprovou.
+    if: always()
+    needs: [fmt, lint, unit, cover, it, build, audit, bdd]
+    steps:
+      - uses: actions/checkout@v5
+      # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
+      # arquivo de partida o build do Angular nao resolve o import.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      # RF-05 e RF-13: quem decide e o caso de uso; o YAML so propaga o codigo
+      # de saida, que e o que bloqueia a cadeia.
+      # Os resultados viajam como JSON em variavel de ambiente: argumento de
+      # `make` nao suporta espaco, e "Análise estática" viraria dois alvos.
+      - name: Avaliar o portão
+        working-directory: app
+        env:
+          ESTEIRA_RESULTADOS: >-
+            [{"name":"Formatação","status":"${{ needs.fmt.result }}"},
+             {"name":"Análise estática","status":"${{ needs.lint.result }}"},
+             {"name":"Testes unitários","status":"${{ needs.unit.result }}"},
+             {"name":"Cobertura 90%","status":"${{ needs.cover.result }}"},
+             {"name":"Integração","status":"${{ needs.it.result }}"},
+             {"name":"Construção","status":"${{ needs.build.result }}"},
+             {"name":"Auditoria","status":"${{ needs.audit.result }}"},
+             {"name":"Comportamento","status":"${{ needs.bdd.result }}"}]
+        run: make -s pipeline gate >> "$GITHUB_STEP_SUMMARY"
+
+  pr:
+    name: PR para develop
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: gate
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      # RF-04: consulta antes de abrir. Sem isso, cada push novo abriria uma
+      # duplicata para a mesma branch.
+      # A Pull Request e aberta com a credencial padrao **de proposito**: quem a
+      # aprova depois e a credencial dedicada, e o GitHub proibe que a mesma
+      # identidade abra e aprove.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
+      - name: Abrir ou atualizar a Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          TITULO="PR - ${{ github.ref_name }} -> develop"
+          NUMERO=$(gh pr list --head "$BRANCH" --base develop --state open --json number --jq '.[0].number')
+          if [ -n "$NUMERO" ]; then
+            gh pr edit "$NUMERO" --title "$TITULO"
+            gh pr comment "$NUMERO" --body "Validação verde na execução ${{ github.run_id }}."
+          else
+            gh pr create --base develop --head "$BRANCH" --title "$TITULO" \
+              --body "Aberta pela esteira após as verificações de \`make validate\` passarem."
+          fi
+      - name: Resumo
+        if: always()
+        working-directory: app
+        env:
+          ESTEIRA_JOB: "PR para develop"
+          ESTEIRA_STATUS: "${{ job.status }}"
+          ESTEIRA_DETALHE: ''
+        run: make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"

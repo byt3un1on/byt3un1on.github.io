@@ -1,0 +1,8 @@
+# Proprietarios de codigo da Byte Union (RF-19). A aprovacao que satisfaz o
+# portao da esteira e a de um proprietario declarado aqui.
+#
+# Para que esta declaracao seja **exigida**, e nao apenas informativa, ligue
+# "Require review from Code Owners" na protecao de `develop` e de `master`.
+# Isso e configuracao do repositorio, e nao artefato desta feature.
+
+* @lsilvpin

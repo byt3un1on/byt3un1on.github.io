@@ -1,0 +1,11 @@
+{
+  "projects": [
+    {
+      "slug": "fantasma",
+      "name": "Projeto fantasma",
+      "summary": "Referencia um repositorio que nao existe mais na organizacao.",
+      "highlighted": false,
+      "repositories": ["repositorio-que-sumiu"]
+    }
+  ]
+}

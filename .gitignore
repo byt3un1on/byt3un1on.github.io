@@ -1,6 +1,29 @@
-node_modules/
-dist/
-coverage/
+# Dependencias e artefatos de build
+app/node_modules/
+app/dist/
+app/out-tsc/
+app/.angular/
+
+# Relatorios de qualidade — saida de ferramenta, nunca versionada
+app/coverage/
+app/.lighthouseci/
+
+# Artefatos gerados por make catalog — derivados, nunca versionados
+app/data/catalog.generated.json
+app/data/prerender-routes.txt
+
+# Ambiente e ruido de sistema
 .env
 .DS_Store
 *.log
+
+# Configuracao local do agente
+# Padrao sem barra inicial para valer em qualquer nivel, e nao so na raiz
+**/.claude/settings.local.json
+**/.claude/.bu-state.json
+
+# Metodo da organizacao — gerado pelo plugin, vive so no disco.
+# `/bu:constitution` recria a constituicao sempre que ela falta.
+# Barra inicial obrigatoria: `CLAUDE.md` solto casaria em qualquer nivel.
+/.specify/memory/constitution.md
+/CLAUDE.md
