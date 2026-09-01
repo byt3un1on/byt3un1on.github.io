@@ -1,0 +1,18 @@
+{
+  "projects": [
+    {
+      "slug": "primeiro",
+      "name": "Primeiro projeto",
+      "summary": "Declara o repositorio compartilhado.",
+      "highlighted": false,
+      "repositories": ["shortsmaker-api"]
+    },
+    {
+      "slug": "segundo",
+      "name": "Segundo projeto",
+      "summary": "Declara o mesmo repositorio do primeiro.",
+      "highlighted": false,
+      "repositories": ["shortsmaker-api"]
+    }
+  ]
+}
