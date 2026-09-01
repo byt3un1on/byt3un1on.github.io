@@ -75,6 +75,11 @@ jobs:
       - uses: actions/checkout@v5
       # RF-17: conflito nao e resolvido aqui. A saida do comando vai para a
       # classificacao, que nomeia a causa em vez de deixar erro generico.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Integrar a feature em develop
         run: |
           gh pr merge "${{ github.event.pull_request.number }}" --merge --delete-branch=false 2>merge.log \
@@ -134,6 +139,11 @@ jobs:
           fetch-depth: 0
       # A branch de release nasce de master, e nao de develop: e master que
       # carrega o que esta publicado.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Abrir a branch de release
         run: |
           git switch -c "release/${{ needs.versao.outputs.versao }}"
@@ -160,6 +170,11 @@ jobs:
       # Aberta com a credencial padrao para que a aprovacao automatica, feita
       # pela credencial dedicada, seja de outra identidade — o GitHub proibe
       # que quem abre aprove.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Abrir a Pull Request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

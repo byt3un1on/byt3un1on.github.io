@@ -127,6 +127,11 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Integrar a release em master
         run: |
           gh pr merge "${{ github.event.pull_request.number }}" --merge --delete-branch 2>merge.log \
@@ -152,6 +157,11 @@ jobs:
         with:
           ref: master
           fetch-depth: 0
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Marcar e liberar a versão
         run: |
           gh release create "${{ needs.build.outputs.versao }}" --target master \

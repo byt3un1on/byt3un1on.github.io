@@ -70,6 +70,11 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Integrar develop na release
         run: |
           gh pr merge "${{ github.event.pull_request.number }}" --merge --delete-branch=false 2>merge.log \
@@ -93,6 +98,11 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Abrir a Pull Request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

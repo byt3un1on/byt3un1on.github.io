@@ -296,6 +296,11 @@ jobs:
       # A Pull Request e aberta com a credencial padrao **de proposito**: quem a
       # aprova depois e a credencial dedicada, e o GitHub proibe que a mesma
       # identidade abra e aprove.
+      # O resumo passa pelo contrato de operacao, entao o servico dev precisa
+      # estar de pe tambem nos jobs que so falam com o GitHub.
+      - name: Subir o serviço dev
+        working-directory: app
+        run: make infra init
       - name: Abrir ou atualizar a Pull Request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
