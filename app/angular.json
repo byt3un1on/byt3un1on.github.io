@@ -1,0 +1,95 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": ".",
+  "projects": {
+    "vitrine": {
+      "projectType": "application",
+      "root": "",
+      "sourceRoot": "",
+      "prefix": "bu",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist",
+            "index": "index.html",
+            "browser": "main.ts",
+            "server": "infra/init/web_server.ts",
+            "ssr": false,
+            "prerender": {
+              "discoverRoutes": false,
+              "routesFile": "data/prerender-routes.txt"
+            },
+            "baseHref": "/",
+            "tsConfig": "tsconfig.json",
+            "styles": ["styles.css"],
+            "polyfills": [],
+            "budgets": [
+              {
+                "type": "initial",
+                "maximumWarning": "250kB",
+                "maximumError": "300kB"
+              },
+              {
+                "type": "anyComponentStyle",
+                "maximumWarning": "4kB",
+                "maximumError": "8kB"
+              }
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "buildTarget": "vitrine:build:development",
+            "host": "0.0.0.0",
+            "port": 4200
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "vitrine:build:development",
+            "tsConfig": "tsconfig.json",
+            "runner": "vitest",
+            "runnerConfig": "vitest.config.ts",
+            "watch": false,
+            "include": ["tests/unit/**/*.test.ts"],
+            "coverageInclude": ["adapters/**/*.ts", "core/**/*.ts", "infra/**/*.ts"],
+            "coverageExclude": [
+              "main.ts",
+              "main_catalog.ts",
+              "main_report.ts",
+              "infra/init/ioc_init.ts",
+              "infra/init/cli_ioc_init.ts",
+              "infra/init/web_init.ts",
+              "infra/init/web_server.ts",
+              "tests/**",
+              "**/*.test.ts"
+            ],
+            "coverageThresholds": {
+              "perFile": true,
+              "statements": 90,
+              "branches": 90,
+              "functions": 90,
+              "lines": 90
+            },
+            "coverageReporters": ["text", "html"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve",
+    "lib": ["ES2022", "dom"],
+    "types": ["node"],
+    "paths": {
+      "@adapters/*": ["./adapters/*"],
+      "@core/*": ["./core/*"],
+      "@infra/*": ["./infra/*"],
+      "@interfaces/*": ["./interfaces/*"]
+    },
+    "outDir": "./out-tsc",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "include": [
+    "adapters/**/*.ts",
+    "core/**/*.ts",
+    "infra/**/*.ts",
+    "interfaces/**/*.ts",
+    "tests/**/*.ts",
+    "main.ts",
+    "main_catalog.ts",
+    "main_report.ts"
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "request": { "method": "GET", "urlPath": "/repos/byt3un1on/byt3un1on.github.io/issues" },
+    "response": { "status": 200, "headers": { "Content-Type": "application/json" }, "jsonBody": [] }
+  },
+  {
+    "request": { "method": "POST", "urlPath": "/repos/byt3un1on/byt3un1on.github.io/issues" },
+    "response": {
+      "status": 201,
+      "headers": { "Content-Type": "application/json" },
+      "jsonBody": { "number": 42 }
+    }
+  }
+]
