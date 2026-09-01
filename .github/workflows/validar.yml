@@ -197,11 +197,14 @@ jobs:
       - name: Auditar acessibilidade e desempenho
         working-directory: app
         run: make audit-only
+      # `lighthouserc.json` grava em coverage/lighthouse, e e la que os cenarios
+      # de comportamento leem o relatorio. Falhar aqui quando nao ha arquivo
+      # vale mais que falhar no job seguinte, ao baixar um artefato que nao existe.
       - uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: auditoria
-          path: app/.lighthouseci
+          path: app/coverage/lighthouse
+          if-no-files-found: error
       - name: Resumo
         if: always()
         working-directory: app
@@ -227,7 +230,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: auditoria
-          path: app/.lighthouseci
+          path: app/coverage/lighthouse
       # `init` junto de `infra`: o catalogo gerado nao e versionado, e sem o
       # arquivo de partida o build do Angular nao resolve o import.
       - name: Subir o serviço dev
