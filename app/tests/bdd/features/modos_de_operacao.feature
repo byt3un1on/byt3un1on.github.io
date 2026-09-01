@@ -32,3 +32,16 @@ Funcionalidade: Modos de operação da esteira
     Quando a esteira decide como tratar os merges da cadeia
     Então ela opera em modo automático
     Mas ela registra no resumo da execução qual modo está em vigor
+
+  @esteira
+  Cenário: RF-09 — a esteira satisfaz a proteção de master antes de mergear
+    Dado que master exige uma revisão aprovadora para aceitar merge
+    Quando a esteira vai mergear a Pull Request que publica
+    Então ela aprova essa Pull Request com a credencial dedicada
+    Mas quem a abriu foi a credencial padrão, porque ninguém aprova a própria
+
+  @esteira
+  Cenário: RF-15 — motivo de falha com várias linhas não corrompe o resumo
+    Dado que a integração falhou com uma mensagem de várias linhas
+    Quando a esteira registra o motivo para o resumo da execução
+    Então o motivo atravessa inteiro, com delimitador em vez de uma linha só

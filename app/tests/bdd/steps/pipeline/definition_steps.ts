@@ -596,3 +596,56 @@ Then(
     assert.ok(fluxo.raw.includes('pipeline summary'), 'o fluxo agendado nao escreve resumo');
   },
 );
+
+Given('que master exige uma revisão aprovadora para aceitar merge', function (): void {
+  return;
+});
+
+Given('que a integração falhou com uma mensagem de várias linhas', function (): void {
+  return;
+});
+
+When('a esteira vai mergear a Pull Request que publica', function (): void {
+  return;
+});
+
+When('a esteira registra o motivo para o resumo da execução', function (): void {
+  return;
+});
+
+// A aprovacao aqui nao e gatilho de nada: o gatilho continua sendo o merge.
+// Ela satisfaz a protecao de master, que exige uma revisao aprovadora.
+Then(
+  'ela aprova essa Pull Request com a credencial dedicada',
+  async function (this: VitrineWorld): Promise<void> {
+    const merge = acha(await this.workflow.jobsOf(PROMOVER_RELEASE), 'Merge master');
+    assert.ok(merge.script.includes('gh pr review'), 'sem aprovação, master recusa o merge');
+    assert.ok(merge.script.includes('--approve'), 'a revisão precisa ser aprovadora');
+  },
+);
+
+Then(
+  'quem a abriu foi a credencial padrão, porque ninguém aprova a própria',
+  async function (this: VitrineWorld): Promise<void> {
+    const fluxo = await this.workflow.byFile(PROMOVER_RELEASE);
+    assert.ok(
+      fluxo.raw.includes('GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}'),
+      'aberta pela credencial dedicada, ela não poderia ser aprovada por ela mesma',
+    );
+  },
+);
+
+// `KEY=valor` no GITHUB_ENV so aceita uma linha. Escrito assim, um motivo
+// multilinha derrubava o proprio mecanismo que existe para mostra-lo.
+Then(
+  'o motivo atravessa inteiro, com delimitador em vez de uma linha só',
+  async function (this: VitrineWorld): Promise<void> {
+    for (const arquivo of [PROMOVER_DEVELOP, PROMOVER_RELEASE]) {
+      const fluxo = await this.workflow.byFile(arquivo);
+      assert.ok(
+        fluxo.raw.includes('DETALHE<<'),
+        `${arquivo} escreve o motivo em uma linha só, e trunca o que importa`,
+      );
+    }
+  },
+);

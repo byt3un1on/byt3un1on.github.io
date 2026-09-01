@@ -228,8 +228,17 @@ jobs:
       # classificacao, que nomeia a causa em vez de deixar erro generico.
       - name: Integrar develop na release
         run: |
-          gh pr merge "${{ needs.pr.outputs.numero }}" --merge --delete-branch=false 2>merge.log \
-            || { echo "DETALHE=$(tail -c 400 merge.log)" >> "$GITHUB_ENV"; exit 1; }
+          gh pr merge "${{ needs.pr.outputs.numero }}" --merge --delete-branch=false 2>merge.log && exit 0
+          # `KEY=valor` no GITHUB_ENV so aceita uma linha, e a saida do `gh` tem
+          # varias: escrita assim, ela derrubava o proprio mecanismo que existe
+          # para mostrar o motivo ("Unable to process file command 'env'"), e o
+          # erro que importava sumia. O delimitador aceita o texto inteiro.
+          {
+            echo "DETALHE<<FIM_DO_MOTIVO"
+            tail -c 400 merge.log
+            echo "FIM_DO_MOTIVO"
+          } >> "$GITHUB_ENV"
+          exit 1
       - name: Resumo
         if: always()
         working-directory: app
