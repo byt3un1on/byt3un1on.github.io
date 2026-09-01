@@ -7,8 +7,14 @@ name: Action - feature -> develop
 run-name: Action - ${{ github.event.pull_request.head.ref }} -> develop
 
 on:
+  # O filtro de destino vive no gatilho, e nao so no `if:` do job. Os tres
+  # estagios escutam o mesmo evento: sem ele, um merge cria tres execucoes, duas
+  # das quais so aparecem para se descartarem — e com nome errado, porque o
+  # `run-name` e calculado antes do descarte. Filtro de gatilho e avaliado antes
+  # de a execucao existir.
   pull_request:
     types: [closed]
+    branches: [develop]
 
 permissions:
   contents: read
@@ -164,16 +170,32 @@ jobs:
       - name: Subir o serviço dev
         working-directory: app
         run: make infra init
+      # O numero vem de quem abriu a Pull Request, e nao de uma listagem
+      # posterior: a listagem ja devolveu vazio para uma PR recem-criada, e o
+      # `echo "x=$(cmd)"` engoliu a falha — o job seguinte recebeu `0` e tentou
+      # mergear a Pull Request numero zero. Aqui o valor e conferido antes de
+      # atravessar a fronteira entre jobs.
       - name: Abrir a Pull Request
         id: abrir
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr create --base "release/${{ needs.versao.outputs.versao }}" --head develop \
+          URL=$(gh pr create --base "release/${{ needs.versao.outputs.versao }}" --head develop \
             --title "PR - develop -> release/${{ needs.versao.outputs.versao }}" \
-            --body "Aberta pela esteira. Modo em vigor: ${{ needs.modo.outputs.modo }}."
-          echo "numero=$(gh pr list --head develop --base 'release/${{ needs.versao.outputs.versao }}' \
-            --state open --json number --jq '.[0].number')" >> "$GITHUB_OUTPUT"
+            --body "Aberta pela esteira. Modo em vigor: ${{ needs.modo.outputs.modo }}.") \
+            || URL=$(gh pr list --head develop --base "release/${{ needs.versao.outputs.versao }}" --state open \
+              --json url --jq '.[0].url')
+          NUMERO=${URL##*/}
+          case "$NUMERO" in
+            [0-9]*) ;;
+            *)
+              ESTEIRA_JOB="PR para release" ESTEIRA_STATUS=failure \
+                ESTEIRA_DETALHE="Pull Request sem numero: recebido '$URL'" \
+                make -s pipeline summary >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+              ;;
+          esac
+          echo "numero=$NUMERO" >> "$GITHUB_OUTPUT"
       - name: Resumo
         if: always()
         working-directory: app
