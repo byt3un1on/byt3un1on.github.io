@@ -1,11 +1,21 @@
 import { Given, Then, When } from '@cucumber/cucumber';
 import { AxeBuilder } from '@axe-core/playwright';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { staticRoutes } from '../../../../core/domain/constants/site_routes_constants.ts';
 import type { VitrineWorld } from '../../support/world.ts';
 
-/** Rotas publicas que a auditoria percorre: as fixas mais a de cada projeto. */
-const ROTAS_PUBLICAS = [...staticRoutes()];
+/**
+ * Rotas publicas que a varredura percorre: as fixas mais a de cada projeto. Ate
+ * 2026-08-31 esta constante trazia so as fixas, apesar de o comentario prometer
+ * as duas — as paginas de projeto ficavam de fora sem que ninguem visse.
+ */
+async function rotasPublicas(): Promise<readonly string[]> {
+  const { projects } = JSON.parse(await readFile('data/catalog.generated.json', 'utf8')) as {
+    projects: readonly { slug: string }[];
+  };
+  return [...staticRoutes(), ...projects.map((p) => `/projetos/${p.slug}`)];
+}
 
 let violacoesGraves: string[] = [];
 let rotasVarridas: string[] = [];
@@ -127,7 +137,7 @@ When('eu leio o conteúdo voltado ao visitante', function (): void {
 });
 
 Then('todo ele está em português do Brasil', async function (this: VitrineWorld): Promise<void> {
-  for (const rota of ROTAS_PUBLICAS) {
+  for (const rota of await rotasPublicas()) {
     await this.browser.visit(rota);
     const idioma = await this.browser.page.getAttribute('html', 'lang');
     assert.equal(idioma, 'pt-BR', `a rota ${rota} declara idioma ${String(idioma)}`);
@@ -137,7 +147,7 @@ Then('todo ele está em português do Brasil', async function (this: VitrineWorl
 Then(
   'não há alternador de idioma nem conteúdo em segundo idioma',
   async function (this: VitrineWorld): Promise<void> {
-    for (const rota of ROTAS_PUBLICAS) {
+    for (const rota of await rotasPublicas()) {
       await this.browser.visit(rota);
       const alternadores = await this.browser.page.locator('[hreflang], [lang]:not(html)').count();
       assert.equal(alternadores, 0, `a rota ${rota} tem marcacao de segundo idioma`);
@@ -152,14 +162,20 @@ When(
   async function (this: VitrineWorld): Promise<void> {
     violacoesGraves = [];
     rotasVarridas = [];
-    for (const rota of ROTAS_PUBLICAS) {
+    for (const rota of await rotasPublicas()) {
       await this.browser.visit(rota);
       const resultado = await new AxeBuilder({ page: this.browser.page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
         .analyze();
       rotasVarridas.push(rota);
       for (const violacao of resultado.violations) {
-        if (violacao.impact === 'critical' || violacao.impact === 'serious') {
+        // Contraste entra em qualquer severidade: o RNF-01 e o RNF-02 da 002
+        // fixam o minimo por numero, e nao pela etiqueta que o axe atribui.
+        if (
+          violacao.impact === 'critical' ||
+          violacao.impact === 'serious' ||
+          violacao.id.includes('color-contrast')
+        ) {
           violacoesGraves.push(`${rota}: ${violacao.id} (${violacao.impact})`);
         }
       }
@@ -175,10 +191,28 @@ Then('nenhuma violação crítica ou séria de acessibilidade é encontrada', fu
   );
 });
 
-Then('nenhuma página é dispensada da verificação', function (): void {
+Then('nenhuma página é dispensada da verificação', async function (): Promise<void> {
   assert.deepEqual(
     rotasVarridas,
-    [...ROTAS_PUBLICAS],
+    [...(await rotasPublicas())],
+    'alguma rota publica ficou de fora da varredura de acessibilidade',
+  );
+});
+
+// --- RNF-01 e RNF-02 da 002: contraste --------------------------------------
+// Vivem aqui, e nao em `appearance_steps.ts`, porque leem o resultado da mesma
+// varredura que o `Quando` acima guarda. Definir o `Quando` duas vezes faria o
+// Cucumber reprovar por ambiguidade.
+
+Then('nenhuma violação de contraste é encontrada', function (): void {
+  const contraste = violacoesGraves.filter((v) => v.includes('color-contrast'));
+  assert.deepEqual(contraste, [], `violacoes de contraste: ${contraste.join('; ')}`);
+});
+
+Then('nenhuma página pública é dispensada da verificação', async function (): Promise<void> {
+  assert.deepEqual(
+    rotasVarridas,
+    [...(await rotasPublicas())],
     'alguma rota publica ficou de fora da varredura de acessibilidade',
   );
 });

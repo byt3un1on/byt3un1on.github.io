@@ -11,9 +11,17 @@ interface ResultadoAuditoria {
   readonly lcp: number;
   readonly cls: number;
   readonly paginas: number;
+  readonly pesoTotal: number;
 }
 
-let auditoria: ResultadoAuditoria = { categorias: {}, lcp: 0, cls: 0, paginas: 0 };
+/**
+ * `total-byte-weight` da pagina mais pesada, medido em 2026-08-31 antes da
+ * identidade visual entrar. Existe para a mensagem de falha dizer de onde o
+ * peso partiu — o teto que reprova e o do cenario, nao esta constante.
+ */
+const LINHA_DE_BASE_BYTES = 79920;
+
+let auditoria: ResultadoAuditoria = { categorias: {}, lcp: 0, cls: 0, paginas: 0, pesoTotal: 0 };
 
 /**
  * Le o relatorio que o Lighthouse CI grava, em vez de reexecuta-lo: `make audit`
@@ -34,6 +42,7 @@ async function lerRelatorio(): Promise<ResultadoAuditoria> {
   const categorias: Record<string, number> = {};
   let lcp = 0;
   let cls = 0;
+  let pesoTotal = 0;
   for (const arquivo of arquivos) {
     const relatorio = JSON.parse(await readFile(arquivo.trim(), 'utf8')) as {
       categories: Record<string, { score: number }>;
@@ -44,12 +53,13 @@ async function lerRelatorio(): Promise<ResultadoAuditoria> {
     }
     lcp = Math.max(lcp, relatorio.audits['largest-contentful-paint']?.numericValue ?? 0);
     cls = Math.max(cls, relatorio.audits['cumulative-layout-shift']?.numericValue ?? 0);
+    pesoTotal = Math.max(pesoTotal, relatorio.audits['total-byte-weight']?.numericValue ?? 0);
   }
-  return { categorias, lcp, cls, paginas: arquivos.length };
+  return { categorias, lcp, cls, paginas: arquivos.length, pesoTotal };
 }
 
 Given('que o sítio foi construído para publicação', function (): void {
-  auditoria = { categorias: {}, lcp: 0, cls: 0, paginas: 0 };
+  auditoria = { categorias: {}, lcp: 0, cls: 0, paginas: 0, pesoTotal: 0 };
 });
 
 When(
@@ -79,4 +89,30 @@ Then(
 
 Then('nenhuma página é dispensada da auditoria', function (): void {
   assert.ok(auditoria.paginas > 0, 'nenhuma pagina foi auditada');
+});
+
+// --- RNF-05: peso da entrega ------------------------------------------------
+
+When('o peso da entrega inicial é medido', async function (): Promise<void> {
+  auditoria = await lerRelatorio();
+});
+
+Then(
+  /^o peso total de nenhuma página pública excede (\d+) kB$/,
+  function (tetoTexto: string): void {
+    const teto = Number(tetoTexto) * 1024;
+    assert.ok(
+      auditoria.pesoTotal <= teto,
+      `peso total ${auditoria.pesoTotal} B excede o teto de ${teto} B ` +
+        `(linha de base medida em ${LINHA_DE_BASE_BYTES} B antes desta feature)`,
+    );
+  },
+);
+
+Then(/^ele permanece abaixo do teto de (\d+) kB$/, function (tetoTexto: string): void {
+  const teto = Number(tetoTexto) * 1024;
+  assert.ok(
+    auditoria.pesoTotal < teto,
+    `peso total ${auditoria.pesoTotal} B nao esta abaixo do teto herdado de ${teto} B`,
+  );
 });

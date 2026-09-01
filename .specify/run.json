@@ -1,0 +1,155 @@
+{
+  "demanda": "Utilizando como principais referências: https://oxide.computer/, https://zed.dev/ e https://thebigcb.com/, trace uma paleta de cores, escolhe um framework de estilo adequado, e ajuste a aparência da nossa vitrine para ficar agradável e seguir um estilo similar a estes das referências. Misture eles para gerar um original nosso!",
+  "feature": "specs/002-identidade-visual-da-vitrine",
+  "branch": "feature/identidade-visual-da-vitrine",
+  "etapa": "converge",
+  "status": "em_andamento",
+  "retentativas": 0,
+  "retentativas_totais": 2,
+  "etapa_mais_avancada": 8,
+  "max_retentativas": 15,
+  "aberto_em": "2026-08-31T21:07:32-03:00",
+  "historico": [
+    {
+      "etapa": "specify",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:12:02-03:00"
+    },
+    {
+      "etapa": "clarify",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:18:25-03:00"
+    },
+    {
+      "etapa": "plan",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:24:55-03:00"
+    },
+    {
+      "etapa": "checklist",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:26:07-03:00"
+    },
+    {
+      "etapa": "tasks",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:28:12-03:00"
+    },
+    {
+      "etapa": "analyze",
+      "veredito": "nook",
+      "alvo": "specify",
+      "motivo": "B1: Fase 0 implementa antes dos cenarios que a medem (dona: tasks). B2: cenario RNF-07 duplica palavra por palavra o RNF-05 da 001, contra a propria regra da spec (dona: specify)",
+      "em": "2026-08-31T21:30:08-03:00"
+    },
+    {
+      "etapa": "specify",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:30:31-03:00"
+    },
+    {
+      "etapa": "clarify",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:30:31-03:00"
+    },
+    {
+      "etapa": "plan",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:30:31-03:00"
+    },
+    {
+      "etapa": "checklist",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:30:31-03:00"
+    },
+    {
+      "etapa": "tasks",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:32:50-03:00"
+    },
+    {
+      "etapa": "analyze",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:32:50-03:00"
+    },
+    {
+      "etapa": "implement",
+      "veredito": "nook",
+      "alvo": "specify",
+      "motivo": "RNF-05 cruza duas metricas: a linha de base de 66,32 kB e a estimativa de pacote inicial do Angular, mas o portao que reprova le total-byte-weight do Lighthouse, medido em 79920 B. O teto de 126 kB segue valido; a redacao do requisito e do cenario precisa nomear a metrica que de fato e medida",
+      "em": "2026-08-31T21:35:04-03:00"
+    },
+    {
+      "etapa": "specify",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:36:14-03:00"
+    },
+    {
+      "etapa": "clarify",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:36:15-03:00"
+    },
+    {
+      "etapa": "plan",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:36:15-03:00"
+    },
+    {
+      "etapa": "checklist",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:36:15-03:00"
+    },
+    {
+      "etapa": "tasks",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:36:15-03:00"
+    },
+    {
+      "etapa": "analyze",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:36:15-03:00"
+    },
+    {
+      "etapa": "implement",
+      "veredito": "ok",
+      "alvo": null,
+      "motivo": "",
+      "em": "2026-08-31T21:55:25-03:00"
+    }
+  ],
+  "motivo_status": ""
+}
