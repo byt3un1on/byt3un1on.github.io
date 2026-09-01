@@ -1,0 +1,11 @@
+{
+  "projects": [
+    {
+      "slug": "shortsmaker",
+      "name": "Shortsmaker",
+      "summary": "Sistema que automatiza a criacao de videos curtos.",
+      "highlighted": true,
+      "repositories": ["shortsmaker-api"]
+    }
+  ]
+}

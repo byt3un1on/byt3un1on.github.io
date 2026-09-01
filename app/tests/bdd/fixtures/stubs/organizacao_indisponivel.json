@@ -1,0 +1,6 @@
+[
+  {
+    "request": { "method": "GET", "urlPath": "/orgs/byt3un1on/repos" },
+    "response": { "status": 503, "body": "service unavailable" }
+  }
+]
