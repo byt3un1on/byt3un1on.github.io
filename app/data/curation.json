@@ -3,14 +3,14 @@
     {
       "slug": "backing-services",
       "name": "Template de backing services",
-      "summary": "Template para subir um cluster OpenSearch de dois nos com Dashboards em ambiente de desenvolvimento, ja com index templates, ingest pipelines e teste de saude do cluster.",
+      "summary": "Template para subir um cluster OpenSearch de dois nós com Dashboards em ambiente de desenvolvimento, já com index templates, ingest pipelines e teste de saúde do cluster.",
       "highlighted": true,
       "repositories": ["templates-backing-services"]
     },
     {
       "slug": "shortsmaker",
       "name": "Shortsmaker",
-      "summary": "Sistema que automatiza a criacao de videos curtos a partir de um tema e uma descricao. Reune API em FastAPI com arquitetura limpa, frontend em TypeScript, worker de processamento assincrono, infraestrutura em Docker Compose e a documentacao do desenho.",
+      "summary": "Sistema que automatiza a criação de vídeos curtos a partir de um tema e uma descrição. Reúne API em FastAPI com arquitetura limpa, frontend em TypeScript, worker de processamento assíncrono, infraestrutura em Docker Compose e a documentação do desenho.",
       "highlighted": false,
       "repositories": [
         "shortsmaker-api",
@@ -23,7 +23,7 @@
     {
       "slug": "vitrine",
       "name": "Vitrine da Byte Union",
-      "summary": "O sitio que voce esta lendo: Angular prerenderizado, com o catalogo montado em tempo de build a partir da API do GitHub e publicado como arquivos estaticos.",
+      "summary": "O sítio que você está lendo: Angular prerenderizado, com o catálogo montado em tempo de build a partir da API do GitHub e publicado como arquivos estáticos.",
       "highlighted": false,
       "repositories": ["byt3un1on.github.io"]
     }

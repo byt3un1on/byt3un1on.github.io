@@ -53,7 +53,7 @@ import { projectRoute } from '../../../core/domain/constants/site_routes_constan
         }
       </ul>
       <p>Atividade mais recente em {{ activity() }}</p>
-      <a [href]="project().repositories[0]?.url" rel="noopener">Ver o repositorio</a>
+      <a [href]="project().repositories[0]?.url" rel="noopener">Ver o repositório</a>
     </article>
   `,
 })

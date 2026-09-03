@@ -56,7 +56,7 @@ describe('HomePageComponent', () => {
     // Assert
     expect(tool.apply).toHaveBeenCalledExactlyOnceWith(
       'Byte Union — oficina de projetos',
-      'O que a Byte Union constroi, em que tecnologias, e onde esta o codigo.',
+      'O que a Byte Union constrói, em que tecnologias, e onde está o código.',
     );
   });
 });

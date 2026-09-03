@@ -25,7 +25,7 @@ describe('SiteFooterComponent', () => {
     await render(SiteFooterComponent);
 
     // Act
-    const ligacao = screen.getByRole('link', { name: 'Organizacao no GitHub' });
+    const ligacao = screen.getByRole('link', { name: 'Organização no GitHub' });
 
     // Assert
     expect(ligacao.getAttribute('href')).toBe(ORGANIZATION.githubUrl);

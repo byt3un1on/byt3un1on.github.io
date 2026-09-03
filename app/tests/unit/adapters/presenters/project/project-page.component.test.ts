@@ -84,7 +84,7 @@ describe('ProjectPageComponent', () => {
     await montar(projeto({ homepage: 'https://byt3un1on.github.io' }));
 
     // Act
-    const ligacao = screen.getByRole('link', { name: 'Abrir o endereco publicado' });
+    const ligacao = screen.getByRole('link', { name: 'Abrir o endereço publicado' });
 
     // Assert
     expect(ligacao.getAttribute('href')).toBe('https://byt3un1on.github.io');
@@ -95,7 +95,7 @@ describe('ProjectPageComponent', () => {
     await montar(projeto({ homepage: null }));
 
     // Act
-    const ligacao = screen.queryByRole('link', { name: 'Abrir o endereco publicado' });
+    const ligacao = screen.queryByRole('link', { name: 'Abrir o endereço publicado' });
 
     // Assert
     expect(ligacao).toBeNull();
@@ -117,7 +117,7 @@ describe('ProjectPageComponent', () => {
     await montar(null);
 
     // Act
-    const titulo = screen.getByRole('heading', { level: 1, name: 'Projeto nao encontrado' });
+    const titulo = screen.getByRole('heading', { level: 1, name: 'Projeto não encontrado' });
 
     // Assert
     expect(titulo).toBeDefined();
@@ -157,7 +157,7 @@ describe('ProjectPageComponent', () => {
 
     // Assert
     expect(tool.apply).toHaveBeenCalledWith(
-      'Projeto nao encontrado — Byte Union',
+      'Projeto não encontrado — Byte Union',
       'Projeto inexistente na vitrine.',
     );
   });
