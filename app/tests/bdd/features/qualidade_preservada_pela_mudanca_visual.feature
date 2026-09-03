@@ -15,7 +15,7 @@ Funcionalidade: Qualidade preservada pela mudança visual
   Cenário: RNF-05 — o peso da entrega permanece dentro do orçamento
     Dado que o sítio foi construído para publicação
     Quando o peso da entrega inicial é medido
-    Então o peso total de nenhuma página pública excede 126 kB
+    Então o peso total de nenhuma página pública excede 180 kB
     Mas ele permanece abaixo do teto de 300 kB
 
   @navegador

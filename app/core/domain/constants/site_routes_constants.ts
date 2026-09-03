@@ -7,6 +7,7 @@
 export const SITE_ROUTES = {
   home: '/',
   catalog: '/projetos',
+  community: '/comunidade',
   project: '/projetos/:slug',
   notFound: '/404',
 } as const;
