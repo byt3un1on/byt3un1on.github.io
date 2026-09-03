@@ -3,6 +3,8 @@ import { GenerateCatalogCommand } from '../../../../adapters/commands/generate_c
 import type { CatalogDto } from '../../../../core/domain/dtos/catalog_dto.ts';
 import { CurationValidationError } from '../../../../core/domain/errors/curation_validation_error.ts';
 import type { IGenerateCatalogUseCase } from '../../../../interfaces/core/application/catalog/i_generate_catalog_use_case.ts';
+import { CommunityInviteError } from '../../../../core/domain/errors/community_invite_error.ts';
+import type { IValidateCommunityInviteUseCase } from '../../../../interfaces/core/application/community/i_validate_community_invite_use_case.ts';
 import type { ILoggerTool } from '../../../../interfaces/infra/tools/i_logger_tool.ts';
 
 const CATALOGO: CatalogDto = {
@@ -34,13 +36,17 @@ function logger(): ILoggerTool {
   return { info: vi.fn(), error: vi.fn() };
 }
 
+function conviteValido(): IValidateCommunityInviteUseCase {
+  return { execute: vi.fn() };
+}
+
 describe('GenerateCatalogCommand', () => {
   it('deve devolver zero quando o catalogo e gerado', async () => {
     // Arrange
     const useCase: IGenerateCatalogUseCase = { execute: vi.fn().mockResolvedValue(CATALOGO) };
 
     // Act
-    const codigo = await new GenerateCatalogCommand(useCase, logger()).execute();
+    const codigo = await new GenerateCatalogCommand(useCase, conviteValido(), logger()).execute();
 
     // Assert
     expect(codigo).toBe(0);
@@ -52,7 +58,7 @@ describe('GenerateCatalogCommand', () => {
     const log = logger();
 
     // Act
-    await new GenerateCatalogCommand(useCase, log).execute();
+    await new GenerateCatalogCommand(useCase, conviteValido(), log).execute();
 
     // Assert
     expect(log.info).toHaveBeenCalledExactlyOnceWith('catalogo gerado', { projects: 1 });
@@ -67,7 +73,7 @@ describe('GenerateCatalogCommand', () => {
     };
 
     // Act
-    const codigo = await new GenerateCatalogCommand(useCase, logger()).execute();
+    const codigo = await new GenerateCatalogCommand(useCase, conviteValido(), logger()).execute();
 
     // Assert
     expect(codigo).toBe(1);
@@ -83,7 +89,7 @@ describe('GenerateCatalogCommand', () => {
     const log = logger();
 
     // Act
-    await new GenerateCatalogCommand(useCase, log).execute();
+    await new GenerateCatalogCommand(useCase, conviteValido(), log).execute();
 
     // Assert
     expect(log.error).toHaveBeenCalledExactlyOnceWith('publicacao abortada', {
@@ -98,7 +104,7 @@ describe('GenerateCatalogCommand', () => {
     const log = logger();
 
     // Act
-    await new GenerateCatalogCommand(useCase, log).execute();
+    await new GenerateCatalogCommand(useCase, conviteValido(), log).execute();
 
     // Assert
     expect(log.error).toHaveBeenCalledExactlyOnceWith('publicacao abortada', {
@@ -115,9 +121,76 @@ describe('GenerateCatalogCommand', () => {
     const log = logger();
 
     // Act
-    await new GenerateCatalogCommand(useCase, log).execute();
+    await new GenerateCatalogCommand(useCase, conviteValido(), log).execute();
 
     // Assert
     expect(log.info).not.toHaveBeenCalled();
+  });
+});
+
+describe('GenerateCatalogCommand com o convite da comunidade', () => {
+  it('deve conferir o convite antes de gerar o catalogo quando executado', async () => {
+    // Arrange
+    const useCase: IGenerateCatalogUseCase = { execute: vi.fn().mockResolvedValue(CATALOGO) };
+    const convite: IValidateCommunityInviteUseCase = { execute: vi.fn() };
+    const comando = new GenerateCatalogCommand(useCase, convite, logger());
+
+    // Act
+    await comando.execute();
+
+    // Assert
+    expect(convite.execute).toHaveBeenCalledTimes(1);
+  });
+
+  it('deve abortar com codigo um quando o convite e invalido', async () => {
+    // Arrange
+    const useCase: IGenerateCatalogUseCase = { execute: vi.fn().mockResolvedValue(CATALOGO) };
+    const convite: IValidateCommunityInviteUseCase = {
+      execute: vi.fn().mockImplementation(() => {
+        throw new CommunityInviteError('', 'convite');
+      }),
+    };
+    const comando = new GenerateCatalogCommand(useCase, convite, logger());
+
+    // Act
+    const codigo = await comando.execute();
+
+    // Assert
+    expect(codigo).toBe(1);
+  });
+
+  it('deve nao gerar o catalogo quando o convite e invalido', async () => {
+    // Arrange
+    const useCase: IGenerateCatalogUseCase = { execute: vi.fn().mockResolvedValue(CATALOGO) };
+    const convite: IValidateCommunityInviteUseCase = {
+      execute: vi.fn().mockImplementation(() => {
+        throw new CommunityInviteError('', 'convite');
+      }),
+    };
+    const comando = new GenerateCatalogCommand(useCase, convite, logger());
+
+    // Act
+    await comando.execute();
+
+    // Assert
+    expect(useCase.execute).toHaveBeenCalledTimes(0);
+  });
+
+  it('deve registrar a causa quando o convite e invalido', async () => {
+    // Arrange
+    const useCase: IGenerateCatalogUseCase = { execute: vi.fn().mockResolvedValue(CATALOGO) };
+    const registro = logger();
+    const convite: IValidateCommunityInviteUseCase = {
+      execute: vi.fn().mockImplementation(() => {
+        throw new CommunityInviteError('', 'convite');
+      }),
+    };
+    const comando = new GenerateCatalogCommand(useCase, convite, registro);
+
+    // Act
+    await comando.execute();
+
+    // Assert
+    expect(registro.error).toHaveBeenCalledTimes(1);
   });
 });

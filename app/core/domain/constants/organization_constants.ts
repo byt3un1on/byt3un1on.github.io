@@ -1,3 +1,5 @@
+import { SITE_ROUTES } from './site_routes_constants.ts';
+
 /**
  * Identidade publica da organizacao e seus canais de contato (RF-10).
  *
@@ -11,6 +13,12 @@ export interface ReadyContactChannel {
   readonly id: string;
   readonly label: string;
   readonly url: string;
+  /**
+   * Onde o endereco leva. O rodape decide por este campo entre navegacao do
+   * roteador e ligacao para fora — inferir pelo formato do endereco seria
+   * adivinhacao, e `check_links.sh` distingue os dois por `rel="noopener"`.
+   */
+  readonly target: 'interno' | 'externo';
 }
 
 export interface PendingContactChannel {
@@ -21,6 +29,15 @@ export interface PendingContactChannel {
 }
 
 export type ContactChannel = ReadyContactChannel | PendingContactChannel;
+
+/**
+ * Convite permanente do servidor (RF-02), declarado uma unica vez.
+ *
+ * Mora aqui, entre os canais de contato, e nao junto da descricao do servidor:
+ * o rodape precisa dele em toda pagina, e importa-lo do outro arquivo
+ * arrastaria a descricao inteira do servidor para o pacote inicial.
+ */
+export const COMMUNITY_INVITE_URL = 'https://discord.gg/fZ3sNap5vJ';
 
 export const ORGANIZATION = {
   name: 'Byte Union',
@@ -34,15 +51,23 @@ export const CONTACT_CHANNELS: readonly ContactChannel[] = Object.freeze([
     id: 'github',
     label: 'Organizacao no GitHub',
     url: ORGANIZATION.githubUrl,
+    target: 'externo',
   },
   {
-    status: 'pending',
+    status: 'ready',
+    id: 'comunidade',
+    label: 'Como funciona a comunidade',
+    url: SITE_ROUTES.community,
+    target: 'interno',
+  },
+  {
+    // Deixou de ser pendente quando o servidor passou a existir. O endereco e o
+    // convite permanente, declarado uma unica vez em `community_space_constants`.
+    status: 'ready',
     id: 'discord',
     label: 'Comunidade no Discord',
-    // Trocar por um convite sem prazo de validade quando o grupo existir.
-    // Enquanto estiver pendente, nao e renderizado e o cenario de aceite de
-    // RF-10 nao passa — que e o aviso de que falta canal, e nao um detalhe.
-    reason: 'grupo ainda nao criado',
+    url: COMMUNITY_INVITE_URL,
+    target: 'externo',
   },
 ]);
 

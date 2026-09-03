@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/angular';
 import { describe, expect, it } from 'vitest';
 import { SiteHeaderComponent } from '../../../../../adapters/presenters/layout/site-header.component.ts';
 import { ORGANIZATION } from '../../../../../core/domain/constants/organization_constants.ts';
+import { SITE_ROUTES } from '../../../../../core/domain/constants/site_routes_constants.ts';
 
 describe('SiteHeaderComponent', () => {
   it('deve rotular a navegacao principal quando renderizado', async () => {
@@ -47,5 +48,18 @@ describe('SiteHeaderComponent', () => {
 
     // Assert
     expect(atalho.getAttribute('href')).toBe('#conteudo');
+  });
+});
+
+describe('SiteHeaderComponent e a comunidade', () => {
+  it('deve levar a pagina da comunidade pelo menu principal quando renderizado', async () => {
+    // Arrange
+    await render(SiteHeaderComponent, { providers: [provideRouter([])] });
+
+    // Act
+    const ligacao = screen.getByRole('link', { name: 'Comunidade' });
+
+    // Assert
+    expect(ligacao.getAttribute('href')).toBe(SITE_ROUTES.community);
   });
 });

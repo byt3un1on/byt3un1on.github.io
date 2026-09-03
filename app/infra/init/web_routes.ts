@@ -1,4 +1,5 @@
 import type { Routes } from '@angular/router';
+import { CommunityPageComponent } from '../../adapters/presenters/community/community-page.component.ts';
 import { CatalogPageComponent } from '../../adapters/presenters/catalog/catalog-page.component.ts';
 import { HomePageComponent } from '../../adapters/presenters/home/home-page.component.ts';
 import { NotFoundPageComponent } from '../../adapters/presenters/error/not-found-page.component.ts';
@@ -12,6 +13,11 @@ import { SITE_ROUTES } from '../../core/domain/constants/site_routes_constants.t
 export const WEB_ROUTES: Routes = [
   { path: withoutLeadingSlash(SITE_ROUTES.home), component: HomePageComponent },
   { path: withoutLeadingSlash(SITE_ROUTES.catalog), component: CatalogPageComponent },
+  // Rota ansiosa como as demais. Carrega-la sob demanda poupava 2,8 kB no pacote
+  // inicial e custava deslocamento de layout medido em 0,248: o pedaco chegava
+  // depois da hidratacao e o rodape pulava. O aviso de orcamento e mais barato
+  // que um portao de acessibilidade reprovado.
+  { path: withoutLeadingSlash(SITE_ROUTES.community), component: CommunityPageComponent },
   { path: withoutLeadingSlash(SITE_ROUTES.project), component: ProjectPageComponent },
   { path: withoutLeadingSlash(SITE_ROUTES.notFound), component: NotFoundPageComponent },
   { path: '**', component: NotFoundPageComponent },

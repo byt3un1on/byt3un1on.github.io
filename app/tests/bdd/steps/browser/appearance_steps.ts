@@ -245,11 +245,23 @@ Then('nenhuma página pública aparece com enquadramento próprio', function ():
 
 // --- RF-09: a identidade nao depende de imagem -----------------------------
 
+/**
+ * A identidade continua sem imagem: tipografia, ritmo e cor sustentam sozinhos
+ * a aparencia do sitio. O que passou a existir e imagem de **conteudo** — as
+ * capturas do servidor na pagina da comunidade, que ilustram o que o texto ao
+ * lado ja diz. Uma coisa e a identidade nao depender de ilustracao; outra seria
+ * proibir que pagina alguma mostre o que descreve.
+ */
+const ROTAS_COM_IMAGEM_DE_CONTEUDO: readonly string[] = ['/comunidade'];
+
 Then(
-  'nenhuma imagem, ilustração ou ícone é carregada como recurso',
+  'nenhuma imagem decorativa, ilustração ou ícone é carregada como recurso',
   async function (this: VitrineWorld): Promise<void> {
     recursosDeImagem = [];
-    for (const rota of await rotasPublicas()) {
+    const rotasDeIdentidade = (await rotasPublicas()).filter(
+      (rota) => !ROTAS_COM_IMAGEM_DE_CONTEUDO.includes(rota),
+    );
+    for (const rota of rotasDeIdentidade) {
       await this.browser.visit(rota);
       const achados = await this.browser.page.evaluate(() => {
         const fora: string[] = [];

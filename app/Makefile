@@ -92,6 +92,10 @@ audit: build
 # Mesma receita de `audit`, sem reconstruir: o comportamento externo de `audit`
 # fica identico, e a esteira ganha como auditar o artefato que ja tem.
 audit-only:
+	# Relatorio antigo no diretorio faz o cenario de qualidade ler o pior de
+	# todas as execucoes ja feitas, e nao a desta. Build passando parecia
+	# reprovado por medicao de uma semana atras.
+	$(DEV) sh -c 'rm -rf coverage/lighthouse .lighthouseci'
 	$(DEV) npx lhci autorun --config=lighthouserc.json
 	$(DEV) sh scripts/check_links.sh
 

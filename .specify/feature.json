@@ -1,4 +1,4 @@
 {
-  "active": "specs/003-esteira-de-entrega-continua",
-  "title": "Pipeline CI/CD que entrega o site como GitHub Pages por meio de esteira em git flow, com portoes bloqueantes e modos manual e automatico"
+  "active": "specs/004-discord-na-vitrine",
+  "title": "Agora que criamos o canal do Discord, nosso site precisa apontar ele corretamente. Além disso, acho que é válido termos uma página explicando o discord, como ele funciona, como deve ser usado pelos colaboradores, e comunidade em geral. Que tal esta ideia?"
 }
