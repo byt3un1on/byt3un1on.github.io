@@ -120,7 +120,7 @@ Then(
   'eu vejo uma página de erro do próprio sítio, com a identidade da Byte Union',
   async function (this: VitrineWorld): Promise<void> {
     const titulo = await this.browser.page.getByRole('heading', { level: 1 }).textContent();
-    assert.match(titulo ?? '', /nao encontrado/i);
+    assert.match(titulo ?? '', /não encontrado/i);
     const cabecalho = await this.browser.page.getByRole('banner').textContent();
     assert.match(cabecalho ?? '', new RegExp(ORGANIZATION.name));
   },

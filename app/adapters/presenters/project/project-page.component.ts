@@ -21,9 +21,9 @@ import { FIND_PROJECT_USE_CASE, SEO_TOOL } from '../../../infra/init/ioc_init.ts
           }
         </ul>
         @if (found.homepage) {
-          <a [href]="found.homepage" rel="noopener">Abrir o endereco publicado</a>
+          <a [href]="found.homepage" rel="noopener">Abrir o endereço publicado</a>
         }
-        <h2>Repositorios</h2>
+        <h2>Repositórios</h2>
         <ul>
           @for (repository of found.repositories; track repository.name) {
             <li>
@@ -33,7 +33,7 @@ import { FIND_PROJECT_USE_CASE, SEO_TOOL } from '../../../infra/init/ioc_init.ts
         </ul>
       </article>
     } @else {
-      <h1>Projeto nao encontrado</h1>
+      <h1>Projeto não encontrado</h1>
       <a [routerLink]="routes.catalog">Ver os projetos</a>
     }
   `,
@@ -48,7 +48,7 @@ export class ProjectPageComponent {
   protected readonly project = computed(() => {
     const found = this.findProject.execute(this.slug());
     this.seo.apply(
-      found === null ? 'Projeto nao encontrado — Byte Union' : `${found.name} — Byte Union`,
+      found === null ? 'Projeto não encontrado — Byte Union' : `${found.name} — Byte Union`,
       found === null ? 'Projeto inexistente na vitrine.' : found.summary,
     );
     return found;

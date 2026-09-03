@@ -32,8 +32,8 @@ import {
     />
     <p role="status" aria-live="polite">{{ announcement() }}</p>
     @if (projects().length === 0) {
-      <p>Nenhum projeto atende ao criterio escolhido.</p>
-      <button type="button" (click)="restrict(null)">Remover a restricao</button>
+      <p>Nenhum projeto atende ao critério escolhido.</p>
+      <button type="button" (click)="restrict(null)">Remover a restrição</button>
     } @else {
       <div class="bu-grid">
         @for (project of projects(); track project.slug) {
@@ -63,7 +63,7 @@ export class CatalogPageComponent {
   constructor() {
     inject(SEO_TOOL).apply(
       'Projetos — Byte Union',
-      'O que a oficina construiu, em que tecnologias, e onde esta o codigo.',
+      'O que a oficina construiu, em que tecnologias, e onde está o código.',
     );
   }
 

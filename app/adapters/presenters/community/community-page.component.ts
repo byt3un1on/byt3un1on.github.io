@@ -30,15 +30,15 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
     <article class="bu-prose">
       <h1>A comunidade da {{ organization.name }}</h1>
       <p>
-        Nosso espaco de conversa fica no Discord. Ele existe para que quem chega pela vitrine
-        consiga falar com quem escreveu o codigo — e para que a gente combine o trabalho em um lugar
-        so.
+        Nosso espaço de conversa fica no Discord. Ele existe para que quem chega pela vitrine
+        consiga falar com quem escreveu o código — e para que a gente combine o trabalho em um lugar
+        só.
       </p>
 
-      <h2 id="organizacao">Como o servidor e organizado</h2>
+      <h2 id="organizacao">Como o servidor é organizado</h2>
       <p>
-        Sao tres areas. Duas voce ve assim que entra; uma e fechada, e esta descrita abaixo pelo que
-        ela e, nao pelo que tem dentro.
+        São três áreas. Duas você vê assim que entra; uma é fechada, e está descrita abaixo pelo que
+        ela é, não pelo que tem dentro.
       </p>
 
       <figure>
@@ -46,9 +46,9 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
           src="imagens/comunidade/estrutura.webp"
           width="253"
           height="400"
-          alt="Barra lateral do servidor no Discord, listando as areas PUBLICO, OFICINA e PROJETOS com seus canais."
+          alt="Barra lateral do servidor no Discord, listando as áreas PÚBLICO, OFICINA e PROJETOS com seus canais."
         />
-        <figcaption>A barra lateral e o mapa: area, e dentro dela os canais.</figcaption>
+        <figcaption>A barra lateral é o mapa: área, e dentro dela os canais.</figcaption>
       </figure>
 
       @for (category of categories; track category.name) {
@@ -72,7 +72,7 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
         </section>
       }
 
-      <h2 id="por-onde-comecar">Por onde comecar</h2>
+      <h2 id="por-onde-comecar">Por onde começar</h2>
       <p>
         Entrando, leia <strong>boas-vindas</strong>: ele diz em poucas linhas o que a oficina faz e
         para onde levar cada assunto. Depois, a conversa acontece em <strong>geral</strong>.
@@ -84,16 +84,16 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
           width="560"
           height="515"
           loading="lazy"
-          alt="Canal boas-vindas aberto no Discord, com a mensagem de apresentacao da Byte Union e as ligacoes para a vitrine e para o codigo."
+          alt="Canal boas-vindas aberto no Discord, com a mensagem de apresentação da Byte Union e as ligações para a vitrine e para o código."
         />
-        <figcaption>A mensagem fixa de boas-vindas, com os enderecos que importam.</figcaption>
+        <figcaption>A mensagem fixa de boas-vindas, com os endereços que importam.</figcaption>
       </figure>
 
-      <h2 id="onde-falar">Onde voce pode escrever</h2>
+      <h2 id="onde-falar">Onde você pode escrever</h2>
       <p>
-        Em <strong>geral</strong>, nas salas de voz e nos foruns de projeto. Os canais
-        <strong>boas-vindas</strong> e <strong>anuncios</strong> sao somente leitura: sao referencia
-        e registro, e conversa no meio deles faz a informacao afundar. Reagir continua liberado.
+        Em <strong>geral</strong>, nas salas de voz e nos fóruns de projeto. Os canais
+        <strong>boas-vindas</strong> e <strong>anúncios</strong> são somente leitura: são referência
+        e registro, e conversa no meio deles faz a informação afundar. Reagir continua liberado.
       </p>
 
       <figure>
@@ -102,15 +102,15 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
           width="560"
           height="515"
           loading="lazy"
-          alt="Canal anuncios no Discord, com o aviso da versao v1.0.0 e a ligacao para a release no GitHub."
+          alt="Canal anúncios no Discord, com o aviso da versão v1.0.0 e a ligação para a release no GitHub."
         />
-        <figcaption>Em anuncios entra versao publicada e marco — e nada mais.</figcaption>
+        <figcaption>Em anúncios entra versão publicada e marco — e nada mais.</figcaption>
       </figure>
 
-      <h2 id="projetos">Um forum por projeto</h2>
+      <h2 id="projetos">Um fórum por projeto</h2>
       <p>
-        Cada projeto tem um forum, e cada assunto vira um topico com titulo. Assim a discussao de
-        ontem continua achavel amanha, em vez de virar rolagem.
+        Cada projeto tem um fórum, e cada assunto vira um tópico com título. Assim a discussão de
+        ontem continua achável amanhã, em vez de virar rolagem.
       </p>
 
       <figure>
@@ -119,14 +119,14 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
           width="560"
           height="194"
           loading="lazy"
-          alt="Forum de um projeto no Discord, com a lista de topicos abertos e o botao de nova publicacao."
+          alt="Fórum de um projeto no Discord, com a lista de tópicos abertos e o botão de nova publicação."
         />
-        <figcaption>Topico com titulo, e nao mensagem solta.</figcaption>
+        <figcaption>Tópico com título, e não mensagem solta.</figcaption>
       </figure>
 
-      <h2 id="github">O que nao se resolve aqui</h2>
+      <h2 id="github">O que não se resolve aqui</h2>
       <p>
-        Assunto de codigo vive onde o codigo vive. Leve para o
+        Assunto de código vive onde o código vive. Leve para o
         <a [href]="organization.githubUrl" rel="noopener">GitHub</a>:
       </p>
       <ul>
@@ -137,8 +137,8 @@ import { DESCRIBE_COMMUNITY_SPACE_USE_CASE, SEO_TOOL } from '../../../infra/init
 
       <h2 id="entrar">Entrar</h2>
       <p>
-        O convite nao expira e nao tem limite de usos. Voce entra direto, sem pedir aprovacao a
-        ninguem.
+        O convite não expira e não tem limite de usos. Você entra direto, sem pedir aprovação a
+        ninguém.
       </p>
       <p>
         <a [href]="inviteUrl" rel="noopener">Entrar no Discord da {{ organization.name }}</a>
@@ -156,7 +156,7 @@ export class CommunityPageComponent {
   constructor() {
     inject(SEO_TOOL).apply(
       'Comunidade — Byte Union',
-      'Como funciona o Discord da Byte Union: o que ha em cada canal, onde falar e como entrar.',
+      'Como funciona o Discord da Byte Union: o que há em cada canal, onde falar e como entrar.',
     );
   }
 }

@@ -1,4 +1,4 @@
 {
-  "active": "specs/004-discord-na-vitrine",
-  "title": "Agora que criamos o canal do Discord, nosso site precisa apontar ele corretamente. Além disso, acho que é válido termos uma página explicando o discord, como ele funciona, como deve ser usado pelos colaboradores, e comunidade em geral. Que tal esta ideia?"
+  "active": "specs/005-portugues-correto-na-vitrine",
+  "title": "A página da comunidade está com português errado, sem acentuação. Revise todas as páginas e ajuste o português para o correto PT-BR. (Brasileiro)."
 }

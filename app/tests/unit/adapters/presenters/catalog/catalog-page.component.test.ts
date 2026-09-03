@@ -140,7 +140,7 @@ describe('CatalogPageComponent', () => {
     await montar(() => [], 'Rust');
 
     // Act
-    const mensagem = screen.getByText('Nenhum projeto atende ao criterio escolhido.');
+    const mensagem = screen.getByText('Nenhum projeto atende ao critério escolhido.');
 
     // Assert
     expect(mensagem).toBeDefined();
@@ -151,7 +151,7 @@ describe('CatalogPageComponent', () => {
     await montar(() => [], 'Rust');
 
     // Act
-    const botao = screen.getByRole('button', { name: 'Remover a restricao' });
+    const botao = screen.getByRole('button', { name: 'Remover a restrição' });
 
     // Assert
     expect(botao).toBeDefined();
@@ -192,7 +192,7 @@ describe('CatalogPageComponent', () => {
     const navegar = vi.spyOn(router, 'navigate').mockResolvedValue(true);
 
     // Act
-    fireEvent.click(screen.getByRole('button', { name: 'Remover a restricao' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remover a restrição' }));
 
     // Assert
     expect(navegar.mock.calls).toEqual([
