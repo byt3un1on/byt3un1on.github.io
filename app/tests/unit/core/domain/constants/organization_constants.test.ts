@@ -39,7 +39,7 @@ describe('readyContactChannels', () => {
     const prontos = readyContactChannels();
 
     // Assert
-    expect(prontos.length).toBeLessThan(total);
+    expect(prontos.length).toBe(total);
   });
 
   it('deve oferecer o GitHub quando consultada', () => {
@@ -53,12 +53,23 @@ describe('readyContactChannels', () => {
     expect(ids).toContain(esperado);
   });
 
-  it('deve entregar endereco absoluto em https em todo canal pronto', () => {
+  it('deve entregar endereco absoluto em https em todo canal externo', () => {
     // Arrange
-    const prontos = readyContactChannels();
+    const externos = readyContactChannels().filter((channel) => channel.target === 'externo');
 
     // Act
-    const invalidos = prontos.filter((channel) => !channel.url.startsWith('https://'));
+    const invalidos = externos.filter((channel) => !channel.url.startsWith('https://'));
+
+    // Assert
+    expect(invalidos).toEqual([]);
+  });
+
+  it('deve entregar rota relativa em todo canal interno', () => {
+    // Arrange
+    const internos = readyContactChannels().filter((channel) => channel.target === 'interno');
+
+    // Act
+    const invalidos = internos.filter((channel) => !channel.url.startsWith('/'));
 
     // Assert
     expect(invalidos).toEqual([]);
@@ -77,15 +88,15 @@ describe('readyContactChannels', () => {
 });
 
 describe('pendingContactChannels', () => {
-  it('deve registrar o Discord como pendente enquanto o grupo nao existir', () => {
+  it('deve nao registrar o Discord como pendente depois de o servidor existir', () => {
     // Arrange
-    const esperado = 'discord';
+    const naoEsperado = 'discord';
 
     // Act
     const ids = pendingContactChannels().map((channel) => channel.id);
 
     // Assert
-    expect(ids).toContain(esperado);
+    expect(ids).not.toContain(naoEsperado);
   });
 
   it('deve declarar o motivo da pendencia em todo canal pendente', () => {
@@ -108,5 +119,62 @@ describe('pendingContactChannels', () => {
 
     // Assert
     expect(oferecidos.filter((id) => pendentes.includes(id))).toEqual([]);
+  });
+});
+
+describe('CONTACT_CHANNELS apos a criacao do servidor', () => {
+  it('deve nao deixar canal pendente algum quando consultada', () => {
+    // Arrange
+    const esperado = 0;
+
+    // Act
+    const pendentes = pendingContactChannels();
+
+    // Assert
+    expect(pendentes).toHaveLength(esperado);
+  });
+
+  it('deve oferecer o Discord pelo convite permanente quando consultada', () => {
+    // Arrange
+    const prefixo = 'https://discord.gg/';
+
+    // Act
+    const discord = readyContactChannels().find((canal) => canal.id === 'discord');
+
+    // Assert
+    expect(discord?.url.startsWith(prefixo)).toBe(true);
+  });
+
+  it('deve marcar o convite do Discord como endereco externo quando consultada', () => {
+    // Arrange
+    const esperado = 'externo';
+
+    // Act
+    const discord = readyContactChannels().find((canal) => canal.id === 'discord');
+
+    // Assert
+    expect(discord?.target).toBe(esperado);
+  });
+
+  it('deve oferecer a pagina da comunidade como navegacao interna quando consultada', () => {
+    // Arrange
+    const esperado = 'interno';
+
+    // Act
+    const pagina = readyContactChannels().find((canal) => canal.id === 'comunidade');
+
+    // Assert
+    expect(pagina?.target).toBe(esperado);
+  });
+
+  it('deve apontar a pagina da comunidade para a rota do sitio quando consultada', () => {
+    // Arrange
+    const esperado = '/comunidade';
+
+    // Act
+    const pagina = readyContactChannels().find((canal) => canal.id === 'comunidade');
+
+    // Assert
+    expect(pagina?.url).toBe(esperado);
   });
 });

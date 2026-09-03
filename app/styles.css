@@ -113,6 +113,13 @@ pre {
   max-width: 100%;
 }
 
+/* Sem `height: auto`, `max-width` sobrescreve a largura e a altura declaradas
+   no atributo, a proporcao se perde e a imagem empurra o texto ao carregar —
+   deslocamento de layout medido, e nao teorico. */
+img {
+  height: auto;
+}
+
 /* --- Tipografia: os quatro niveis ---------------------------------------- */
 
 h1 {

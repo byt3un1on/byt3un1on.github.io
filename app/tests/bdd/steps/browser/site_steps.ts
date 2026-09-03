@@ -145,15 +145,19 @@ Then(
 
 // --- RF-10: canal declarado mas ainda inexistente ---------------------------
 
-Given(
-  'que a organização declara um canal de comunidade que ainda não foi criado',
-  function (): void {
-    assert.ok(
-      pendingContactChannels().length > 0,
-      'nenhum canal pendente declarado: o cenario ficaria sem objeto de verificacao',
-    );
-  },
-);
+// O canal do Discord deixou de ser pendente quando o servidor passou a existir.
+// A garantia continua valendo e continua sendo exercida: o que o cenario afirma
+// e que canal sem endereco nunca chega ao visitante — hoje a lista de pendentes
+// esta vazia, e e exatamente isso que a vitrine deve publicar.
+Given('que a organização só oferece canal com endereço declarado', function (): void {
+  const oferecidos = readyContactChannels().map((canal) => canal.id);
+  const pendentes = pendingContactChannels().map((canal) => canal.id);
+  assert.deepEqual(
+    oferecidos.filter((id) => pendentes.includes(id)),
+    [],
+    'canal sem endereco chegou a lista oferecida ao visitante',
+  );
+});
 
 When(
   'eu procuro os canais de contato em qualquer página pública',
@@ -163,7 +167,7 @@ When(
 );
 
 Then(
-  'esse canal não me é oferecido em lugar nenhum do sítio',
+  'canal pendente algum me é oferecido em lugar nenhum do sítio',
   async function (this: VitrineWorld): Promise<void> {
     for (const rota of staticRoutes()) {
       await this.browser.visit(rota);
@@ -187,8 +191,14 @@ Then(
       .getByRole('link')
       .evaluateAll((links) => links.map((l) => (l as HTMLAnchorElement).href));
     for (const canal of readyContactChannels()) {
+      // Canal interno vira endereco absoluto no DOM (`http://host/comunidade`),
+      // entao a comparacao e por sufixo; externo continua sendo por prefixo.
+      const acionavel =
+        canal.target === 'interno'
+          ? (e: string): boolean => new URL(e).pathname.replace(/\/$/, '') === canal.url
+          : (e: string): boolean => e.startsWith(canal.url);
       assert.ok(
-        enderecos.some((e) => e.startsWith(canal.url)),
+        enderecos.some(acionavel),
         `canal pronto "${canal.label}" nao esta acionavel: esperado ${canal.url}`,
       );
     }

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CommunityPageComponent } from '../../../../adapters/presenters/community/community-page.component.ts';
 import { WEB_ROUTES, withoutLeadingSlash } from '../../../../infra/init/web_routes.ts';
 import { SITE_ROUTES } from '../../../../core/domain/constants/site_routes_constants.ts';
 
@@ -40,7 +41,7 @@ describe('withoutLeadingSlash', () => {
 describe('WEB_ROUTES', () => {
   it('deve declarar todas as rotas publicas do sitio quando inspecionada', () => {
     // Arrange
-    const esperadas = ['', 'projetos', 'projetos/:slug', '404', '**'];
+    const esperadas = ['', 'projetos', 'comunidade', 'projetos/:slug', '404', '**'];
 
     // Act
     const caminhos = WEB_ROUTES.map((route) => route.path);
@@ -69,5 +70,18 @@ describe('WEB_ROUTES', () => {
 
     // Assert
     expect(total).toBe(0);
+  });
+});
+
+describe('rota da comunidade', () => {
+  it('deve resolver para a pagina da comunidade quando inspecionada', () => {
+    // Arrange
+    const esperado = 'comunidade';
+
+    // Act
+    const rota = WEB_ROUTES.find((route) => route.path === esperado);
+
+    // Assert
+    expect(rota?.component).toBe(CommunityPageComponent);
   });
 });
