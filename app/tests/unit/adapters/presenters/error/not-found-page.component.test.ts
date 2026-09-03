@@ -17,7 +17,7 @@ describe('NotFoundPageComponent', () => {
     });
 
     // Act
-    const titulo = screen.getByRole('heading', { name: 'Endereco nao encontrado' });
+    const titulo = screen.getByRole('heading', { name: 'Endereço não encontrado' });
 
     // Assert
     expect(titulo).toBeDefined();
@@ -47,8 +47,8 @@ describe('NotFoundPageComponent', () => {
 
     // Assert
     expect(tool.apply).toHaveBeenCalledExactlyOnceWith(
-      'Endereco nao encontrado — Byte Union',
-      'A pagina procurada nao existe na vitrine da Byte Union.',
+      'Endereço não encontrado — Byte Union',
+      'A página procurada não existe na vitrine da Byte Union.',
     );
   });
 });

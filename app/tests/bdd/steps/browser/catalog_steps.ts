@@ -207,7 +207,7 @@ Then(
   'cada projeto exibido corresponde a repositório existente da organização',
   async function (this: VitrineWorld): Promise<void> {
     const repos = await this.browser.page
-      .getByRole('link', { name: 'Ver o repositorio' })
+      .getByRole('link', { name: 'Ver o repositório' })
       .evaluateAll((links) => links.map((l) => (l as HTMLAnchorElement).href));
     assert.ok(repos.length > 0, 'nenhum projeto exibido');
     const forasteiros = repos.filter((r) => !r.startsWith('https://github.com/byt3un1on/'));
@@ -220,7 +220,7 @@ Then(
   async function (this: VitrineWorld): Promise<void> {
     const totalCartoes = (await cartoes(this)).length;
     const totalRepos = await this.browser.page
-      .getByRole('link', { name: 'Ver o repositorio' })
+      .getByRole('link', { name: 'Ver o repositório' })
       .count();
     assert.equal(totalRepos, totalCartoes, 'ha cartao sem ligacao para repositorio de origem');
   },
@@ -243,7 +243,7 @@ Then(
 Then(
   'eu vejo uma ligação que leva ao repositório de origem',
   async function (this: VitrineWorld): Promise<void> {
-    const ligacao = this.browser.page.getByRole('link', { name: 'Ver o repositorio' }).first();
+    const ligacao = this.browser.page.getByRole('link', { name: 'Ver o repositório' }).first();
     assert.match((await ligacao.getAttribute('href')) ?? '', /^https:\/\/github\.com\/byt3un1on\//);
   },
 );
@@ -357,7 +357,7 @@ Then(
 Then(
   'vejo o detalhamento do projeto e a ligação para o seu repositório',
   async function (this: VitrineWorld): Promise<void> {
-    await this.browser.page.getByRole('heading', { level: 2, name: 'Repositorios' }).waitFor();
+    await this.browser.page.getByRole('heading', { level: 2, name: 'Repositórios' }).waitFor();
     assert.ok((await this.browser.page.locator('article ul li a').count()) > 0);
   },
 );
@@ -372,7 +372,7 @@ Then(
 Then(
   'eu vejo duas ligações distintas e rotuladas: uma para o repositório e outra para o endereço publicado',
   async function (this: VitrineWorld): Promise<void> {
-    await this.browser.page.getByRole('link', { name: 'Abrir o endereco publicado' }).waitFor();
+    await this.browser.page.getByRole('link', { name: 'Abrir o endereço publicado' }).waitFor();
     assert.ok((await this.browser.page.locator('article ul li a').count()) > 0);
   },
 );
@@ -381,7 +381,7 @@ Then(
   'as duas ligações não apontam para o mesmo destino',
   async function (this: VitrineWorld): Promise<void> {
     const publicado = await this.browser.page
-      .getByRole('link', { name: 'Abrir o endereco publicado' })
+      .getByRole('link', { name: 'Abrir o endereço publicado' })
       .getAttribute('href');
     const repositorio = await this.browser.page
       .locator('article ul li a')
@@ -396,7 +396,7 @@ Then(
   async function (this: VitrineWorld): Promise<void> {
     const titulo = (await this.browser.page.getByRole('heading', { level: 1 }).textContent()) ?? '';
     assert.ok(titulo.trim().length > 0);
-    await this.browser.page.getByRole('heading', { level: 2, name: 'Repositorios' }).waitFor();
+    await this.browser.page.getByRole('heading', { level: 2, name: 'Repositórios' }).waitFor();
   },
 );
 
@@ -404,7 +404,7 @@ Then(
   'eu não recebo erro de endereço não encontrado nem sou redirecionado à página inicial',
   async function (this: VitrineWorld): Promise<void> {
     const titulo = (await this.browser.page.getByRole('heading', { level: 1 }).textContent()) ?? '';
-    assert.equal(/nao encontrado/i.test(titulo), false);
+    assert.equal(/não encontrado/i.test(titulo), false);
     assert.match(this.browser.page.url(), new RegExp(`/projetos/${slugObservado}$`));
   },
 );
@@ -442,14 +442,14 @@ Then(
   'eu vejo uma mensagem que explica que nenhum projeto atende ao critério',
   async function (this: VitrineWorld): Promise<void> {
     await this.browser.page
-      .getByText('Nenhum projeto atende ao criterio escolhido.')
+      .getByText('Nenhum projeto atende ao critério escolhido.')
       .waitFor({ timeout: 3000 });
   },
 );
 
 Then('eu vejo como remover a restrição', async function (this: VitrineWorld): Promise<void> {
   await this.browser.page
-    .getByRole('button', { name: 'Remover a restricao' })
+    .getByRole('button', { name: 'Remover a restrição' })
     .waitFor({ timeout: 3000 });
 });
 
@@ -458,7 +458,7 @@ Then(
   async function (this: VitrineWorld): Promise<void> {
     assert.equal(await this.browser.page.locator('article').count(), 0);
     await this.browser.page
-      .getByText('Nenhum projeto atende ao criterio escolhido.')
+      .getByText('Nenhum projeto atende ao critério escolhido.')
       .waitFor({ timeout: 3000 });
   },
 );
@@ -512,7 +512,7 @@ Then(
     const declarada = await curadoria();
     const projeto = declarada.projects.find((p) => p.slug === slugObservado);
     const conteudo = await this.browser.page.content();
-    assert.ok(conteudo.includes(projeto?.summary ?? ' '), 'o resumo da curadoria nao aparece');
+    assert.ok(conteudo.includes(projeto?.summary ?? '\0'), 'o resumo da curadoria nao aparece');
   },
 );
 

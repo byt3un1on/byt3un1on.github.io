@@ -10,7 +10,7 @@ import { SITE_ROUTES } from '../../../core/domain/constants/site_routes_constant
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <header class="bu-container">
-      <a class="bu-visually-hidden" href="#conteudo">Pular para o conteudo</a>
+      <a class="bu-visually-hidden" href="#conteudo">Pular para o conteúdo</a>
       <nav aria-label="Principal">
         <a
           [routerLink]="routes.home"
