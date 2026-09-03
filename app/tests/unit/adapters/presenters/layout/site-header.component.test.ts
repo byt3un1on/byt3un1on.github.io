@@ -44,7 +44,7 @@ describe('SiteHeaderComponent', () => {
     await render(SiteHeaderComponent, { providers: [provideRouter([])] });
 
     // Act
-    const atalho = screen.getByRole('link', { name: 'Pular para o conteudo' });
+    const atalho = screen.getByRole('link', { name: 'Pular para o conteúdo' });
 
     // Assert
     expect(atalho.getAttribute('href')).toBe('#conteudo');

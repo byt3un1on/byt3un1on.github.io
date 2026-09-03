@@ -1,91 +1,70 @@
 {
-  "demanda": "Agora que criamos o canal do Discord, nosso site precisa apontar ele corretamente. Além disso, acho que é válido termos uma página explicando o discord, como ele funciona, como deve ser usado pelos colaboradores, e comunidade em geral. Que tal esta ideia?",
-  "feature": "specs/004-discord-na-vitrine",
-  "branch": "feature/discord-na-vitrine",
+  "demanda": "A página da comunidade está com português errado, sem acentuação. Revise todas as páginas e ajuste o português para o correto PT-BR. (Brasileiro).",
+  "feature": "specs/005-portugues-correto-na-vitrine",
+  "branch": "feature/portugues-correto-na-vitrine",
   "etapa": "deliver",
   "status": "em_andamento",
   "retentativas": 0,
-  "retentativas_totais": 1,
+  "retentativas_totais": 0,
   "etapa_mais_avancada": 9,
   "max_retentativas": 15,
-  "aberto_em": "2026-09-02T20:43:38-03:00",
+  "aberto_em": "2026-09-02T23:07:08-03:00",
   "historico": [
     {
       "etapa": "specify",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T20:45:29-03:00"
+      "em": "2026-09-02T23:09:48-03:00"
     },
     {
       "etapa": "clarify",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T20:49:51-03:00"
-    },
-    {
-      "etapa": "plan",
-      "veredito": "nook",
-      "alvo": "specify",
-      "motivo": "demanda ampliada pelo usuario: a pagina deve ilustrar cada trecho com capturas reais do servidor. Imagem nao esta na spec, e requisito novo nao entra pelo plano",
-      "em": "2026-09-02T20:59:15-03:00"
-    },
-    {
-      "etapa": "specify",
-      "veredito": "ok",
-      "alvo": null,
-      "motivo": "",
-      "em": "2026-09-02T20:59:58-03:00"
-    },
-    {
-      "etapa": "clarify",
-      "veredito": "ok",
-      "alvo": null,
-      "motivo": "",
-      "em": "2026-09-02T21:07:32-03:00"
+      "em": "2026-09-02T23:16:54-03:00"
     },
     {
       "etapa": "plan",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T21:09:45-03:00"
+      "em": "2026-09-02T23:19:49-03:00"
     },
     {
       "etapa": "checklist",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T21:10:35-03:00"
+      "em": "2026-09-02T23:20:28-03:00"
     },
     {
       "etapa": "tasks",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T21:11:31-03:00"
+      "em": "2026-09-02T23:22:08-03:00"
     },
     {
       "etapa": "analyze",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T21:12:39-03:00"
+      "em": "2026-09-02T23:23:00-03:00"
     },
     {
       "etapa": "implement",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T21:49:52-03:00"
+      "em": "2026-09-02T23:44:41-03:00"
     },
     {
       "etapa": "converge",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-02T21:50:16-03:00"
+      "em": "2026-09-02T23:44:45-03:00"
     }
   ],
   "motivo_status": ""

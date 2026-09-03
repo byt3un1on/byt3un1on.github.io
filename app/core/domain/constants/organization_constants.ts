@@ -49,7 +49,7 @@ export const CONTACT_CHANNELS: readonly ContactChannel[] = Object.freeze([
   {
     status: 'ready',
     id: 'github',
-    label: 'Organizacao no GitHub',
+    label: 'Organização no GitHub',
     url: ORGANIZATION.githubUrl,
     target: 'externo',
   },

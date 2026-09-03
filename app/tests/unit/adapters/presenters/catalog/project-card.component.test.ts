@@ -95,7 +95,7 @@ describe('ProjectCardComponent', () => {
     await montar(projeto());
 
     // Act
-    const ligacao = screen.getByRole('link', { name: 'Ver o repositorio' });
+    const ligacao = screen.getByRole('link', { name: 'Ver o repositório' });
 
     // Assert
     expect(ligacao.getAttribute('href')).toBe('https://github.com/byt3un1on/shortsmaker-api');

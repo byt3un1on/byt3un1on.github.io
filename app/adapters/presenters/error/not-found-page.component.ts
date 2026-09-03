@@ -10,8 +10,8 @@ import { SEO_TOOL } from '../../../infra/init/ioc_init.ts';
   imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <h1>Endereco nao encontrado</h1>
-    <p>A pagina que voce procurou nao existe nesta vitrine.</p>
+    <h1>Endereço não encontrado</h1>
+    <p>A página que você procurou não existe nesta vitrine.</p>
     <a [routerLink]="routes.catalog">Ver os projetos</a>
   `,
 })
@@ -20,8 +20,8 @@ export class NotFoundPageComponent {
 
   constructor() {
     inject(SEO_TOOL).apply(
-      'Endereco nao encontrado — Byte Union',
-      'A pagina procurada nao existe na vitrine da Byte Union.',
+      'Endereço não encontrado — Byte Union',
+      'A página procurada não existe na vitrine da Byte Union.',
     );
   }
 }

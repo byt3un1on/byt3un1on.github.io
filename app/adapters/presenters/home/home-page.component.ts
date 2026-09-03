@@ -14,7 +14,7 @@ import { SEO_TOOL } from '../../../infra/init/ioc_init.ts';
     <section class="bu-prose">
       <h1>{{ organization.name }}</h1>
       <p>
-        Uma oficina de projetos: construimos software de ponta a ponta e deixamos o codigo aberto
+        Uma oficina de projetos: construímos software de ponta a ponta e deixamos o código aberto
         para quem quiser usar, estudar ou contribuir.
       </p>
       <a [routerLink]="routes.catalog">Ver os projetos</a>
@@ -28,7 +28,7 @@ export class HomePageComponent {
   constructor() {
     inject(SEO_TOOL).apply(
       'Byte Union — oficina de projetos',
-      'O que a Byte Union constroi, em que tecnologias, e onde esta o codigo.',
+      'O que a Byte Union constrói, em que tecnologias, e onde está o código.',
     );
   }
 }
