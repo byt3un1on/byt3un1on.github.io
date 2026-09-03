@@ -15,7 +15,7 @@ Funcionalidade: Contato com a organização
 
   @navegador
   Cenário: RF-10 — canal ainda inexistente não vira ligação morta
-    Dado que a organização declara um canal de comunidade que ainda não foi criado
+    Dado que a organização só oferece canal com endereço declarado
     Quando eu procuro os canais de contato em qualquer página pública
-    Então esse canal não me é oferecido em lugar nenhum do sítio
+    Então canal pendente algum me é oferecido em lugar nenhum do sítio
     Mas os canais que já existem continuam acionáveis

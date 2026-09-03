@@ -1,6 +1,7 @@
 import { GithubIssueClient } from '../../adapters/clients/github_issue_client.ts';
 import { GithubOrganizationClient } from '../../adapters/clients/github_organization_client.ts';
 import { GenerateCatalogCommand } from '../../adapters/commands/generate_catalog_command.ts';
+import { ValidateCommunityInviteUseCase } from '../../core/application/community/validate_community_invite_use_case.ts';
 import { ReportPublicationCommand } from '../../adapters/commands/report_publication_command.ts';
 import { CatalogFileRepository } from '../../adapters/repositories/catalog_file_repository.ts';
 import { CurationRepository } from '../../adapters/repositories/curation_repository.ts';
@@ -28,7 +29,7 @@ export function buildCliEntry(): ICliEntry {
   );
   const reportStatus = new ReportPublicationStatusUseCase(new GithubIssueClient(config), logger);
   return new CliEntry(
-    new GenerateCatalogCommand(generateCatalog, logger),
+    new GenerateCatalogCommand(generateCatalog, new ValidateCommunityInviteUseCase(), logger),
     new ReportPublicationCommand(reportStatus, logger),
     logger,
   );

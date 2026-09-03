@@ -29,5 +29,5 @@ Funcionalidade: Paleta e enquadramento da vitrine
   Cenário: RF-09 — a identidade não depende de imagem
     Dado que eu percorro todas as páginas públicas do sítio
     Quando a página termina de carregar
-    Então nenhuma imagem, ilustração ou ícone é carregada como recurso
+    Então nenhuma imagem decorativa, ilustração ou ícone é carregada como recurso
     Mas o sítio continua tendo aparência própria

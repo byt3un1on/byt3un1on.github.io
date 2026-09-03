@@ -20,6 +20,7 @@ import { SITE_ROUTES } from '../../../core/domain/constants/site_routes_constant
           {{ organization.name }}
         </a>
         <a [routerLink]="routes.catalog" routerLinkActive="ativo">Projetos</a>
+        <a [routerLink]="routes.community" routerLinkActive="ativo">Comunidade</a>
       </nav>
     </header>
   `,

@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { render, screen } from '@testing-library/angular';
 import { describe, expect, it } from 'vitest';
 import { SiteFooterComponent } from '../../../../../adapters/presenters/layout/site-footer.component.ts';
@@ -62,5 +63,43 @@ describe('SiteFooterComponent', () => {
 
     // Assert
     expect(navegacao).toBeDefined();
+  });
+});
+
+describe('SiteFooterComponent e os dois tipos de canal', () => {
+  it('deve navegar por rota interna quando o canal e interno', async () => {
+    // Arrange
+    await render(SiteFooterComponent, { providers: [provideRouter([])] });
+    const interno = readyContactChannels().find((canal) => canal.target === 'interno');
+
+    // Act
+    const ligacao = screen.getByRole('link', { name: interno?.label ?? '' });
+
+    // Assert
+    expect(ligacao.getAttribute('rel')).toBeNull();
+  });
+
+  it('deve sair com noopener quando o canal e externo', async () => {
+    // Arrange
+    await render(SiteFooterComponent, { providers: [provideRouter([])] });
+    const externo = readyContactChannels().find((canal) => canal.id === 'discord');
+
+    // Act
+    const ligacao = screen.getByRole('link', { name: externo?.label ?? '' });
+
+    // Assert
+    expect(ligacao.getAttribute('rel')).toBe('noopener');
+  });
+
+  it('deve oferecer o convite do Discord quando renderizado', async () => {
+    // Arrange
+    await render(SiteFooterComponent, { providers: [provideRouter([])] });
+    const externo = readyContactChannels().find((canal) => canal.id === 'discord');
+
+    // Act
+    const ligacao = screen.getByRole('link', { name: externo?.label ?? '' });
+
+    // Assert
+    expect(ligacao.getAttribute('href')).toBe(externo?.url);
   });
 });

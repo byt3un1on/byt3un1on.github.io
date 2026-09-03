@@ -1,4 +1,5 @@
 import { InjectionToken, type Provider } from '@angular/core';
+import type { IDescribeCommunitySpaceUseCase } from '../../interfaces/core/application/community/i_describe_community_space_use_case.ts';
 import { StaticCatalogRepository } from '../../adapters/repositories/static_catalog_repository.ts';
 import { FilterProjectsByTechnologyUseCase } from '../../core/application/showcase/filter_projects_by_technology_use_case.ts';
 import { FindProjectBySlugUseCase } from '../../core/application/showcase/find_project_by_slug_use_case.ts';
@@ -30,6 +31,14 @@ export const LIST_TECHNOLOGIES_USE_CASE = new InjectionToken<IListTechnologiesUs
 );
 export const FIND_PROJECT_USE_CASE = new InjectionToken<IFindProjectBySlugUseCase>(
   'IFindProjectBySlugUseCase',
+);
+/**
+ * O token vive aqui como todos os outros, mas quem o satisfaz e a propria
+ * pagina da comunidade: a implementacao carrega junto com o pedaco dela, e nao
+ * no pacote inicial que toda visita baixa.
+ */
+export const DESCRIBE_COMMUNITY_SPACE_USE_CASE = new InjectionToken<IDescribeCommunitySpaceUseCase>(
+  'IDescribeCommunitySpaceUseCase',
 );
 export const SEO_TOOL = new InjectionToken<ISeoTool>('ISeoTool');
 

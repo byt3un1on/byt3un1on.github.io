@@ -1,119 +1,91 @@
 {
-  "demanda": "Quero uma pipeline CI/CD que dispare uma esteira que entrega o site como git hub pages, publicado após o push de branch feature. Mas não imediatamente, a ideia é. Push da feature, executa uma action (Nome da action: Descrição do último commit) que roda as etapas fmt, lint, test, cover, it, bdd e audit (ou seja, todos os passos do make validate), e avalia gate de cobertura 90% (todos estes comandos executam como jobs separados na esteira, independentes, e em paralelo. Se tudo passar, abre PR para develop (Nome da PR: PR - feature/<nome_curto> -> develop). Se aprovada pelos owners da org, dispara action (Nome da action: Action - feature/<nome_curto> -> develop. Esta nova action, faz merge de feature/<nome_curto> em develop, abre uma branch a partir da master, com uma nova versão release/vx.x.x (versionamento semântico). Após abrir esta branch, abre uma PR da develop para esta branch (Nome da PR: PR - develop -> release/vx.x.x). Se owners aprovam esta PR, ela dispara uma action (Nome da Action: Action: develop -> release/vx.x.x). Esta action, faz merge de develop -> release/vx.x.x, abre uma PR (Nome da PR: PR - release/vx.x.x -> master). Se aprovada pelos owners, dispra uma action (Nome da Action: Action - release/vx.x.x -> master). Esta action faz a implantação do app em Github Pages, depois faz merge da branch release/vx.x.x em master e cria tag e release para esta versão. Esta esteira deve possuir dois modos, manual e automático. No modo automático, ela exige aprovação apenas da primeira PR (feature/<nome_curto> -> develop), as demais actions são aprovadas sozinha. E no modo manual, existe aprovação manual de todas as PRs. Por padrão, deve assumir o modo automático. Todas as actions devem ter seus passos como jobs separados, e evitar jobs com muitos steps. Queremos ver cada etapa visualmente no diagrama do github actions, que só aparessem como etapas separadas quando são jobs separados. Então cuide do visual do diagrama! Todos os gates são bloqueantes, se falhar algum, não deixa a esteira seguir e deixa bem claro o motivo, precisamos de feedback visual bom, ou seja, o usuário que acompanha a esteira nunca está em dúvida sobre o que está acontecendo, e sobre os motivos de sucesso/falha. Além disso, use nomes curtos e representativos para jobs, coerentes, e que não sejam truncados na UI.",
-  "feature": "specs/003-esteira-de-entrega-continua",
-  "branch": "feature/esteira-de-entrega-continua",
+  "demanda": "Agora que criamos o canal do Discord, nosso site precisa apontar ele corretamente. Além disso, acho que é válido termos uma página explicando o discord, como ele funciona, como deve ser usado pelos colaboradores, e comunidade em geral. Que tal esta ideia?",
+  "feature": "specs/004-discord-na-vitrine",
+  "branch": "feature/discord-na-vitrine",
   "etapa": "deliver",
   "status": "em_andamento",
   "retentativas": 0,
   "retentativas_totais": 1,
   "etapa_mais_avancada": 9,
   "max_retentativas": 15,
-  "aberto_em": "2026-09-01T05:00:28-03:00",
+  "aberto_em": "2026-09-02T20:43:38-03:00",
   "historico": [
     {
       "etapa": "specify",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:12:40-03:00"
+      "em": "2026-09-02T20:45:29-03:00"
     },
     {
       "etapa": "clarify",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:22:54-03:00"
+      "em": "2026-09-02T20:49:51-03:00"
     },
     {
       "etapa": "plan",
-      "veredito": "ok",
-      "alvo": null,
-      "motivo": "",
-      "em": "2026-09-01T05:28:45-03:00"
-    },
-    {
-      "etapa": "checklist",
-      "veredito": "ok",
-      "alvo": null,
-      "motivo": "",
-      "em": "2026-09-01T05:30:02-03:00"
-    },
-    {
-      "etapa": "tasks",
-      "veredito": "ok",
-      "alvo": null,
-      "motivo": "",
-      "em": "2026-09-01T05:32:59-03:00"
-    },
-    {
-      "etapa": "analyze",
       "veredito": "nook",
-      "alvo": "constitution",
-      "motivo": "B1: Principio 7 fixa o Pages servindo a branch master, contra RF-14 e o esclarecimento 7 que publicam por acao (dona: constitution). B2: RF-10 nao define a primeira versao e o repositorio tem zero tags; T049 inventa versao inicial nao especificada (dona: specify)",
-      "em": "2026-09-01T05:34:57-03:00"
-    },
-    {
-      "etapa": "constitution",
-      "veredito": "ok",
-      "alvo": null,
-      "motivo": "",
-      "em": "2026-09-01T05:38:41-03:00"
+      "alvo": "specify",
+      "motivo": "demanda ampliada pelo usuario: a pagina deve ilustrar cada trecho com capturas reais do servidor. Imagem nao esta na spec, e requisito novo nao entra pelo plano",
+      "em": "2026-09-02T20:59:15-03:00"
     },
     {
       "etapa": "specify",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:39:08-03:00"
+      "em": "2026-09-02T20:59:58-03:00"
     },
     {
       "etapa": "clarify",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:40:12-03:00"
+      "em": "2026-09-02T21:07:32-03:00"
     },
     {
       "etapa": "plan",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:40:50-03:00"
+      "em": "2026-09-02T21:09:45-03:00"
     },
     {
       "etapa": "checklist",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:40:50-03:00"
+      "em": "2026-09-02T21:10:35-03:00"
     },
     {
       "etapa": "tasks",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:41:00-03:00"
+      "em": "2026-09-02T21:11:31-03:00"
     },
     {
       "etapa": "analyze",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T05:41:28-03:00"
+      "em": "2026-09-02T21:12:39-03:00"
     },
     {
       "etapa": "implement",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T06:23:46-03:00"
+      "em": "2026-09-02T21:49:52-03:00"
     },
     {
       "etapa": "converge",
       "veredito": "ok",
       "alvo": null,
       "motivo": "",
-      "em": "2026-09-01T06:25:09-03:00"
+      "em": "2026-09-02T21:50:16-03:00"
     }
   ],
   "motivo_status": ""

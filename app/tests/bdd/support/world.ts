@@ -38,6 +38,10 @@ Before({ tags: '@esteira' }, function (this: VitrineWorld): void {
   this.pipeline.reset();
 });
 
+Before({ tags: '@comunidade and @navegador' }, function (): void {
+  return;
+});
+
 Before({ tags: '@processo' }, async function (this: VitrineWorld): Promise<void> {
   await this.process.start();
 });

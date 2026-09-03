@@ -183,6 +183,7 @@ describe('GenerateCatalogUseCase', () => {
     expect(d.catalogFileRepository.writePrerenderRoutes).toHaveBeenCalledExactlyOnceWith([
       '/',
       '/projetos',
+      '/comunidade',
       '/404',
       '/projetos/shortsmaker',
     ]);

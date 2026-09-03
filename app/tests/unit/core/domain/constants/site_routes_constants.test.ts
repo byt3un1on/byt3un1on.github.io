@@ -70,7 +70,7 @@ describe('projectRoute', () => {
 describe('staticRoutes', () => {
   it('deve devolver apenas as rotas fixas quando chamada', () => {
     // Arrange
-    const esperado = ['/', '/projetos', '/404'];
+    const esperado = ['/', '/projetos', '/comunidade', '/404'];
 
     // Act
     const routes = staticRoutes();
@@ -99,5 +99,29 @@ describe('staticRoutes', () => {
 
     // Assert
     expect(parametro).toBe(esperado);
+  });
+});
+
+describe('rota da comunidade', () => {
+  it('deve existir com endereco estavel quando consultada', () => {
+    // Arrange
+    const esperado = '/comunidade';
+
+    // Act
+    const rota = SITE_ROUTES.community;
+
+    // Assert
+    expect(rota).toBe(esperado);
+  });
+
+  it('deve entrar na prerenderizacao quando as rotas fixas sao listadas', () => {
+    // Arrange
+    const esperada = SITE_ROUTES.community;
+
+    // Act
+    const fixas = staticRoutes();
+
+    // Assert
+    expect(fixas).toContain(esperada);
   });
 });
